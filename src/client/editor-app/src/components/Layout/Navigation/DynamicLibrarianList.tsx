@@ -5,10 +5,9 @@ import './Navigator.css';
 
 interface DynamicLibrarianListProps {
   isCollapsed: boolean;
-  location: any;
 }
 
-const DynamicLibrarianList: React.FC<DynamicLibrarianListProps> = ({ isCollapsed, location }) => {
+const DynamicLibrarianList: React.FC<DynamicLibrarianListProps> = ({ isCollapsed }) => {
   // Retrieve library data from the WebSocket context.
   const { library } = useWebSocketContext();
 
@@ -40,7 +39,7 @@ const DynamicLibrarianList: React.FC<DynamicLibrarianListProps> = ({ isCollapsed
           ) : (
             <span className="nav-icon">🏠</span>
           )}
-          {!isCollapsed && <span>{`${librarian.Name}@${room.Name + room.Emoji}`}</span>}
+          {!isCollapsed && <span>{`${librarian.Name} @ ${room.Name + room.Emoji}`}</span>}
         </Link>
       </li>
     ));
@@ -50,10 +49,10 @@ const DynamicLibrarianList: React.FC<DynamicLibrarianListProps> = ({ isCollapsed
       <li key={`${room.Name}-${librarian.Name}`} className="disabled" title="This librarian is not active">
         {librarian.Emoji ? (
           <span className="librarian-emoji">{librarian.Emoji}</span>
-        ) : (
+        ) : ( 
           <span className="nav-icon">🏠</span>
         )}
-        {!isCollapsed && <span>{`${librarian.Name}@${room.Name + room.Emoji}`}</span>}
+        {!isCollapsed && <span>{`${librarian.Name} @ ${room.Name + room.Emoji}`}</span>}
       </li>
     ));
 

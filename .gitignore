@@ -180,7 +180,6 @@ src/service/vectordb/load-vector-db-with-sk/obj/Debug/net9.0/load-vector-db-with
 /src/service/shared/obj
 src/client/editor-app/package-lock.json
 src/client/sample-app/package-lock.json
- 
 src/service/.vs/multi-agent-prototype/v17/.suo
 /src/service/.vs/multi-agent-prototype/FileContentIndex
 /src/service/.vs/multi-agent-prototype/v17
@@ -190,4 +189,3 @@ src/service/.vs/multi-agent-prototype/DesignTimeBuild/.dtbcache.v2
 src/client/shared/package-lock.json
 src/client/shared/tsconfig.tsbuildinfo
 src/service/api/localsettings.json
- 

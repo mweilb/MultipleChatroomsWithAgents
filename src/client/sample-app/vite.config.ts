@@ -12,7 +12,7 @@ export default defineConfig({
     },
   },
   server: {
-    port: 3001,
+    port: 3002,
     fs: {
       // Allow access to the parent directory (client) which contains both shared and tools
       allow: [path.resolve(__dirname, '../')],

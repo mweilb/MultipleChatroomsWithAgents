@@ -1,73 +1,93 @@
 {
-    "version": "2.0.0",
-    "tasks": [
-      {
-        "label": "Init Editor",
-        "type": "shell",
-        "command": "npm install",
-        "runOptions": {
-          "runOn": "folderOpen"
-        },
-        "options": {
-          "cwd": "${workspaceFolder}/src/client/editor-app"
-        },
-        "problemMatcher": []
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Init Shared",
+      "type": "shell",
+      "command": "npm install",
+      "runOptions": {
+        "runOn": "folderOpen"
       },
-      {
-        "label": "Init Sample App",
-        "type": "shell",
-        "command": "npm install",
-        "runOptions": {
-          "runOn": "folderOpen"
-        },
-        "options": {
-          "cwd": "${workspaceFolder}/src/client/sample-app"
-        },
-        "problemMatcher": []
+      "options": {
+        "cwd": "${workspaceFolder}/src/client/shared"
       },
-      {
-        "label": "build-api",
-        "command": "dotnet",
-        "type": "process",
-        "args": [
-          "build",
-          "${workspaceFolder}/src/service/api/api.csproj"
-        ],
-        "problemMatcher": "$msCompile"
+      "problemMatcher": []
+    },
+    {
+      "label": "Watch Shared",
+      "type": "shell",
+      "command": "npm run watch",
+      "isBackground": true,
+      "options": {
+        "cwd": "${workspaceFolder}/src/client/shared"
       },
-      {
-        "label": "Start Editor",
-        "type": "shell",
-        "command": "npm",
-        "options": {
-          "cwd": "${workspaceFolder}/src/client/editor-app",
-          "env": {
-            "BROWSER": "none"
-          }
-        },
-        "args": [ "start" ],
-        "runOptions": {
-            "runOn": "folderOpen"
-        },
-        "dependsOn": ["Init Editor"]  
+      "problemMatcher": []
+    },
+    {
+      "label": "Init Editor",
+      "type": "shell",
+      "command": "npm install",
+      "runOptions": {
+        "runOn": "folderOpen"
       },
-      {
-        "label": "Start Sample App",
-        "type": "shell",
-        "command": "npm",
-        "options": {
-          "cwd": "${workspaceFolder}/src/client/sample-app",
-          "env": {
-            "BROWSER": "none"
-          }
-        },
-        "args": [ "start" ],
-        "runOptions": {
-            "runOn": "folderOpen"
-        },
-        "dependsOn": ["Init Sample App"]  
-      }
-       
-    ]
-  }
-  
+      "options": {
+        "cwd": "${workspaceFolder}/src/client/editor-app"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Init Sample App",
+      "type": "shell",
+      "command": "npm install",
+      "runOptions": {
+        "runOn": "folderOpen"
+      },
+      "options": {
+        "cwd": "${workspaceFolder}/src/client/sample-app"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "build-api",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "build",
+        "${workspaceFolder}/src/service/api/api.csproj"
+      ],
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "Start Editor",
+      "type": "shell",
+      "command": "npm",
+      "args": ["start"],
+      "options": {
+        "cwd": "${workspaceFolder}/src/client/editor-app",
+        "env": {
+          "BROWSER": "none"
+        }
+      },
+      "runOptions": {
+        "runOn": "folderOpen"
+      },
+      "dependsOn": ["Init Editor", "Init Shared"]
+    },
+    {
+      "label": "Start Sample App",
+      "type": "shell",
+      "command": "npm",
+      "args": ["start"],
+      "options": {
+        "cwd": "${workspaceFolder}/src/client/sample-app",
+        "env": {
+          "BROWSER": "none"
+        }
+      },
+      "runOptions": {
+        "runOn": "folderOpen"
+      },
+      "dependsOn": ["Init Sample App", "Init Shared"]
+    }
+  ]
+}

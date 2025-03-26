@@ -35,7 +35,7 @@ const NavigationTabContainer: React.FC<NavigationTabContainerProps> = ({ locatio
           <DynamicRoomsList isCollapsed={isCollapsed} location={location} />
         )}
         {activeTab === 'libraries' && (
-           <DynamicLibrarianList isCollapsed={isCollapsed} location={location} />)}
+           <DynamicLibrarianList isCollapsed={isCollapsed}/>)}
       </div>
     </div>
   );

@@ -154,14 +154,14 @@ const renderSection = (section: Section, msg: WebSocketReplyChatRoomMessage, col
         localStorageKey={`${section.title.toLowerCase().replace(/\s/g, '-')}-${transactionId}`}
       >
         {/* Render the groups within the section */}
-        {section.groups?.map((group, idx) => {
+        {section.groups?.map((group, _) => {
           const isGroupHidden = collapsedSections.has(group.key);
           if (isGroupHidden) return null;
           return renderGroup(group, msg, collapsedFields, transactionId);
         })}
 
         {/* Render standalone fields within the section */}
-        {section.fields?.map((field, idx) => {
+        {section.fields?.map((field, _) => {
           return renderStandaloneField(field, msg, collapsedFields, transactionId);
         })}
       </MessageSection>

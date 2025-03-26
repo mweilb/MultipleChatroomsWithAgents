@@ -41,6 +41,12 @@
     transform: scale(1);
     opacity: 1;
   }
+
+  .tab-content-main{
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 200px);;
+  }
   
   /* Content area styling */
   .tab-content {

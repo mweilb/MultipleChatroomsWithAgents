@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { useRef, useCallback } from 'react';
 import { WebSocketBaseMessage } from '../models/WebSocketBaseMessage';
 import { WebSocketAudioMessage } from '../models/WebSocketVoiceMessage';
 
@@ -33,6 +33,7 @@ export function useVoice(sender: (message: WebSocketBaseMessage) => void) {
         Content: '',
         RoomName: '',
         SubRoomName: '',
+        Hints: {},
       };
       sender(message);
     },

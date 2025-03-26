@@ -1,5 +1,4 @@
-import React, { JSX } from 'react';
-import { FaCog, FaBalanceScale } from 'react-icons/fa';
+import React from 'react';
  
 import Settings from '../components/Settings/Settings';
 import Compliance from '../components/Compliance/Compliance';

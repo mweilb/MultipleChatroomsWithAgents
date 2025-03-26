@@ -1,6 +1,7 @@
 ﻿
 
 using MultiAgents.AzureAISpeech;
+using MultiAgents.WebSockets;
 
 namespace MultiAgents.AgentsChatRoom.WebSockets
 {
@@ -16,7 +17,7 @@ namespace MultiAgents.AgentsChatRoom.WebSockets
         /// <param name="replyMessage">The chat room reply message to send.</param>
         /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
         /// <returns>A task representing the asynchronous send operation.</returns>
-        Task SendAsync(WebSocketReplyChatRoomMessage replyMessage, CancellationToken cancellationToken = default);
+        Task SendAsync(WebSocketReplyChatRoomMessage replyMessage, ConnectionMode mode, CancellationToken cancellationToken = default);
         Task SendSpeachAsync(WebSocketReplyChatRoomMessage currentMessage, IAgentSpeech speech, CancellationToken cancellationToken);
 
         Task SendModerationConcern(string userId, string command, string transactionId, string textToModerate, string why);

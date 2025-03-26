@@ -90,6 +90,11 @@ const MessageList: React.FC<MessageListProps> = ({ messages }) => {
                       {roomMessage.Content}
                     </ReactMarkdown>
                   </div>
+                  <MessageSections
+                    msg={message}
+                    collapsedSections={collapsedSectionTitles}
+                    collapsedFields={collapsedFieldLabels}
+                  />
                 </div>
               );
             }

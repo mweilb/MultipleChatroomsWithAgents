@@ -81,6 +81,7 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ chatType, title, userId }) => {
       Content: input,
       SubRoomName: "",
       RoomName: "",
+      Hints: {}
     };
     
     sendMessage(message);

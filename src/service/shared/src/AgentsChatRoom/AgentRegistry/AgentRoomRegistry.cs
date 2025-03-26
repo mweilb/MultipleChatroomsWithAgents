@@ -50,7 +50,7 @@ namespace MultiAgents.AgentsChatRoom.AgentRegistry
         {
             webSocketHandler.RegisterCommand("rooms", HandleRoomsCommandAsync);
             // Delegate librarian command handling to LibrarianRegistry.
-            webSocketHandler.RegisterCommand("librarians", (msg, socket, kernel, speech) => librarianRegistry.HandleLibrariansCommandAsync(msg, socket, kernel));
+            webSocketHandler.RegisterCommand("librarians", (msg, socket, kernel, speech, mode) => librarianRegistry.HandleLibrariansCommandAsync(msg, socket, kernel, mode));
 
             foreach (var (name, group) in dictMultipleChartRooms)
             {
@@ -61,26 +61,26 @@ namespace MultiAgents.AgentsChatRoom.AgentRegistry
         /// <summary>
         /// Handles the "rooms" command by delegating to specific methods based on SubAction.
         /// </summary>
-        private async Task HandleRoomsCommandAsync(WebSocketBaseMessage message, WebSocket webSocket, Kernel kernel, IAgentSpeech speech)
+        private async Task HandleRoomsCommandAsync(WebSocketBaseMessage message, WebSocket webSocket, Kernel kernel, IAgentSpeech speech, ConnectionMode mode)
         {
             if (message.SubAction == "get")
             {
-                await HandleGetRequest(message, webSocket);
+                await HandleGetRequest(message, webSocket, mode);
             }
             else if (message.SubAction == "change")
             {
-                await HandleChangeRoomRequest(message, webSocket);
+                await HandleChangeRoomRequest(message, webSocket, mode);
             }
             else if (message.SubAction == "reset")
             {
-                await HandleResetChatRequestAsync(message, webSocket, speech);
+                await HandleResetChatRequestAsync(message, webSocket, mode, speech);
             }
         }
 
         /// <summary>
         /// Handles the "get" command for chat rooms.
         /// </summary>
-        private async Task HandleGetRequest(WebSocketBaseMessage message, WebSocket webSocket)
+        private async Task HandleGetRequest(WebSocketBaseMessage message, WebSocket webSocket, ConnectionMode mode)
         {
             var response = new WebSocketGetRoomsMessage
             {
@@ -129,7 +129,7 @@ namespace MultiAgents.AgentsChatRoom.AgentRegistry
         /// <summary>
         /// Handles the room change command.
         /// </summary>
-        public async Task HandleChangeRoomRequest(WebSocketBaseMessage message, WebSocket webSocket)
+        public async Task HandleChangeRoomRequest(WebSocketBaseMessage message, WebSocket webSocket, ConnectionMode mode)
         {
             try
             {
@@ -155,7 +155,7 @@ namespace MultiAgents.AgentsChatRoom.AgentRegistry
         /// <summary>
         /// Handles the reset chat command.
         /// </summary>
-        private async Task HandleResetChatRequestAsync(WebSocketBaseMessage message, WebSocket webSocket, IAgentSpeech speech)
+        private async Task HandleResetChatRequestAsync(WebSocketBaseMessage message, WebSocket webSocket, ConnectionMode mode, IAgentSpeech speech)
         {
             try
             {
@@ -177,7 +177,7 @@ namespace MultiAgents.AgentsChatRoom.AgentRegistry
 
                     if (AutoStart)
                     {
-                        await chatRoomGroup.SendMessageToRoom("start", message, webSocket, speech);
+                        await chatRoomGroup.SendMessageToRoom("start", message, webSocket, speech, mode);
                     }
                    
 

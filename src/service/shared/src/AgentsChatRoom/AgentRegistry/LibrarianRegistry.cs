@@ -41,7 +41,7 @@ namespace MultiAgents.AgentsChatRoom.AgentRegistry
         /// Handles the "librarians" command by checking the SubAction and dispatching
         /// to the appropriate method.
         /// </summary>
-        public async Task HandleLibrariansCommandAsync(WebSocketBaseMessage message, WebSocket socket, Kernel kernel)
+        public async Task HandleLibrariansCommandAsync(WebSocketBaseMessage message, WebSocket socket, Kernel kernel, ConnectionMode mode)
         {
             if (message.SubAction == "get")
             {

@@ -11,7 +11,7 @@ interface CodeProps {
 
 // Function to fix the graph syntax
 function fixParenthesesInLabels(graph: string): string {
-  return graph.replace(/\[([^\]]+)\]/g, (match, labelContent) => {
+  return graph.replace(/\[([^\]]+)\]/g, (_, labelContent) => {
     // Replace each occurrence of a parentheses group (including the parentheses) with a dash.
     // Then replace any multiple dashes with a single dash.
     const replaced = labelContent.replace(/\([^)]*\)/g, '-').replace(/-+/g, '-').trim();
@@ -19,13 +19,7 @@ function fixParenthesesInLabels(graph: string): string {
   });
 }
 
-function fixMissingBracket(input: string): string {
-  // Use \S+ to match any non-whitespace sequence as the node id,
-  // then one or more whitespace characters, then capture everything until the arrow (excluding '[').
-  return input.replace(/(\S+)\s+([^[]+?)\s*-->/g, (_, nodeId, label) => {
-    return `${nodeId}[${label.trim()}] -->`;
-  });
-}
+ 
 
 export const CodeBlock: React.FC<CodeProps> = ({ inline, className, children, ...props }) => {
   const [isDiagramVisible, setIsDiagramVisible] = useState(false);

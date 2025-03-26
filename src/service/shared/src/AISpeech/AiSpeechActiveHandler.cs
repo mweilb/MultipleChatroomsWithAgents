@@ -15,7 +15,7 @@ namespace multi_agents_shared.src.AISpeech
             webSocketHandler.RegisterCommand("voice", HandleSpeechState);
         }
 
-        private Task HandleSpeechState(WebSocketBaseMessage message, WebSocket socket,Kernel _, IAgentSpeech speech)
+        private Task HandleSpeechState(WebSocketBaseMessage message, WebSocket socket,Kernel _, IAgentSpeech __, ConnectionMode ___)
         {
             if (_speachAgent != null)
             {

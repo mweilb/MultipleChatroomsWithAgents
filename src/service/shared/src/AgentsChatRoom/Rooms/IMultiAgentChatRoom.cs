@@ -44,7 +44,7 @@ namespace MultiAgents.AgentsChatRoom.Rooms
         /// <param name="message">The incoming WebSocket message.</param>
         /// <param name="webSocket">The WebSocket connection for sending responses.</param>
         /// <returns>A task that represents the asynchronous operation.</returns>
-        Task<(bool, string, string, string)> HandleCommandAsync(string author, WebSocketBaseMessage message, WebSocket webSocket, IAgentSpeech speech);
+        Task<(bool, string, string, WebSocketBaseMessage)> HandleCommandAsync(string author, WebSocketBaseMessage message, WebSocket webSocket, ConnectionMode mode, IAgentSpeech speech);
 
         /// <summary>
         /// Engages the moderator for reviewing and acting on flagged content from a user.

@@ -67,7 +67,7 @@ namespace MultiAgents.AgentsChatRoom.Rooms
         /// <param name="message">The incoming WebSocket message containing user content and metadata.</param>
         /// <param name="webSocket">The WebSocket connection used for sending responses back to the client.</param>
         /// <returns>A task representing the asynchronous handling operation.</returns>
-        public async Task<(bool, string, string,string)> HandleCommandAsync(string author, WebSocketBaseMessage message, WebSocket webSocket, IAgentSpeech speech)
+        public async Task<(bool, string, string, WebSocketBaseMessage)> HandleCommandAsync(string author, WebSocketBaseMessage message, WebSocket webSocket, ConnectionMode mode, IAgentSpeech speech)
         {
             // Wrap the WebSocket connection with a sender helper to simplify sending messages.
             var sender = new WebSocketSender(webSocket);
@@ -80,8 +80,8 @@ namespace MultiAgents.AgentsChatRoom.Rooms
             if (chatRoom == null)
             {
                 logger?.LogError("ChatRoom not initialized for {CommandName}", Name);
-                await SendErrorAsync(sender, message.UserId, GroupName, $"ChatRoom not initialized {Name}", cancellationToken);
-                return (false,"","", message.TransactionId);
+                await SendErrorAsync(sender, mode, message.UserId, GroupName, $"ChatRoom not initialized {Name}", cancellationToken);
+                return (false,"","",message);
             }
 
             try
@@ -96,15 +96,15 @@ namespace MultiAgents.AgentsChatRoom.Rooms
                 chatRoom.AddChatMessage(messageContent);
 
                 // Begin streaming agent replies back to the client.
-                return await StreamAgentRepliesAsync(message, sender, speech, cancellationToken);
+                return await StreamAgentRepliesAsync(message, sender,mode, speech, cancellationToken);
             }
             catch (Exception ex)
             {
                 // Log any exceptions and send an error response to the client.
                 logger?.LogError(ex, "Error occurred handling command {CommandName}", Name);
-                await SendErrorAsync(sender, message.UserId, GroupName, $"Initialization or logic error: {ex.Message}", cancellationToken);
+                await SendErrorAsync(sender,mode, message.UserId, GroupName, $"Initialization or logic error: {ex.Message}", cancellationToken);
             }
-            return (false, "", "", message.TransactionId);
+            return (false,"","",message);
         }
 
         /// <summary>
@@ -211,17 +211,18 @@ namespace MultiAgents.AgentsChatRoom.Rooms
         /// <param name="speech">The speech synthesis interface used for TTS.</param>
         /// <param name="cancellationToken">Token to observe cancellation requests during the streaming process.</param>
         /// <returns>A task representing the asynchronous streaming operation.</returns>
-        protected virtual async Task<(bool, string, string, string)> StreamAgentRepliesAsync(
+        protected virtual async Task<(bool, string, string, WebSocketBaseMessage)> StreamAgentRepliesAsync(
             WebSocketBaseMessage message,
             IWebSocketSender sender,
+            ConnectionMode mode,
             IAgentSpeech speech,
             CancellationToken cancellationToken)
         {
             if (chatRoom == null)
             {
                 logger?.LogError("ChatRoom not initialized for {CommandName}", Name);
-                await SendErrorAsync(sender, message.UserId, GroupName, $"ChatRoom not initialized {Name}", cancellationToken);
-                return (false, "", "", message.TransactionId);
+                await SendErrorAsync(sender, mode, message.UserId, GroupName, $"ChatRoom not initialized {Name}", cancellationToken);
+                return (false, "","", message);
             }
 
             try
@@ -252,12 +253,12 @@ namespace MultiAgents.AgentsChatRoom.Rooms
                           
                                 currentMessage.AgentName = "";
                                 currentMessage.UserTurn = true;
-                            
-                                await sender.SendAsync(currentMessage, cancellationToken);
-                                return (false, "", "", message.TransactionId);
+                                await sender.SendAsync(currentMessage, mode, cancellationToken);
+                                return (false, "","",  message);
                             }
-                            
-                            return (true, agentChunk.RequestedChatRoom, agentChunk.RequestedChatRoomContext, currentMessage.TransactionId);
+
+                    
+                            return (true, agentChunk.RequestedChatRoom, agentChunk.RequestedChatRoomContext, currentMessage);
                         }
 
                         // Update the message content from agent hints if available.
@@ -296,7 +297,7 @@ namespace MultiAgents.AgentsChatRoom.Rooms
                         lastSpeechIndex = await SendPendingSpeechAsync(message.UserId, GroupName, currentMessage.Content, lastSpeechIndex, sender, speech, cancellationToken);
 
                         // Send the updated message back to the client.
-                        await sender.SendAsync(currentMessage, cancellationToken);
+                        await sender.SendAsync(currentMessage,mode, cancellationToken);
                     }
                 }
 
@@ -311,11 +312,11 @@ namespace MultiAgents.AgentsChatRoom.Rooms
             }
             catch (Exception ex)
             {
-                await SendErrorAsync(sender, message.UserId, GroupName, $"Error: {ex.Message}", cancellationToken);
+                await SendErrorAsync(sender,mode, message.UserId, GroupName, $"Error: {ex.Message}", cancellationToken);
                 logger?.LogError(ex, "Error during streaming for command: {CommandName}", Name);
             }
 
-            return (false, "", "", message.TransactionId);
+            return (false, "","",  message);
         }
 
         /// <summary>
@@ -330,13 +331,14 @@ namespace MultiAgents.AgentsChatRoom.Rooms
         /// <returns>A task representing the asynchronous send operation.</returns>
         protected virtual async Task SendErrorAsync(
             IWebSocketSender sender,
+            ConnectionMode mode,
             string userId,
             string command,
             string error,
             CancellationToken cancellationToken)
         {
             var errorResponse = CreateError(userId, GroupName, error);
-            await sender.SendAsync(errorResponse, cancellationToken);
+            await sender.SendAsync(errorResponse, mode, cancellationToken);
         }
 
         /// <summary>

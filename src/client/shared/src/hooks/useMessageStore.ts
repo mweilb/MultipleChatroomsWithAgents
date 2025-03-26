@@ -21,7 +21,7 @@ export function useMessageStore(
   // Add or update a message based on its TransactionId.
   const addOrUpdateMessage = useCallback(
     (message: WebSocketReplyChatRoomMessage): void => {
-      setMessages((prevMessages) => {
+      setMessages((prevMessages:ActionMessages) => {
         const actionKey = message.Action;
         const currentMessages = prevMessages[actionKey] || [];
         const index = currentMessages.findIndex(
@@ -78,7 +78,7 @@ export function useMessageStore(
 
   // Clear stored messages for a given room.
   const resetMessagesForRoom = useCallback((room: string): void => {
-    setMessages((prevMessages) => {
+    setMessages((prevMessages:ActionMessages) => {
       const updated = { ...prevMessages };
       if (updated[room]) {
         delete updated[room];

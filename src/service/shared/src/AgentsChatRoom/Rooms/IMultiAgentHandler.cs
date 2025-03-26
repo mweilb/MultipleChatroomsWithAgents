@@ -16,10 +16,11 @@ namespace MultiAgents.AgentsChatRoom.Rooms
         /// <param name="webSocket">The active WebSocket connection.</param>
         /// <param name="speech">Agent speech interface.</param>
         /// <returns>A tuple containing whether a new chat room was created, the chat room name, content, and a transaction ID.</returns>
-        Task<(bool newChatRoom, string chatRoomName, string chatRoomContent, string transactionID)> HandleCommandAsync(
+        Task<(bool newChatRoom, string chatRoomName, string chatRoomContent, WebSocketBaseMessage)> HandleCommandAsync(
             string user,
             WebSocketBaseMessage message,
             WebSocket webSocket,
+            ConnectionMode mode,
             IAgentSpeech speech);
 
     }

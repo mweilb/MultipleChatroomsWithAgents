@@ -10,7 +10,7 @@ const ChatSettingComponent: React.FC<ChatSettingComponentProps> = ({ currentRoom
   const { toggleVoice, requestRoomChange, rooms, resetChat } = useWebSocketContext();
   const [voiceEnabled, setVoiceEnabled] = useState(false);
   const [selectedSubRoom, setSelectedSubRoom] = useState('');
-  const [group, setGroup] = useState('default');
+
 
   const handleVoiceToggle = () => {
     const newVoiceState = !voiceEnabled;

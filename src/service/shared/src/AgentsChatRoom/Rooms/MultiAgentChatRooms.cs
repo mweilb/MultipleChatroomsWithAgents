@@ -53,21 +53,21 @@ namespace MultiAgents.AgentsChatRoom.Rooms
         }
  
 
-        private async Task HandleCommandAsync(WebSocketBaseMessage message, WebSocket webSocket,Kernel _, IAgentSpeech speech)
+        private async Task HandleCommandAsync(WebSocketBaseMessage message, WebSocket webSocket,Kernel _, IAgentSpeech speech, ConnectionMode mode)
         {
-            await SendMessageToRoom("user",message, webSocket, speech);
+            await SendMessageToRoom("user",message, webSocket, speech, mode);
         }
 
 
-        public async Task SendMessageToRoom(string user, WebSocketBaseMessage message, WebSocket webSocket, IAgentSpeech speech)
+        public async Task SendMessageToRoom(string user, WebSocketBaseMessage message, WebSocket webSocket, IAgentSpeech speech, ConnectionMode mode)
         {
             var rooms = GetRooms();
             if ((rooms != null) && rooms.TryGetValue(CurrentRoomName, out var room))
             {
-                var (newChatRoom, chatRoomName, chatRoomContent, transactionID) = await room.HandleCommandAsync(user, message, webSocket, speech);
+                var (newChatRoom, chatRoomName, chatRoomContent, currentMessage) = await room.HandleCommandAsync(user, message, webSocket,mode, speech);
                 if (newChatRoom)
                 {
-                    await ChangeChatRooms(message, webSocket, speech, chatRoomName, chatRoomContent, transactionID);
+                    await ChangeChatRooms(currentMessage, webSocket, speech, mode, chatRoomName, chatRoomContent);
                 }
 
             }
@@ -85,7 +85,7 @@ namespace MultiAgents.AgentsChatRoom.Rooms
             return false;
         }
 
-        private async Task ChangeChatRooms(WebSocketBaseMessage message, WebSocket webSocket, IAgentSpeech speech, string toChatRoomName, string chatRoomContent, string transactionID)
+        private async Task ChangeChatRooms(WebSocketBaseMessage message, WebSocket webSocket, IAgentSpeech speech, ConnectionMode mode, string toChatRoomName, string chatRoomContent)
         {
             var rooms = GetRooms();
             if ((rooms != null) && rooms.TryGetValue(toChatRoomName, out var room))
@@ -98,8 +98,8 @@ namespace MultiAgents.AgentsChatRoom.Rooms
                 CancellationToken cancellationToken = cts.Token;
 
                 var sender = new WebSocketSender(webSocket);
-                var changeMessage = new WebSocketChangeRoom(message.UserId, transactionID, message.Action, fromChatRoomName, toChatRoomName, chatRoomContent);
-                await sender.SendAsync(changeMessage, cancellationToken);
+                var changeMessage = new WebSocketChangeRoom(message.UserId, message.TransactionId, message.Action, fromChatRoomName, toChatRoomName, chatRoomContent);
+                await sender.SendAsync(changeMessage, mode, cancellationToken);
 
              
                 //new message    
@@ -110,9 +110,10 @@ namespace MultiAgents.AgentsChatRoom.Rooms
                     Action = Name,
                     SubAction = "start",
                     Content = chatRoomContent,
+                    Hints = message.Hints,
                 };
 
-                await SendMessageToRoom(fromChatRoomName,newMessage, webSocket, speech);
+                await SendMessageToRoom(fromChatRoomName,newMessage, webSocket, speech, mode);
             }
           
         }

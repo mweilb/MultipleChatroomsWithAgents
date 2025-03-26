@@ -1,6 +1,6 @@
 /* General Navigator styling */
 .navigator {
-  height: calc(100vh - 80px);
+  height: calc(100vh - 80px); /* Full height minus header */
   width: 240px;
   background-color: #fff;
   border-right: 1px solid #ddd;
@@ -18,6 +18,7 @@
   width: 70px;
   padding: 20px 5px;
 }
+
 
 /* Toggle button styling */
 .toggle-button {
@@ -90,8 +91,7 @@
 .navigation-tab-container,
 .dynamic-rooms-container {
   flex: 1; /* Take available space */
-  overflow-y: auto;
-  margin-bottom: 10px;
+  /*overflow-y: hidden;*/
 }
 
  
@@ -237,7 +237,6 @@
     display: flex;
     gap: 0.5rem; /* Buttons are closer together */
   }
- 
   /* Toggle button container */
   .navigation-tab-content {
     display: flex;
@@ -247,8 +246,6 @@
     background-color: rgba(250, 249, 249, 0.984);
     height: calc(100vh - 360px); /* Full height minus header */
   }
-
- 
   /* Base style for tab buttons */
   .navigation-tab-button {
     padding: 0.5rem 1rem;

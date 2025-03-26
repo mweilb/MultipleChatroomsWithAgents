@@ -65,7 +65,7 @@ const TabContainer: React.FC<TabContainerProps> = ({ roomName }) => {
           Errors {errorCount > 0 && <span className="badge">{errorCount}</span>}
         </button>
       </div>
-      <div className="tab-content">
+      <div className="tab-content-main">
         {activeTab === 'chat' && (
           <ChatRoom
             chatType={`${roomName}`}

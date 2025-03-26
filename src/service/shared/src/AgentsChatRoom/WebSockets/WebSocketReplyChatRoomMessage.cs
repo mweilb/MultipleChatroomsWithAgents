@@ -10,12 +10,6 @@ namespace MultiAgents.AgentsChatRoom.WebSockets
     public class WebSocketReplyChatRoomMessage : WebSocketBaseMessage
     {
         /// <summary>
-        /// Gets or sets a dictionary of additional hints for processing the message.
-        /// These hints may include metadata such as processing status or debugging information.
-        /// </summary>
-        public Dictionary<string, object> Hints { get; set; } = new Dictionary<string, object>();
-
-        /// <summary>
         /// Gets or sets the name of the agent that is responding.
         /// </summary>
         public string AgentName { get; set; } = string.Empty;

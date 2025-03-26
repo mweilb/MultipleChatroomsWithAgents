@@ -26,13 +26,15 @@ namespace MultiAgents.AgentsChatRoom.WebSockets
             this.webSocket = webSocket;
         }
 
+
+
         /// <summary>
         /// Asynchronously sends a chat room reply message as a JSON string over the WebSocket.
         /// </summary>
         /// <param name="message">The chat room reply message to be sent.</param>
         /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
         /// <returns>A task that represents the asynchronous send operation.</returns>
-        public async Task SendAsync(WebSocketReplyChatRoomMessage message, CancellationToken cancellationToken = default)
+        public async Task SendAsync(WebSocketReplyChatRoomMessage message,ConnectionMode mode, CancellationToken cancellationToken = default)
         {
             // Configure JSON serialization options to format the output and include public fields.
             var options = new JsonSerializerOptions
@@ -40,10 +42,20 @@ namespace MultiAgents.AgentsChatRoom.WebSockets
                 WriteIndented = true,
                 IncludeFields = true
             };
-            //Console.WriteLine($"Voice message: {message.Content}");
-            //AzureSpeech azureSpeech = new AzureSpeech();
-            //await azureSpeech.StreamTtsAudioAsync(message.Content);
-			
+
+            if (mode == ConnectionMode.App)
+            {
+                //for app, if not content, nothing to send
+                if (string.IsNullOrWhiteSpace(message.Content))
+                {
+                    return;
+                }
+
+                //no hints either
+                message.Hints = [];
+
+            }
+    		
             // Serialize the message to a JSON string.
             string json = JsonSerializer.Serialize(message, options);
             // Convert the JSON string to UTF8-encoded bytes.
@@ -58,8 +70,16 @@ namespace MultiAgents.AgentsChatRoom.WebSockets
             );
         }
 
-        public async Task SendAsync(WebSocketChangeRoom message, CancellationToken cancellationToken = default)
+        public async Task SendAsync(WebSocketChangeRoom message, ConnectionMode mode, CancellationToken cancellationToken = default)
         {
+
+            if (mode == ConnectionMode.App)
+            {
+                //no hints either
+                message.Hints = [];
+
+            }
+
             // Configure JSON serialization options to format the output and include public fields.
             var options = new JsonSerializerOptions
             {

@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    /* Language and Environment */
+    "target": "ES2022",
+    "lib": ["ES2023", "dom"],
+    "jsx": "react",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "skipLibCheck": true,
+
+    /* Modules */
+    "module": "ESNext",
+
+    /* Emit */
+    "outDir": "./dist",
+    "sourceMap": true,
+    "declaration": true,
+    "declarationDir": "./dist/types"
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
+}

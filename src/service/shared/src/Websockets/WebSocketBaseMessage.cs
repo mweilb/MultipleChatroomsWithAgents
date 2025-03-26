@@ -31,5 +31,12 @@ namespace MultiAgents.WebSockets
         /// Gets or sets the content or payload of the message.
         /// </summary>
         public string Content { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets a dictionary of additional hints for processing the message.
+        /// These hints may include metadata such as processing status or debugging information.
+        /// </summary>
+        public Dictionary<string, object> Hints { get; set; } = [];
+
     }
 }

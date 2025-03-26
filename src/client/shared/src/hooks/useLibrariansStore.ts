@@ -32,11 +32,13 @@ export function useLibrariansStore(sender: (message: WebSocketBaseMessage) => vo
   // Handler for incoming librarian messages that contain overall library data.
   const handleLibrariansMessage = useCallback((msg: WebSocketLibrariansMessage) => {
     try {
-      const parsed = JSON.parse(msg.Content) as WebSocketLibrariansMessage;
-      setLibrary(parsed);
+      if (msg.Content && msg.Content.trim() !== '') {
+        const parsed = JSON.parse(msg.Content) as WebSocketLibrariansMessage;
+        setLibrary(parsed);
+      }
     } catch (error) {
       console.error('Error parsing library content', error);
-      setLibrary(msg);
+  
     }
   }, []);
 
@@ -66,7 +68,7 @@ export function useLibrariansStore(sender: (message: WebSocketBaseMessage) => vo
     librarianConverseStoreRef.current = store;
     
     // Force a re-render so consumers can see the updated conversation.
-    setVersion(v => v + 1);
+    setVersion(v  => v + 1);
   }, []);
 
     // New handler for conversation messages using a ref.
@@ -100,7 +102,7 @@ export function useLibrariansStore(sender: (message: WebSocketBaseMessage) => vo
 
 
     const handleLibrarianDocMessage = useCallback((msg: WebSocketLibrarianList) => {
-      const { RoomName, AgentName, TransactionId } = msg;
+      const { RoomName, AgentName } = msg;
       const store = librarianConverseStoreRef.current;
   
       // Get current store for the room; if it doesn't exist, initialize it.
@@ -141,6 +143,7 @@ export function useLibrariansStore(sender: (message: WebSocketBaseMessage) => vo
       Content: '',
       RoomName: '',
       SubRoomName: '',
+      Hints: {},
     };
     socket.send(JSON.stringify(message));
   }, []);
@@ -157,6 +160,7 @@ export function useLibrariansStore(sender: (message: WebSocketBaseMessage) => vo
         Content: JSON.stringify({ roomName, AgentName, text }),
         RoomName: '',
         SubRoomName: '',
+        Hints: {},
       };
       sender(message);
     },
@@ -175,6 +179,7 @@ export function useLibrariansStore(sender: (message: WebSocketBaseMessage) => vo
         Content: JSON.stringify({ roomName, AgentName, text }),
         SubRoomName: '',
         RoomName: '',
+        Hints: {},
       };
       sender(message);
     },
@@ -194,6 +199,7 @@ export function useLibrariansStore(sender: (message: WebSocketBaseMessage) => vo
         Content: JSON.stringify({ roomName, AgentName, top, skip }),
         SubRoomName: '',
         RoomName: '',
+        Hints: {}
       };
       sender(message);
     },

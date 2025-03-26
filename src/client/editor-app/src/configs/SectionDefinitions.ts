@@ -41,6 +41,16 @@ export const messageSectionDefinitions: Section[] = [
     ],
   },
   {
+    title: "Agent Changing Room", // Title of the section
+    key: "AgentProcessing", // Unique identifier for the section
+    
+    
+    fields: [ // Standalone fields
+      { key: "select-decision", subkey: "content", label: "Decision" },
+      { key: "transfer-history", subkey: "reason", label: "Thinking" },
+    ],
+  },
+  {
     title: "Chat Termination", // Title of the section
     key: "terminate-rationale", // Unique identifier for the section
     mode: "group", // Defines this section as a grouped type
