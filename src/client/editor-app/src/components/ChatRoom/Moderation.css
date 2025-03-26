@@ -1,0 +1,57 @@
+.moderation-container {
+    padding: 16px;
+    margin: 0 auto;
+  }
+  
+  .moderation-header {
+    font-size: 24px;
+    margin-bottom: 16px;
+    text-align: center;
+  }
+  
+  .moderation-table-wrapper {
+    max-height: calc(100vh - 300px); /* Adjust this value as needed */
+    min-height: calc(100vh - 300px); /* Adjust this value as needed */
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  .moderation-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed; /* Ensure fixed column widths */
+  }
+  
+  .moderation-table th,
+  .moderation-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    word-wrap: break-word; /* Allow wrapping inside cells */
+  }
+  
+  .moderation-table th {
+    background-color: #f2f2f2;
+    text-align: left;
+  }
+  
+  /* Define fixed widths for each column */
+  .moderation-col-transaction {
+    width: 30%;
+  }
+  
+  .moderation-col-why {
+    width: 30%;
+  }
+  
+  .moderation-col-content {
+    width: 40%;
+  }
+  
+  .moderation-empty {
+    text-align: center;
+    font-style: italic;
+    color: #666;
+    padding: 16px;
+  }
+  

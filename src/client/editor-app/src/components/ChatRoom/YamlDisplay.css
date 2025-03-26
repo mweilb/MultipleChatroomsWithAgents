@@ -1,0 +1,40 @@
+.full-page-container {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    
+  }
+
+  .yaml-container {
+    min-height: calc(100vh - 220px); /* Adjust as needed, e.g., 80% of viewport height */
+    max-height: calc(100vh - 220px); /* Adjust as needed, e.g., 80% of viewport height */
+    overflow-y: auto; /* Adds vertical scrollbar if content overflows */
+    padding: 1rem;
+    border: 1px solid #ddd; /* Optional: border for definition */
+    border-radius: 5px; /* Optional: rounded corners */
+  }
+  
+  /* Errors container styling */
+.errors-container {
+    margin-top: 1rem;
+  }
+  
+  /* General error row styling */
+  .error-row {
+    padding: 8px;
+    /* Optional: add a border or margin if needed */
+    border-bottom: 1px solid #ccc;
+  }
+  
+  /* Alternating error row colors */
+  .error-row-0 {
+    background-color: #ffffff; /* White */
+  }
+  
+  .error-row-1 {
+    background-color: #f2f2f2; /* Light grey */
+  }
+  
+  .error-row-2 {
+    background-color: #e6e6e6; /* Slightly darker grey */
+  }

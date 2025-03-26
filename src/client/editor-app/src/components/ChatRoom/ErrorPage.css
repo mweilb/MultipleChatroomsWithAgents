@@ -1,0 +1,53 @@
+.error-container {
+    padding: 16px;
+    margin: 0 auto;
+  }
+  
+  .error-header {
+    font-size: 24px;
+    margin-bottom: 16px;
+    text-align: center;
+  }
+  
+  .error-table-wrapper {
+    max-height: calc(100vh - 300px); /* Adjust this value as needed */
+    min-height: calc(100vh - 300px); /* Adjust this value as needed */
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  .error-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed; /* Ensure fixed column widths */
+  }
+  
+  .error-table th,
+  .error-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    word-wrap: break-word; /* Allow wrapping inside cells */
+  }
+  
+  .error-table th {
+    background-color: #f2f2f2;
+    text-align: left;
+  }
+  
+  /* Define fixed widths for each column */
+  .error-col-transaction {
+    width: 30%;
+  }
+  
+  .error-col-content {
+    width: 40%;
+  }
+  
+  .error-empty {
+    text-align: center;
+    font-style: italic;
+    color: #666;
+    padding: 16px;
+  }
+  

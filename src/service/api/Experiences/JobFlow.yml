@@ -1,0 +1,159 @@
+Job Flow:
+  emoji: "💡"
+  start-room: Get To Know Us
+  agents:
+    # Global Agents - Defined Once, Used Everywhere
+    Inform Agent:
+      emoji: "💡"
+      model: gpt-4
+      instructions: >
+        {{messages}}
+        I want you to have a conversation with a applicant for services and I want you to keep your responses to two sentences at the most. I need you to act as a vocational rehabilitation counselor and a career counselor and help individuals who are coming to our website navigate our job opportunities. It is traditional for applicants to initiate contact by saying, “Hello”. Once the candidate says this word I want you to only say the following, “Welcome to Job Search! Let’s start your journey! Would you like to learn more about Company? Or would you prefer to jump right into building your career profile and uncovering transferable skills and interests first?”
+    Next Room Agent:
+      emoji: "🧠"
+      model: gpt-4
+      instructions: >
+        {{messages}} 
+        The candidate will now give you their vocational history and talk about their disability. I want you to continue to talk with the candidate and interact with the candidate as if you are a vocational rehabilitation counselor. Evaluate their last statement based on the Discovery Model and ask any follow up questions you may need to ask in order to uncover any transferable skills needed to make a job recommendation. I also want you to evaluate how their disability might impact them and very briefly state in general what accommodations from the jobs accommodation network they may consider. Keep the overall responses to a maximum of two sentences as you interact directly with the applicant. 
+    Gather Agent:
+      emoji: "🔐"
+      model: gpt-4
+      instructions: >
+        {{messages}}
+        Now I want you to act as a vocational rehabilitation counselor and take everything you have learned about the candidate and match them to the Company job description at the end of this prompt. I need you to concisely tell the candidate, in three sentences how their transferable skills will match this job, what accommodations they may want, and ask the candidate if they would like you to help them through the application process. Here is the job description: Customer Service Representative- SUMMARY
+        This is a phone-based customer service position supporting a government customer. Customer Service Representatives (CSRs) in this position will answer phone calls from U.S. citizens and utilize a computer-based knowledge system to answer general questions about policies, practices, procedures, and other data to assist callers. Successful candidates will have a customer service orientation with excellent communication and problem-solving skills  
+
+        DUTIES AND RESPONSIBILITIES
+        1. Provide superior customer service by answering incoming calls in a timely manner  
+        2. Follow established policies and procedures to respond and route calls appropriately   
+        3. Gather information to determine customers’ needs; apply problem solving skills and resolve the inquiry/request effectively   
+        4. Log customer information into a database ensuring data entry is accurate and complete 
+        5. Access knowledge base per customer request for information 
+        6. Verify and record demographic data with caller and escalate customer issues as appropriate 
+        7. Maintain and improve quality results by adhering to standards and guidelines 
+        8. Handle inquiries and requests in a courteous and professional manner, including calls received in crisis situations 
+    Job Agent:
+      emoji: "🔐"
+      model: gpt-4
+      instructions: >
+        {{messages}}
+        An one line to promote of the aabove messages!   
+    Apply Agent:
+      emoji: "🔐"
+      model: gpt-4
+      instructions: >
+        {{messages}}
+        An one line to promote of the aabove messages!   
+ 
+  chatrooms:
+    Get To Know Us:
+      emoji: "🧠"
+      agents:
+        - name: Inform Agent
+        - name: Next Room Agent
+        - name: Gather Agent
+     
+      strategies: 
+        termination:
+            name: By Pass Human
+            presets: ["No"]
+        rules:
+            # Rule 1: General agent flow
+            - name: Rule 1
+              current:
+                - name: start
+              next:
+                - name: Inform Agent
+              termination:
+                  name: User Input 1 
+                  presets: ["Yes"]
+            # Rule 2: When the message comes from Assistant AI  
+            - name: Rule 2
+              current:
+                - name: User Input 1
+              next:
+                - name: Next Room Agent
+              termination:
+                  name: User Input 2
+                  presets: ["Yes"]
+            - name: Rule 3
+              current:
+                - name: User Input 2
+              next:
+                - name: Gather Agent
+              termination:
+                  name: User Input 3
+                  presets: ["Yes"]
+
+            
+          
+      moderation:
+        prompt: > 
+            Answer simple yes or no if this is hateful speach or voilence to others
+            {{messages}}
+        messages-preset-filters: [Last message]
+
+    Get To Know You:
+      emoji: "🧠"
+      agents:
+        - name: Gather Agent
+        - name: Next Room Agent
+      strategies:
+        termination:
+              presets: ["No"]
+        rules:
+          - current:
+              - name: start
+            next:
+              - name: Gather Agent
+          - current:
+              - name: Gather Agent
+            next:
+              - name: Next Room Agent
+           
+          - current:
+              - name: Next Room Agent
+            next:
+              - name: Find The Job
+                context-transfer:
+                    prompt: >
+                        {{messages}}
+                        Summarize the conversation
+             
+
+    Find The Job:
+      emoji: "🧠"
+      agents:
+        - name: Job Agent
+        - name: Next Room Agent
+      strategies:
+        termination:
+              presets: ["No"]
+        rules:
+          - current:
+              - name: Job Agent
+            next:
+              - name: Next Room Agent
+          - current:
+              - name: Next Room Agent
+            next:
+              - name: Apply For Job
+                context-transfer:
+                    prompt: >
+                        {{messages}}
+                        Summarize the conversation
+            
+    
+    Apply For Job:
+      emoji: "🧠"
+      agents:
+        - name: Apply Agent
+      strategies:
+        rules:
+          - current:
+              - name: Apply Agent
+            next:
+              - name: Apply Agent
+            termination:
+              presets: ["Yes"]
+         

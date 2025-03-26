@@ -1,0 +1,304 @@
+/* General Navigator styling */
+.navigator {
+  height: calc(100vh - 80px);
+  width: 240px;
+  background-color: #fff;
+  border-right: 1px solid #ddd;
+  box-shadow: 2px 0 4px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* Prevent overall overflow */
+  padding: 20px 15px;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: #333;
+  transition: width 0.3s ease, padding 0.3s ease;
+}
+
+.navigator.collapsed {
+  width: 70px;
+  padding: 20px 5px;
+}
+
+/* Toggle button styling */
+.toggle-button {
+  align-self: flex-end;
+  margin-bottom: 4px;
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #333;
+}
+
+/* Navigation list styling */
+.navigator nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.navigator nav li {
+  margin: 10px 0;
+}
+
+.navigator nav li a {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: #333;
+  padding: 8px 12px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.navigator nav li a:hover {
+  background-color: #f5f5f5;
+}
+
+.navigator nav li a span {
+  margin-left: 12px;
+  font-size: 16px;
+}
+
+.navigator nav li.active a {
+  background-color: #e0e0e0;
+}
+
+/* Connection status styling */
+.connection-status {
+  font-size: 10px;
+  text-align: center;
+  padding-top: 10px;
+  border-top: 1px solid #ddd;
+}
+
+/* Grouping container */
+.nav-group {
+  flex-shrink: 0; /* Prevent group from shrinking */
+}
+
+/* Group header label */
+.group-label {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 5px;
+  padding-left: 5px;
+  color: #444;
+}
+
+/* Dynamic Rooms Container - takes available vertical space */
+.navigation-tab-container,
+.dynamic-rooms-container {
+  flex: 1; /* Take available space */
+  overflow-y: auto;
+  margin-bottom: 10px;
+}
+
+ 
+ 
+
+/* Rooms list styling */
+.rooms-list ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.rooms-list p.no-rooms {
+  padding: 5px 0;
+  font-size: 14px;
+  color: #777;
+}
+
+/* Specific styling for Filters group */
+.nav-group.filters {
+  background-color: #f9f9f9;
+  padding: 8px 10px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+/* Bottom sections container */
+.bottom-sections {
+  flex-shrink: 0;
+}
+
+/* Filters controls container */
+.filters-controls {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Global toggle container */
+.global-toggle-container {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.toggle-group {
+  margin-bottom: 0px;
+  gap: 0px;
+}
+
+/* Global toggle buttons */
+.global-toggle-button {
+  flex: 1;
+  font-size: 12px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.global-toggle-button:hover {
+  background-color: #f0f0f0;
+}
+
+/* Container for individual toggle buttons */
+.toggle-buttons {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Toggle group for sections and fields */
+.toggle-group {
+  margin-left: 10px;
+}
+
+.toggle-group.sections {
+  margin-bottom: 0px;
+}
+
+.toggle-group.fields {
+  margin-top: 0px;
+}
+
+/* Sub-group labels */
+.sub-group-label {
+  font-size: 16px;
+  font-weight: 500;
+  color: #555;
+}
+
+/* Sub-group labels */
+.sub-section-label {
+  margin-left: 5px;
+  margin-right: 5px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #555;
+}
+
+/* Individual toggle button styling within filters */
+.nav-group.filters .toggle-button {
+ 
+  font-size: 12px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.nav-group.filters .toggle-button:hover {
+  background-color: #f0f0f0;
+}
+
+/* Emoji styling */
+.nav-emoji {
+  transform: scale(1.5);
+  margin-right: 0.5rem;
+  transition: transform 0.2s ease;
+  display: inline-block;
+}
+
+.nav-emoji:hover {
+  transform: scale(2.0);
+}
+
+/* Additional spacing for dynamic rooms list */
+.dynamic-rooms-container .rooms-list li {
+  margin-bottom: 10px;
+}
+
+.group-toggle-group{
+  margin-left: 15px;
+  ;
+}
+ 
+
+  /* Header with a light background to connect the tabs with the content */
+  .navigation-tab-header {
+    background-color: #f5f5f5; /* Light background behind the tabs */
+    border-bottom: 1px solid #ccc;
+    padding: 0.5rem 1rem;
+    display: flex;
+    gap: 0.5rem; /* Buttons are closer together */
+  }
+ 
+  /* Toggle button container */
+  .navigation-tab-content {
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+    overflow-y: auto; 
+    background-color: rgba(250, 249, 249, 0.984);
+    height: calc(100vh - 360px); /* Full height minus header */
+  }
+
+ 
+  /* Base style for tab buttons */
+  .navigation-tab-button {
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background-color: #e0e0e0; /* Non-active tabs are a little darker */
+    border: none;
+    outline: none;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    margin: 0;
+  }
+  
+  /* Active tab styling: lighter background, bold text, and a slight scale effect */
+  .navigation-tab-button.active {
+    background-color: #fff; /* Lighter to appear "on top" of the header */
+    font-weight: bold;
+    transform: scale(1.1);
+    box-shadow: 0px -2px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Non-active tabs remain at regular scale and full opacity */
+  .navigation-tab-button:not(.active) {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  .nested-rooms {
+    margin-left: 40px;
+    font-style: italic; /* To visually distinguish nested rooms */
+    color: gray; /* Optional: Lighten the color of nested rooms */
+  }
+
+  /* Style for disabled (not active) librarian entries */
+  .dynamic-library-container li.disabled {
+  color: #6d6868;          /* Grey text color */
+  opacity: 0.6;         /* Lower opacity for a faded look */
+  cursor: not-allowed;  /* Change cursor to indicate they are not clickable */
+}
+
+/* General link styling for active entries */
+.dynamic-library-container nav ul li a {
+  cursor: pointer;      /* Show pointer cursor on hover */
+  text-decoration: none;
+  color: inherit;       /* Inherit text color */
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Hover effect for active librarian links */
+.dynamic-library-container nav ul li a:hover {
+  background-color: #f0f0f0; /* Light grey background on hover */
+  color: #333;             /* Darker text color on hover */
+}

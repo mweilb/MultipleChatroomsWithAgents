@@ -1,0 +1,38 @@
+.compliance-container {
+    max-width: 100%;
+    height: calc(100vh - 200px);
+    margin: 0 auto;
+    padding: 40px 20px;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    color: #333;
+    overflow-y: auto;
+  }
+  
+  .compliance-container h1 {
+    font-size: 32px;
+    margin-bottom: 20px;
+  }
+  
+  .compliance-container h2 {
+    font-size: 24px;
+    margin-top: 40px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 5px;
+  }
+  
+  .compliance-container p {
+    line-height: 1.6;
+    margin-bottom: 20px;
+  }
+  
+  .compliance-container ul {
+    list-style-type: disc;
+    margin-left: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .compliance-container li {
+    margin-bottom: 10px;
+  }
+  

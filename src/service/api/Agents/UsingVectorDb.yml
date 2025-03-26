@@ -1,0 +1,39 @@
+name: UsingVectorDB
+emoji: 💬
+
+agents:
+  - name: CodeReviewer
+    emoji: 🎨 
+    collection:
+        name: SourceForCSharp
+        structure: TextParagraph
+        top: 2
+        skip: 0
+    instructions: >
+       {{#with (SourceForCSharp-GetTextSearchResults query)}}  
+            {{#each this}}  
+             Name: {{Name}}
+             Value: {{Value}}
+             Link: {{Link}}
+            -----------------
+            {{/each}}  
+        {{/with}}  
+
+        {{messages}}
+
+        Include thelink to the relevant information where it is referenced in the response.
+  
+
+strategies:
+  termination:
+    prompt: >
+      End conversation, if the "name" field is not empty.
+    messages-preset-filters: [ "Last message","Remove content"]
+
+  selection:
+    prompt: >
+        Select the CodeReviewer to speak next
+    messages-preset-filters: ["Last message","Remove content"]
+  
+
+

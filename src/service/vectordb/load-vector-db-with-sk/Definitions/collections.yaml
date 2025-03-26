@@ -1,0 +1,19 @@
+collections:
+  - name: "SourceForCSharp"
+    structure: TextParagraph
+    searchDirectory: "C:\\Github\\MW\\multi-agen-chatroom"
+    fileFilters:
+      - "*.cs"
+    directoriesToIgnore:
+      - "node_modules\\"
+      - "obj\\"
+    questions: 
+      - what classes are in this file?
+      - what is the purpose of each class
+  - name: "SourceForReact"
+    structure: TextParagraph
+    searchDirectory: "C:\\Github\\MW\\multi-agen-chatroom"
+    fileFilters:
+      - "*.ts"
+    directoriesToIgnore:
+      - "node_modules\\"

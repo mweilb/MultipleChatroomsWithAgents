@@ -1,0 +1,24 @@
+name: Echo
+emoji: 💬
+
+agents:
+  - name: EchoAgent
+    emoji: 🎨 
+    instructions: >
+      Echo the the following with positivity:
+      {{messages}}
+  
+
+strategies:
+  termination:
+    prompt: >
+      End conversation, if the "name" field is not empty.
+    messages-preset-filters: [ "Last message","Remove content"]
+
+  selection:
+    prompt: >
+        Select the EchoAgent to speak next
+    preset-conditions: ["Last message","Remove content"]
+
+
+

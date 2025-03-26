@@ -1,0 +1,35 @@
+.title-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #ffffff;
+    border-bottom: 1px solid #ddd;
+    padding: 10px 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  }
+  
+  .logo  {
+    transform: scale(2.0);
+    margin-left: 40px;
+    background-color: lightblue;
+  }
+  
+  .title-text h1 {
+    font-size: 20px;
+    margin: 0;
+    color: #333;
+  }
+  
+  .title-links a {
+    margin-left: 20px;
+    text-decoration: none;
+    color: #333;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+  
+  .title-links a:hover {
+    color: #0078d7;
+  }
+  

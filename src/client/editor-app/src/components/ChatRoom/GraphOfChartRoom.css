@@ -1,0 +1,23 @@
+.full-page-container {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  
+}
+
+.graph-container {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+ 
+}
+
+.mermaid,
+.mermaid svg {
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  min-width: 100%;
+  max-height: calc(100% - 10px);
+  min-height: calc(100% - 10px);
+}

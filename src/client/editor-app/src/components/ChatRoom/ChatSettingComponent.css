@@ -1,0 +1,47 @@
+.chat-setting.compact {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 16px;
+    padding: 8px;
+    border: 1px solid var(--primary-border-color, #ccc);
+    border-radius: 4px;
+    background-color: #fafafa;
+    max-width: 100%;
+  }
+  
+  .setting-item {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+  }
+  
+  .setting-label {
+    font-weight: bold;
+    font-size: 12px;
+    margin-bottom: 4px;
+  }
+  
+  .setting-input,
+  .setting-select {
+    padding: 4px;
+    border: 1px solid var(--secondary-border-color, #ddd);
+    border-radius: 4px;
+    font-size: 12px;
+    min-width: 100px;
+  }
+  
+  .setting-button {
+    padding: 4px 8px;
+    font-size: 12px;
+    cursor: pointer;
+    background-color: #e0e0e0;
+    border: 1px solid var(--primary-border-color, #ccc);
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .setting-button:hover {
+    background-color: #c0c0c0;
+  }
+  

@@ -1,0 +1,86 @@
+.filters-container.compact {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 8px;
+    font-family: Arial, sans-serif;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  .filter-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  
+  .filter-header h3 {
+    margin: 0;
+    font-size: 16px;
+    color: #333;
+  }
+  
+  .global-buttons {
+    display: flex;
+    gap: 4px;
+  }
+  
+  .filter-sections,
+  .filter-fields {
+    margin-bottom: 8px;
+  }
+  
+  .filter-sections h4,
+  .filter-fields h4 {
+    font-size: 14px;
+    margin: 4px 0;
+    color: #555;
+  }
+  
+  .sections-grid,
+  .fields-grid {
+    display: grid;
+    gap: 4px;
+  }
+  
+  .sections-grid {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  }
+  
+  .fields-grid {
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  }
+  
+  .section-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  
+  .subsections {
+    display: flex;
+    gap: 2px;
+    flex-wrap: wrap;
+    margin-left: 4px;
+  }
+  
+  .btn {
+    padding: 4px 8px;
+    font-size: 11px;
+    background: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  
+  .btn:hover {
+    background: #e0e0e0;
+  }
+  
+  .sub-btn {
+    font-size: 10px;
+    padding: 3px 6px;
+  }
+  
