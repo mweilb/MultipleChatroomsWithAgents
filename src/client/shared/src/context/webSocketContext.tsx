@@ -130,7 +130,7 @@ export const WebSocketProvider = ({
       triggerRoomsRequest(socketConnection);
       triggerLibraryRequest(socketConnection);
     };
-
+ 
     socketConnection.onmessage = (event) => {
       let incomingMessage: any | null = null;
       try {

@@ -118,7 +118,7 @@ const MessageList: React.FC<MessageListProps> = ({ messages }) => {
                     remarkPlugins={[remarkGfm]}
                     rehypePlugins={[rehypeHighlight]}
                   >
-                   {message.Hints?.['agent']?.['content']?.toString() ?? ''}
+                   {message.Content.toString() ?? ''}
                   </ReactMarkdown>
                   {/* Render additional message sections, passing down collapsed states */}
                   <MessageSections

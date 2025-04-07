@@ -1,33 +1,21 @@
 
 
 using api.src;
+using AppExtensions.AgentRegistry;
+using AppExtensions.Experience;
+using AppExtensions.SemanticKernel;
 using Microsoft.SemanticKernel;
-using multi_agents_shared.src.AISpeech;
-using MultiAgents.AgentsChatRoom.AgentRegistry;
-using MultiAgents.AzureAISpeech;
-using MultiAgents.SemanticKernel;
-using MultiAgents.WebSockets;
+using WebSocketMessages;
 
-
-
-var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
-builder.Services.AddControllers();
-
-// Configure CORS to allow the React app (assumes it runs on http://localhost:3000)
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowFrontend", policy =>
-    {
-        policy.WithOrigins("http://localhost:3000")
-              .AllowAnyHeader()
-              .AllowAnyMethod();
-    });
-
-});
+WebApplicationBuilder builder = SetupBuilder(args);
 
 var app = builder.Build();
+
+// Enable CORS
+app.UseCors("AllowFrontend");
+
+// Create WebSocketHandler
+var webSocketHandler = new WebSocketHandler();
 
 var configBuilder = new ConfigurationBuilder()
     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
@@ -36,59 +24,26 @@ var configBuilder = new ConfigurationBuilder()
 
 IConfiguration configuration = configBuilder.Build();
 
-
-// Create the kernel builder for initializing services.
-var kernelBuilder = Kernel.CreateBuilder();
-
 // Initialize KernelHandler
+var setupForLlmRequested = configuration["LlmSetup"] ?? "Ollama";
+var setupForVectorDBRequested = configuration["VectorSetup"] ?? "Qdrant";
 
-//KernelHelper.SetupAzure(kernelBuilder, configuration);
-KernelHelper.SetupOllama(kernelBuilder, configuration);
+Kernel kernel = SetupKernel(configuration, setupForLlmRequested);
 
-KernelHelper.SetupQdrant(kernelBuilder, configuration);
-//KernelHelper.SetupPinecone(kernelBuilder, configuration);
-//KernelHelper.SetupAzureSearch(kernelBuilder, configuration);
-// Build the kernel.
-var kernel = kernelBuilder.Build();
-
-// Enable CORS
-app.UseCors("AllowFrontend");
-
-// Create WebSocketHandler
-var webSocketHandler = new WebSocketHandler();
-
-
-AgentRoomRegistry manager = new();
-
+ExperienceManager experineceManager = new(kernel);
 
 // Determine the base directory and the Agents directory
 string baseDirectory = AppContext.BaseDirectory;
 string agentsDirectory = Path.Combine(baseDirectory, "Agents");
 string expereincesDirectory = Path.Combine(baseDirectory, "Experiences");
-//hack to get the reading right..
 
-var (rooms, librariesRoom) = await RegisterYamls.RegisterSingleRoomsAsync(kernel, KernelHelper.EmbeddingDimension, webSocketHandler, agentsDirectory);
+bool resultOfAction;
+resultOfAction = await experineceManager.ReadDirectoryAsync(agentsDirectory);
+resultOfAction = await experineceManager.ReadDirectoryAsync(expereincesDirectory);
+resultOfAction = await experineceManager.CreateOrchestratorsAsync();
 
-manager.AppendRooms(rooms);
-manager.AppendLibrarians(librariesRoom);
 
-var (multiRooms, librariesMultiRooms) = await RegisterYamls.RegisterMultiRoomsAsync(kernel, KernelHelper.EmbeddingDimension, webSocketHandler, expereincesDirectory);
-manager.AppendRooms(multiRooms);
-manager.AppendLibrarians(librariesRoom);
- 
-//can also do code version..
-//agentHandlerManager.AddAgentChatRoom(new ExampleAgentRegistry(), new ExampleAgentHandler(), kernel);
-
-manager.RegisterHandlers(webSocketHandler);
-
-//Now handle the speech part
-IAgentSpeech agentSpeech = new AzureAgentSpeech();
-if (agentSpeech.Initialize(configuration) == false)
-{
-    agentSpeech = new NullAgentSpeech();
-}
-
-AiSpeechActiveHandler speechHandler = new(webSocketHandler, agentSpeech);
+//manager.RegisterHandlers(webSocketHandler);
 
 LibrarianRegistry.EmbeddingDimension = KernelHelper.EmbeddingDimension;
 
@@ -101,7 +56,7 @@ app.Map("/ws", async context =>
     {
         using var webSocket = await context.WebSockets.AcceptWebSocketAsync();
         Console.WriteLine("WebSocket connection established");
-        await webSocketHandler.HandleRequestAsync(webSocket, kernel, agentSpeech);
+        await webSocketHandler.HandleRequestAsync(webSocket);
     }
     else
     {
@@ -111,3 +66,55 @@ app.Map("/ws", async context =>
 
 
 app.Run();
+
+static Kernel SetupKernel(IConfiguration configuration, string setupForLlmRequested)
+{
+    // Create the kernel builder for initializing services.
+    var kernelBuilder = Kernel.CreateBuilder();
+
+    if (setupForLlmRequested == "Ollama")
+    {
+        KernelHelper.SetupOllama(kernelBuilder, configuration);
+    }
+    else
+    {
+        KernelHelper.SetupAzure(kernelBuilder, configuration);
+    }
+
+    if (setupForLlmRequested == "Qdrant")
+    {
+        KernelHelper.SetupQdrant(kernelBuilder, configuration);
+    }
+    else if (setupForLlmRequested == "Pinecone")
+    {
+        KernelHelper.SetupPinecone(kernelBuilder, configuration);
+    }
+    else if (setupForLlmRequested == "AzureSearch")
+    {
+        KernelHelper.SetupAzureSearch(kernelBuilder, configuration);
+    }
+
+    var kernel = kernelBuilder.Build();
+    return kernel;
+}
+
+static WebApplicationBuilder SetupBuilder(string[] args)
+{
+    var builder = WebApplication.CreateBuilder(args);
+
+    // Add services to the container.
+    builder.Services.AddControllers();
+
+    // Configure CORS to allow the React app (assumes it runs on http://localhost:3000)
+    builder.Services.AddCors(options =>
+    {
+        options.AddPolicy("AllowFrontend", policy =>
+        {
+            policy.WithOrigins("http://localhost:3000")
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+
+    });
+    return builder;
+}

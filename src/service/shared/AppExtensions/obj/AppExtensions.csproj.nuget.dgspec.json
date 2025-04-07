@@ -1,0 +1,356 @@
+{
+  "format": 1,
+  "restore": {
+    "C:\\Github\\MW\\MultipleChatroomsWithAgents\\src\\service\\shared\\AppExtensions\\AppExtensions.csproj": {}
+  },
+  "projects": {
+    "C:\\Github\\MW\\MultipleChatroomsWithAgents\\src\\service\\shared\\AppExtensions\\AppExtensions.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Github\\MW\\MultipleChatroomsWithAgents\\src\\service\\shared\\AppExtensions\\AppExtensions.csproj",
+        "projectName": "AppExtensions",
+        "projectPath": "C:\\Github\\MW\\MultipleChatroomsWithAgents\\src\\service\\shared\\AppExtensions\\AppExtensions.csproj",
+        "packagesPath": "C:\\Users\\mweil\\.nuget\\packages\\",
+        "outputPath": "C:\\Github\\MW\\MultipleChatroomsWithAgents\\src\\service\\shared\\AppExtensions\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\mweil\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {
+              "C:\\Github\\MW\\MultipleChatroomsWithAgents\\src\\service\\shared\\SemanticKernelExtensions\\SemanticKernelExtension\\SemanticKernelExtension.csproj": {
+                "projectPath": "C:\\Github\\MW\\MultipleChatroomsWithAgents\\src\\service\\shared\\SemanticKernelExtensions\\SemanticKernelExtension\\SemanticKernelExtension.csproj"
+              },
+              "C:\\Github\\MW\\MultipleChatroomsWithAgents\\src\\service\\shared\\WebSocketMessages\\WebSocketMessages.csproj": {
+                "projectPath": "C:\\Github\\MW\\MultipleChatroomsWithAgents\\src\\service\\shared\\WebSocketMessages\\WebSocketMessages.csproj"
+              },
+              "C:\\Github\\MW\\MultipleChatroomsWithAgents\\src\\service\\shared\\YamlConfigurations\\YamlConfigurations.csproj": {
+                "projectPath": "C:\\Github\\MW\\MultipleChatroomsWithAgents\\src\\service\\shared\\YamlConfigurations\\YamlConfigurations.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.200"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "dependencies": {
+            "DocumentFormat.OpenXml": {
+              "target": "Package",
+              "version": "[3.3.0, )"
+            },
+            "Microsoft.CognitiveServices.Speech": {
+              "target": "Package",
+              "version": "[1.43.0, )"
+            },
+            "Microsoft.Extensions.Configuration": {
+              "target": "Package",
+              "version": "[10.0.0-preview.2.25163.2, )"
+            },
+            "Microsoft.SemanticKernel": {
+              "target": "Package",
+              "version": "[1.44.0, )"
+            },
+            "Microsoft.SemanticKernel.Agents.Core": {
+              "target": "Package",
+              "version": "[1.44.0-preview, )"
+            },
+            "Microsoft.SemanticKernel.Connectors.AzureAISearch": {
+              "target": "Package",
+              "version": "[1.44.0-preview, )"
+            },
+            "Microsoft.SemanticKernel.Connectors.AzureOpenAI": {
+              "target": "Package",
+              "version": "[1.44.0, )"
+            },
+            "Microsoft.SemanticKernel.Connectors.Ollama": {
+              "target": "Package",
+              "version": "[1.44.0-alpha, )"
+            },
+            "Microsoft.SemanticKernel.Connectors.Pinecone": {
+              "target": "Package",
+              "version": "[1.44.0-preview, )"
+            },
+            "Microsoft.SemanticKernel.Connectors.Qdrant": {
+              "target": "Package",
+              "version": "[1.44.0-preview, )"
+            },
+            "Microsoft.SemanticKernel.PromptTemplates.Handlebars": {
+              "target": "Package",
+              "version": "[1.44.0, )"
+            },
+            "PdfPig": {
+              "target": "Package",
+              "version": "[0.1.11-alpha-20250327-74d61, )"
+            },
+            "YamlDotNet": {
+              "target": "Package",
+              "version": "[16.3.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.201/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Github\\MW\\MultipleChatroomsWithAgents\\src\\service\\shared\\SemanticKernelExtensions\\SemanticKernelExtension\\SemanticKernelExtension.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Github\\MW\\MultipleChatroomsWithAgents\\src\\service\\shared\\SemanticKernelExtensions\\SemanticKernelExtension\\SemanticKernelExtension.csproj",
+        "projectName": "SemanticKernelExtension",
+        "projectPath": "C:\\Github\\MW\\MultipleChatroomsWithAgents\\src\\service\\shared\\SemanticKernelExtensions\\SemanticKernelExtension\\SemanticKernelExtension.csproj",
+        "packagesPath": "C:\\Users\\mweil\\.nuget\\packages\\",
+        "outputPath": "C:\\Github\\MW\\MultipleChatroomsWithAgents\\src\\service\\shared\\SemanticKernelExtensions\\SemanticKernelExtension\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\mweil\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.200"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "dependencies": {
+            "Microsoft.SemanticKernel.Agents.Core": {
+              "target": "Package",
+              "version": "[1.44.0-preview, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.201/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Github\\MW\\MultipleChatroomsWithAgents\\src\\service\\shared\\WebSocketMessages\\WebSocketMessages.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Github\\MW\\MultipleChatroomsWithAgents\\src\\service\\shared\\WebSocketMessages\\WebSocketMessages.csproj",
+        "projectName": "WebSocketMessages",
+        "projectPath": "C:\\Github\\MW\\MultipleChatroomsWithAgents\\src\\service\\shared\\WebSocketMessages\\WebSocketMessages.csproj",
+        "packagesPath": "C:\\Users\\mweil\\.nuget\\packages\\",
+        "outputPath": "C:\\Github\\MW\\MultipleChatroomsWithAgents\\src\\service\\shared\\WebSocketMessages\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\mweil\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.200"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.201/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Github\\MW\\MultipleChatroomsWithAgents\\src\\service\\shared\\YamlConfigurations\\YamlConfigurations.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Github\\MW\\MultipleChatroomsWithAgents\\src\\service\\shared\\YamlConfigurations\\YamlConfigurations.csproj",
+        "projectName": "YamlConfigurations",
+        "projectPath": "C:\\Github\\MW\\MultipleChatroomsWithAgents\\src\\service\\shared\\YamlConfigurations\\YamlConfigurations.csproj",
+        "packagesPath": "C:\\Users\\mweil\\.nuget\\packages\\",
+        "outputPath": "C:\\Github\\MW\\MultipleChatroomsWithAgents\\src\\service\\shared\\YamlConfigurations\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\mweil\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.200"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "dependencies": {
+            "DocumentFormat.OpenXml": {
+              "target": "Package",
+              "version": "[3.3.0, )"
+            },
+            "PdfPig": {
+              "target": "Package",
+              "version": "[0.1.11-alpha-20250327-74d61, )"
+            },
+            "YamlDotNet": {
+              "target": "Package",
+              "version": "[16.3.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.201/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

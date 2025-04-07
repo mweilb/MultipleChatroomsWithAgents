@@ -8,10 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\shared\multi-agents-shared.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Folder Include="Definitions\" />
   </ItemGroup>
 

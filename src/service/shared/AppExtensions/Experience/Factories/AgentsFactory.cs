@@ -1,0 +1,62 @@
+﻿using Microsoft.SemanticKernel.Agents;
+using Microsoft.SemanticKernel;
+using SemanticKernelExtension.Agents;
+using YamlConfigurations;
+
+namespace AppExtensions.Experience.Factories
+{
+    public class AgentsFactory
+    {
+        public static List<ChatHistoryKernelAgent> Create(YamlMultipleChatRooms experience, Kernel kernel, string roomName, YamlRoomConfig roomConfig)
+        {
+            List<ChatHistoryKernelAgent> completionAgents = [];
+
+            if (roomConfig.Agents != null && roomConfig.Agents.Any())
+            {
+                Console.WriteLine("  Agents:");
+                foreach (var agent in roomConfig.Agents)
+                {
+                    completionAgents.Add(
+                        new ChatCompletionAgent()
+                        {
+                            Name = agent.Name,
+                            Instructions = agent.Instructions,
+                            Kernel = kernel
+                        });
+
+
+                    Console.WriteLine($"    • Agent Name: {agent.Name}, Model: {agent.Model}, Emoji: {agent.Emoji}");
+                }
+
+                //Need to add all the rooms as they echo agents
+                foreach (var room in experience.Rooms ?? [])
+                {
+                    var otherRoomNames = room.Key;
+                    if (otherRoomNames != roomName)
+                    {
+                        completionAgents.Add(new EchoAgent(otherRoomNames, roomName, "room", roomName, false));
+                    }
+                }
+
+                // Need to add user terminations
+                if (roomConfig.Strategies != null)
+                {
+                    foreach (var rule in roomConfig.Strategies.Rules)
+                    {
+                        if (rule.Termination != null && rule.Termination.ContinuationAgentName != null)
+                        {
+                            var userAgentRequestName = rule.Termination.ContinuationAgentName;
+                            completionAgents.Add(new EchoAgent(userAgentRequestName, userAgentRequestName, "user", $"request user input", false));
+                        }
+                    }
+                }
+            }
+            else
+            {
+                Console.WriteLine("  (No agents found in this room.)");
+            }
+
+            return completionAgents;
+        }
+    }
+}

@@ -189,3 +189,12 @@ src/service/.vs/multi-agent-prototype/DesignTimeBuild/.dtbcache.v2
 src/client/shared/package-lock.json
 src/client/shared/tsconfig.tsbuildinfo
 src/service/api/localsettings.json
+/src/service/shared/AppExtensions/bin
+/src/service/shared/AppExtensions/obj
+/src/service/shared/AppExtensions/obj
+/src/service/shared/SemanticKernelExtensions/SemanticKernelExtension/bin
+/src/service/shared/SemanticKernelExtensions/SemanticKernelExtension/obj
+/src/service/shared/WebSocketMessages/bin
+/src/service/shared/WebSocketMessages/obj
+/src/service/shared/YamlConfigurations/obj
+/src/service/shared/YamlConfigurations/bin

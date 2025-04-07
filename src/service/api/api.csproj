@@ -25,11 +25,6 @@
     </None>
   </ItemGroup>
 
-
-  <ItemGroup>
-    <ProjectReference Include="..\shared\multi-agents-shared.csproj" />
-  </ItemGroup>
-
  
   <ItemGroup>
     <Content Update="appsettings.json">
@@ -38,6 +33,19 @@
     <Content Update="localsetting.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+
+ 
+  <ItemGroup>
+    <Folder Include="Experiences\" />
+  </ItemGroup>
+
+ 
+  <ItemGroup>
+    <ProjectReference Include="..\shared\AppExtensions\AppExtensions.csproj" />
+    <ProjectReference Include="..\shared\SemanticKernelExtensions\SemanticKernelExtension\SemanticKernelExtension.csproj" />
+    <ProjectReference Include="..\shared\WebSocketMessages\WebSocketMessages.csproj" />
+    <ProjectReference Include="..\shared\YamlConfigurations\YamlConfigurations.csproj" />
   </ItemGroup>
 
  
