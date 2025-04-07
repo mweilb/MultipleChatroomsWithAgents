@@ -181,6 +181,24 @@ namespace SemanticKernelExtension.Orchestrator
             } while (roomChanged && !cancellationToken.IsCancellationRequested);
 
         }
- 
+
+        public async Task<bool> ResetAsync()
+        {
+            try
+            {
+                foreach (var chat in _chats.Values)
+                {
+                    await chat.ResetAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogError(ex, "Error resetting chats");
+                return false;
+            }
+
+            return true;
+
+        }
     }
 }

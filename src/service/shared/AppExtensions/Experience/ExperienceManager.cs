@@ -1,12 +1,10 @@
 ﻿using AppExtensions.Experience.Factories;
-using DocumentFormat.OpenXml.Wordprocessing;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.VectorData;
+using AppExtensions.Experience.Handlers;
 using Microsoft.SemanticKernel;
-using Microsoft.SemanticKernel.Embeddings;
 using SemanticKernelExtension.Orchestrator;
+using WebSocketMessages;
 using YamlConfigurations;
-using YamlConfigurations.FileReader;
+ 
 using YamlConfigurations.Librarians;
 
 namespace AppExtensions.Experience
@@ -22,12 +20,14 @@ namespace AppExtensions.Experience
         }
 
         public Dictionary<string, TrackingInfo> Experiences = [];
+        
+        private readonly RoomsHandler RoomsHandler;
 
         public ExperienceManager(Kernel kernel)
         {
             Kernel = kernel;
+            RoomsHandler = new RoomsHandler(this);
         }
-
 
         public async Task<bool> ReadDirectoryAsync(string directory)
         {
@@ -59,9 +59,10 @@ namespace AppExtensions.Experience
             return true;
         }
 
-
-
-
+        public void RegisterHandlers(WebSocketHandler webSocketHandler)
+        {
+            webSocketHandler.RegisterCommand("rooms", RoomsHandler.HandleRoomsCommandAsync);
+        }
 
     }
 }
