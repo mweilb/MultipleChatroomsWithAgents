@@ -1,0 +1,56 @@
+.vc-container {
+    width: 25px;
+    margin: 0 auto;
+    text-align: center;
+    /* border: 1px solid #ccc; */
+    border-radius: 4px;
+    font-size: 26px;
+    cursor: pointer;
+  }
+  
+  .vc-status {
+    display: flex;
+    justify-content: center;
+  }
+  
+  .vc-icon {
+    opacity: 0.4;
+    transition: opacity 0.3s;
+  }
+  
+  .vc-icon.active {
+    opacity: 1;
+  }
+  
+  .vc-buttons {
+    display: flex;
+    justify-content: center;
+    max-width: 25px
+  }
+  
+  .vc-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+  
+  .vc-button:active {
+    transform: scale(0.9);
+  }
+  
+  .vc-error {
+    color: red;
+    font-weight: bold;
+    text-align: center;
+  }
+
+  .vc-container {
+    display: flex;
+    align-items: center;
+  }
+
+  .mic-icon {
+    color:white;
+    width:1.8rem;
+  }
