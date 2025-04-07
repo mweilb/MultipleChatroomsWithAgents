@@ -72,9 +72,9 @@ namespace YamlConfigurations.Validations
                     {
                         foreach (var rule in room.Strategies.Rules)
                         {
-                            if (rule.Termination != null && !string.IsNullOrEmpty(rule.Termination.Name))
+                            if (rule.Termination != null && !string.IsNullOrEmpty(rule.Termination.ContinuationAgentName))
                             {
-                                var terminationName = rule.Termination.Name;
+                                var terminationName = rule.Termination.ContinuationAgentName;
                                 if (usedNames.TryGetValue(terminationName, out string? existingCategory))
                                 {
                                     if (!existingCategory.Equals("termination", StringComparison.OrdinalIgnoreCase))

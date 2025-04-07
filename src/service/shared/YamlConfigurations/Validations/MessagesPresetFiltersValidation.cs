@@ -30,27 +30,27 @@ namespace YamlConfigurations.Validations
                     {
                         // Validate global decision configs.
 
-                        ValidateDecisionConfig(room.Strategies.GlobalSelectAgentOrRoom,
-                            $"Rooms[{roomName}].Strategies.GlobalSelectAgentOrRoom", errors);
-                        ValidateDecisionConfig(room.Strategies.GlobalTermination,
-                            $"Rooms[{roomName}].Strategies.GlobalTermination", errors);
+                        //ValidateDecisionConfig(room.Strategies.GlobalSelectAgentOrRoom,
+                        //    $"Rooms[{roomName}].Strategies.GlobalSelectAgentOrRoom", errors);
+                        //ValidateDecisionConfig(room.Strategies.GlobalTermination,
+                        //    $"Rooms[{roomName}].Strategies.GlobalTermination", errors);
 
                         if (room.Strategies.Rules != null)
                         {
                             foreach (var rule in room.Strategies.Rules)
                             {
                                 // Validate each rule's decision configs.
-                                ValidateDecisionConfig(rule.SelectAgentOrRoom,
-                                    $"Rooms[{roomName}].Strategies.Rule[{rule.Name}].SelectAgentOrRoom", errors);
-                                ValidateDecisionConfig(rule.Termination,
-                                    $"Rooms[{roomName}].Strategies.Rule[{rule.Name}].Termination", errors);
+                               // ValidateDecisionConfig(rule.SelectAgentOrRoom,
+                                //    $"Rooms[{roomName}].Strategies.Rule[{rule.Name}].SelectAgentOrRoom", errors);
+                               // ValidateDecisionConfig(rule.Termination,
+                               //     $"Rooms[{roomName}].Strategies.Rule[{rule.Name}].Termination", errors);
 
                                 if (rule.Next != null)
                                 {
                                     foreach (var next in rule.Next)
                                     {
-                                        ValidateDecisionConfig(next.ContextTransfer,
-                                            $"Rooms[{roomName}].Strategies.Rule[{rule.Name}].Next[{next.Name}].ContextTransfer", errors);
+                                      //  ValidateDecisionConfig(next.ContextTransfer,
+                                      //      $"Rooms[{roomName}].Strategies.Rule[{rule.Name}].Next[{next.Name}].ContextTransfer", errors);
                                     }
                                 }
                             }

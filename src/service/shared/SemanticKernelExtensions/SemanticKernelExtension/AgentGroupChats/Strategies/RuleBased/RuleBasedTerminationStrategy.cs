@@ -41,8 +41,10 @@ namespace SemanticKernelExtension.AgentGroupChats.Strategies.RuleBased
 
             // Delegate the termination decision to the rule's termination strategy
             // and await the result before returning.
-            return await _settings.CurrentRule.Termination.ShouldTerminateAsync(agent, history, cancellationToken)
+            var shouldEnd = await _settings.CurrentRule.Termination.ShouldTerminateAsync(agent, history, cancellationToken)
                                           .ConfigureAwait(false);
+
+            return shouldEnd;
             
         }
     }

@@ -136,7 +136,7 @@ export function useLibrariansStore(sender: (message: WebSocketBaseMessage) => vo
   // Sends a request message with action "librarians" to retrieve the library info.
   const requestLibrary = useCallback((socket: WebSocket) => {
     const message: WebSocketBaseMessage = {
-      UserId: '',
+      UserId: 'app',
       TransactionId: 'librarians-get-' + Date.now(),
       Action: 'librarians',
       SubAction: 'get',

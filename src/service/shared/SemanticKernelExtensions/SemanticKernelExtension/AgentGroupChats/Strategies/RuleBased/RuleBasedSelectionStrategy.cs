@@ -95,7 +95,11 @@ namespace SemanticKernelExtension.AgentGroupChats.Strategies.RuleBased
 
             // Use the rule's selection strategy to determine the next agent.
             // The NextAsync method is expected to return an agent from the provided list.
-            Agent selectedAgent = await rule.Selection.NextAsync(agents, history, cancellationToken)
+            var filteredAgents = (rule.NextAgentsNames is { Count: > 0 })
+                ? [.. agents.Where(a => rule.NextAgentsNames.Contains(a.Name, StringComparer.OrdinalIgnoreCase))]
+                : agents;
+
+            Agent selectedAgent = await rule.Selection.NextAsync(filteredAgents, history, cancellationToken)
                                                      .ConfigureAwait(false);
 
             if (selectedAgent is null)

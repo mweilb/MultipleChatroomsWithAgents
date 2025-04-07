@@ -17,7 +17,8 @@ namespace YamlConfigurations.Validations
             new NextRoomValidation(),
             new AgentReferenceValidation(),
             new MessagesPresetFiltersValidation(),
-            new TerminationPresetValidation(),
+            new SelectionValidation(),
+            new TerminationValidation(),
             new ModerationPromptNotEmptyValidation()
             // Add additional validations here as needed.
         };

@@ -16,7 +16,7 @@ namespace  YamlConfigurations
 
         // The decision associated with the rule.
         [YamlMember(Alias = "selection")]
-        public YamlSelectionConfig? SelectAgentOrRoom { get; set; }
+        public YamlSelectionConfig? Selection { get; set; }
 
         // Termination rule.
         [YamlMember(Alias = "termination")]

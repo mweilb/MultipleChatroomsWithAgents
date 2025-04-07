@@ -29,7 +29,7 @@ namespace YamlConfigurations.Validations
                             }
 
                             // If the selection decision is null, ensure both "current" and "next" are provided.
-                            if (rule.SelectAgentOrRoom == null)
+                            if (rule.Selection == null)
                             {
                                 bool hasCurrent = rule.Current != null && rule.Current.Any();
                                 bool hasNext = rule.Next != null && rule.Next.Any();

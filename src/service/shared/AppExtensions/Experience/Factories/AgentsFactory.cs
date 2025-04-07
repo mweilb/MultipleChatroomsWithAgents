@@ -16,15 +16,22 @@ namespace AppExtensions.Experience.Factories
                 Console.WriteLine("  Agents:");
                 foreach (var agent in roomConfig.Agents)
                 {
-                    completionAgents.Add(
-                        new ChatCompletionAgent()
-                        {
-                            Name = agent.Name,
-                            Instructions = agent.Instructions,
-                            Kernel = kernel
-                        });
 
-
+                    if (agent.Instructions != null)
+                    {
+                        completionAgents.Add(
+                            new ChatCompletionAgent()
+                            {
+                                Name = agent.Name,
+                                Instructions = agent.Instructions,
+                                Kernel = kernel
+                            });
+                    }
+                    else if (agent.Echo != null)
+                    {
+                        completionAgents.Add(new EchoAgent(agent.Name, agent.Name, "Echo", agent.Echo, true));         
+                    }
+                    
                     Console.WriteLine($"    • Agent Name: {agent.Name}, Model: {agent.Model}, Emoji: {agent.Emoji}");
                 }
 
@@ -38,18 +45,6 @@ namespace AppExtensions.Experience.Factories
                     }
                 }
 
-                // Need to add user terminations
-                if (roomConfig.Strategies != null)
-                {
-                    foreach (var rule in roomConfig.Strategies.Rules)
-                    {
-                        if (rule.Termination != null && rule.Termination.ContinuationAgentName != null)
-                        {
-                            var userAgentRequestName = rule.Termination.ContinuationAgentName;
-                            completionAgents.Add(new EchoAgent(userAgentRequestName, userAgentRequestName, "user", $"request user input", false));
-                        }
-                    }
-                }
             }
             else
             {

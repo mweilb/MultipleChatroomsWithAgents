@@ -30,7 +30,7 @@ var setupForVectorDBRequested = configuration["VectorSetup"] ?? "Qdrant";
 
 Kernel kernel = SetupKernel(configuration, setupForLlmRequested);
 
-ExperienceManager experineceManager = new(kernel);
+ExperienceManager manager = new(kernel);
 
 // Determine the base directory and the Agents directory
 string baseDirectory = AppContext.BaseDirectory;
@@ -38,12 +38,12 @@ string agentsDirectory = Path.Combine(baseDirectory, "Agents");
 string expereincesDirectory = Path.Combine(baseDirectory, "Experiences");
 
 bool resultOfAction;
-resultOfAction = await experineceManager.ReadDirectoryAsync(agentsDirectory);
-resultOfAction = await experineceManager.ReadDirectoryAsync(expereincesDirectory);
-resultOfAction = await experineceManager.CreateOrchestratorsAsync();
+resultOfAction = await manager.ReadDirectoryAsync(agentsDirectory);
+resultOfAction = await manager.ReadDirectoryAsync(expereincesDirectory);
+resultOfAction = await manager.CreateOrchestratorsAsync();
 
 
-//manager.RegisterHandlers(webSocketHandler);
+manager.RegisterHandlers(webSocketHandler);
 
 LibrarianRegistry.EmbeddingDimension = KernelHelper.EmbeddingDimension;
 

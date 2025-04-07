@@ -17,6 +17,7 @@ namespace AppExtensions.Experience
             public YamlMultipleChatRooms? Experience = null;
             public YamLibrarians? Librarians = null;
             public AgentGroupChatOrchestrator? agentGroupChatOrchestrator = null;
+            public MessageHandler? handler = null;
         }
 
         public Dictionary<string, TrackingInfo> Experiences = [];
@@ -62,6 +63,17 @@ namespace AppExtensions.Experience
         public void RegisterHandlers(WebSocketHandler webSocketHandler)
         {
             webSocketHandler.RegisterCommand("rooms", RoomsHandler.HandleRoomsCommandAsync);
+
+            foreach(var (key,group) in Experiences)
+            {
+                if (group != null)
+                {
+                    group.handler = new MessageHandler(group, key);
+                    webSocketHandler.RegisterCommand(key, group.handler.HandleCommandAsync);
+                }
+            }
+            
+
         }
 
     }

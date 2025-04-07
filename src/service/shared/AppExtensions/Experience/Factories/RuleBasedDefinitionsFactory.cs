@@ -36,7 +36,7 @@ namespace AppExtensions.Experience.Factories
 
                         AddCurrentAgents(rule, ruleForSK);
                         AddNextAgents(rule, ruleForSK);
-                        AddSelectionStrategy(rule.SelectAgentOrRoom, ruleForSK, completionAgents, kernel);
+                        AddSelectionStrategy(rule.Selection, ruleForSK, completionAgents, kernel);
                         AddTerminationStrategy(rule.Termination, ruleForSK, completionAgents, kernel);
 
                         listSKRules.Add(ruleForSK);
@@ -130,7 +130,6 @@ namespace AppExtensions.Experience.Factories
                 {
                     ruleForSK.Termination = ConstantTerminationStrategyFactory.Create(termination.ConstantTermination, agents);
                 }
-  
             }
             
             ruleForSK.Termination ??= new ConstantTerminationStrategy(false);

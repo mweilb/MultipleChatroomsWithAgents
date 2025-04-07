@@ -12,7 +12,7 @@ namespace YamlConfigurations
 
         // The decision associated with the rule.
         [YamlMember(Alias = "selection")]
-        public YamlSelectionConfig? GlobalSelectAgentOrRoom { get; set; }
+        public YamlSelectionConfig? GlobalSelection { get; set; }
 
         // Termination rule.
         [YamlMember(Alias = "termination")]
@@ -29,9 +29,9 @@ namespace YamlConfigurations
             }
             if (GlobalTermination != null)
             {
-                if (string.IsNullOrEmpty(GlobalTermination.Name))
+                if (string.IsNullOrEmpty(GlobalTermination.ContinuationAgentName))
                 {
-                    GlobalTermination.Name = $"{room.Name} Termination"; 
+                    GlobalTermination.ContinuationAgentName = $"{room.Name} Termination"; 
                 }
             }
 
@@ -46,9 +46,9 @@ namespace YamlConfigurations
                 }
 
                     // If the rule does not have a selection configuration, assign the global one.
-                if (rule.SelectAgentOrRoom == null && GlobalSelectAgentOrRoom != null)
+                if (rule.Selection == null && GlobalSelection != null)
                 {
-                    rule.SelectAgentOrRoom = GlobalSelectAgentOrRoom;
+                    rule.Selection = GlobalSelection;
                 }
 
                 // If the rule does not have a termination configuration, assign the global one.
@@ -59,9 +59,9 @@ namespace YamlConfigurations
                 }
                 else if (rule.Termination != null)
                 {
-                    if (string.IsNullOrEmpty(rule.Termination.Name))
+                    if (string.IsNullOrEmpty(rule.Termination.ContinuationAgentName))
                     {
-                        rule.Termination.Name = $"{rule.Name} Termination";
+                        rule.Termination.ContinuationAgentName = $"{rule.Name} Termination";
                     }
                 }
                  

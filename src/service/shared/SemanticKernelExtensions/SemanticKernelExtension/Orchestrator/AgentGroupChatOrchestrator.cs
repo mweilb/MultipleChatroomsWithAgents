@@ -105,7 +105,7 @@ namespace SemanticKernelExtension.Orchestrator
             {
                 _logger?.LogError("No active AgentGroupChat selected.");
                 var content = new StreamingChatMessageContent(AuthorRole.System, "No active AgentGroupChat selected.");
-                yield return new StreamingOrchestratorContent(StreamingOrchestratorContent.Action.Error, OrchestratorName, _activeChatName, string.Empty, content);
+                yield return new StreamingOrchestratorContent(StreamingOrchestratorContent.ActionTypes.Error, OrchestratorName, _activeChatName, string.Empty, content);
                 yield break;
             }
 
@@ -134,11 +134,11 @@ namespace SemanticKernelExtension.Orchestrator
                         // End event for the previous agent (only if it was non-empty)
                         if (!string.IsNullOrEmpty(currentAgent))
                         {
-                            yield return new StreamingOrchestratorContent(StreamingOrchestratorContent.Action.AgentEnded, OrchestratorName, _activeChatName, currentAgent);
+                            yield return new StreamingOrchestratorContent(StreamingOrchestratorContent.ActionTypes.AgentFinsihed, OrchestratorName, _activeChatName, currentAgent);
                         }
 
                         currentAgent = agentChunk.AuthorName;
-                        yield return new StreamingOrchestratorContent(StreamingOrchestratorContent.Action.AgentEnded, OrchestratorName, _activeChatName, currentAgent, agentChunk);
+                        yield return new StreamingOrchestratorContent(StreamingOrchestratorContent.ActionTypes.AgentStarted, OrchestratorName, _activeChatName, currentAgent, agentChunk);
                         continue;
                     }
 
@@ -146,19 +146,19 @@ namespace SemanticKernelExtension.Orchestrator
                     if (agentChunk.Role == AuthorRole.Tool && agentChunk.ModelId == RoomModelId)
                     {
                         newRoomName = agentChunk.Content ?? "";
-                        yield return new StreamingOrchestratorContent(StreamingOrchestratorContent.Action.RoomChange, OrchestratorName, _activeChatName, currentAgent, agentChunk);
+                        yield return new StreamingOrchestratorContent(StreamingOrchestratorContent.ActionTypes.RoomChange, OrchestratorName, _activeChatName, currentAgent, agentChunk);
                         roomChanged = true;
                         break;
                     }
 
 
-                    yield return new StreamingOrchestratorContent(StreamingOrchestratorContent.Action.AgentUpdated, OrchestratorName, _activeChatName, currentAgent, agentChunk);
+                    yield return new StreamingOrchestratorContent(StreamingOrchestratorContent.ActionTypes.AgentUpdated, OrchestratorName, _activeChatName, currentAgent, agentChunk);
 
                 }
 
                 if (!string.IsNullOrEmpty(currentAgent))
                 {
-                    yield return new StreamingOrchestratorContent(StreamingOrchestratorContent.Action.AgentEnded, OrchestratorName, _activeChatName, currentAgent);
+                    yield return new StreamingOrchestratorContent(StreamingOrchestratorContent.ActionTypes.AgentFinsihed, OrchestratorName, _activeChatName, currentAgent);
                 }
 
                 if (roomChanged == true && YieldOnRoomChange == false)

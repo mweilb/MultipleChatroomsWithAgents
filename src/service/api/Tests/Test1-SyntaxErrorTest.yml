@@ -1,4 +1,4 @@
-name: Echo
+name: Syntax Error Test
 emoji: 💬
 
 agents:
@@ -14,7 +14,7 @@ agents:
       
       instructions: >
         Echo the the following with positivity:
-        {{messages}
+        {{messages}}
 
 
 strategies:

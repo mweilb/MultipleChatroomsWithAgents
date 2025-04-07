@@ -91,7 +91,9 @@ namespace WebSocketMessages
                                 UserId = incomingMessage.UserId,
                                 TransactionId = incomingMessage.TransactionId,
                                 Action = "unknown",
+                                SubAction = incomingMessage.Action,
                                 Content = $"Unknown action: {incomingMessage.Action}"
+
                             };
 
                             var unknownJson = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(unknownResponse));

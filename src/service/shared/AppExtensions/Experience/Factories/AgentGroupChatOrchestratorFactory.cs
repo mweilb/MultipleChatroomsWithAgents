@@ -51,9 +51,20 @@ namespace AppExtensions.Experience.Factories
                 orchestrator.Add(roomName, groupChat);
             }
 
-            // Eventually you’ll construct and return real orchestrators here.
-            // For now, returning null as requested.
-            return await Task.FromResult<AgentGroupChatOrchestrator?>(orchestrator);
+            if (string.IsNullOrWhiteSpace(experience.StartRoom) == false)
+            {
+                orchestrator.SwitchTo(experience.StartRoom);
+            }
+            else
+            {
+                orchestrator.SwitchTo(experience.Rooms.First().Key);
+            }
+
+                // Check for auto-start rooms
+
+                // Eventually you’ll construct and return real orchestrators here.
+                // For now, returning null as requested.
+                return await Task.FromResult<AgentGroupChatOrchestrator?>(orchestrator);
         }
 
     

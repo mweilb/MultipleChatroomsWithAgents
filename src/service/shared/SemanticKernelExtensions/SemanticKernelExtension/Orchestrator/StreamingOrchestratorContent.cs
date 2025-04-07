@@ -3,17 +3,17 @@
 namespace SemanticKernelExtension.Orchestrator
 {
 
-    public class StreamingOrchestratorContent(StreamingOrchestratorContent.Action actionType, 
+    public class StreamingOrchestratorContent(StreamingOrchestratorContent.ActionTypes actionType, 
         string orchestratorName, string chatName, string agentName, 
         StreamingChatMessageContent? content = null)
     {
-        public enum Action
+        public enum ActionTypes
         {
             Invalid = -1,
             Error,
             AgentStarted,
             AgentUpdated,
-            AgentEnded,
+            AgentFinsihed,
             RoomChange
         }
 
@@ -25,7 +25,7 @@ namespace SemanticKernelExtension.Orchestrator
         /// <summary>
         /// What "event" is happening: Start, Update, End, Error, etc.
         /// </summary>
-        public Action ActionType { get; set; } = actionType;
+        public ActionTypes Action { get; set; } = actionType;
 
         /// <summary>
         /// Name or identifier of the agent, if useful for the consumer.

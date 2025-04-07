@@ -102,7 +102,7 @@ namespace AppExtensions.AgentRegistry
                     Errors = group.Errors,
                     AutoStart = group.AutoStart,
                     Rooms = group.Rooms != null
-                        ? group.Rooms.Select(room => new WebSocketRoomProfile
+                        ? [.. group.Rooms.Select(room => new WebSocketRoomProfile
                         {
                             Name = room.Value.Name,
                             Emoji = room.Value.Emoji,
@@ -112,9 +112,9 @@ namespace AppExtensions.AgentRegistry
                                     Name = agent.Name,
                                     Emoji = agent.Emoji
                                 }).ToList()
-                                : new List<WebSocketAgentProfile>()
-                        }).ToList()
-                        : new List<WebSocketRoomProfile>()
+                                : []
+                        })]
+                        : []
                 });
             }
 

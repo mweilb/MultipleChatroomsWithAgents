@@ -70,6 +70,12 @@ namespace SemanticKernelExtension.Agents
             };
 
             yield return new AgentResponseItem<ChatMessageContent>(response, thread!);
+
+            if (_visible)
+            {
+                messages.Add(response);
+            }
+
         }
 
         // 3) Streaming ChatMessageContent (history-based InvokeStreamingAsync)
@@ -89,7 +95,22 @@ namespace SemanticKernelExtension.Agents
                 AuthorName = _agentName
             };
 
+
             yield return response;
+
+            if (_visible)
+            {
+                var content = new ChatMessageContent
+                {
+                    AuthorName = _agentName,
+                    Content = _message,
+                    Role = _visible ? AuthorRole.System : AuthorRole.Tool,
+                    ModelId = _modelId
+                };
+
+                history.Add(content);
+            }
+
         }
 
         // 4) Streaming ChatMessageContent (messages-based InvokeStreamingAsync)
@@ -109,9 +130,19 @@ namespace SemanticKernelExtension.Agents
                 AuthorName = _agentName,
             };
 
-        
-
             yield return new AgentResponseItem<StreamingChatMessageContent>(response, thread!);
+            if (_visible)
+            {
+                var content = new ChatMessageContent
+                {
+                    AuthorName = _agentName,
+                    Content = _message,
+                    Role = _visible ? AuthorRole.System : AuthorRole.Tool,
+                    ModelId = _modelId
+                };
+
+                messages.Add(content);
+            }
         }
 
         // 5) Restoring channel logic

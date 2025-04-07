@@ -20,7 +20,9 @@
                         foreach (var rule in room.Strategies.Rules)
                         {
                             // Validate that the prompt for SelectAgentOrRoom is not empty.
-                            if (rule.SelectAgentOrRoom != null && string.IsNullOrWhiteSpace(rule.SelectAgentOrRoom.Prompt))
+                            if (rule.Selection != null &&
+                                rule.Selection.PromptSelect != null &&
+                                string.IsNullOrWhiteSpace(rule.Selection.PromptSelect.Instructions))
                             {
                                 errors.Add(new ValidationError(
                                     "Prompt must not be empty.",
@@ -31,28 +33,15 @@
                             // For Termination, if presets are available then an empty prompt is acceptable.
                             if (rule.Termination != null)
                             {
-                                if (rule.Termination is YamlTerminationDecisionConfig termConfig)
+                            
+                                if (rule.Termination != null &&
+                                    rule.Termination.PromptTermination != null &&
+                                    string.IsNullOrWhiteSpace(rule.Termination.PromptTermination.Instructions))
                                 {
-                                    // If there are no presets, then the termination prompt must not be empty.
-                                    if ((termConfig.Presets == null || termConfig.Presets.Count == 0) &&
-                                        string.IsNullOrWhiteSpace(termConfig.Prompt))
-                                    {
-                                        errors.Add(new ValidationError(
-                                            "Termination prompt must not be empty when no presets are defined.",
-                                            $"Rooms[{roomName}].Strategies.Rule[{rule.Name}].Termination.Prompt"
-                                        ));
-                                    }
-                                }
-                                else
-                                {
-                                    // If termination is not a YamlTerminationDecisionConfig, always check the prompt.
-                                    if (string.IsNullOrWhiteSpace(rule.Termination.Prompt))
-                                    {
-                                        errors.Add(new ValidationError(
-                                            "Termination prompt must not be empty.",
-                                            $"Rooms[{roomName}].Strategies.Rule[{rule.Name}].Termination.Prompt"
-                                        ));
-                                    }
+                                    errors.Add(new ValidationError(
+                                        "Prompt must not be empty.",
+                                        $"Rooms[{roomName}].Strategies.Rule[{rule.Name}].Termination.Prompt"
+                                    ));
                                 }
                             }
                         }

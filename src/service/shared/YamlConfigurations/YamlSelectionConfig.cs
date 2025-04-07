@@ -3,7 +3,7 @@ using YamlDotNet.Serialization;
 
 namespace YamlConfigurations
 {
-    public class YamlSelectionConfig : YamlDecisionConfig
+    public class YamlSelectionConfig  
     {
         [YamlMember(Alias = "sequential-selection")]
         public YamlSequentialSelection? SequentialSelection { get; set; }

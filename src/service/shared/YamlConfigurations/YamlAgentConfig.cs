@@ -12,11 +12,11 @@ namespace YamlConfigurations
         public string? Model { get; set; } = string.Empty;
 
         [YamlMember(Alias = "instructions")]
-        public string? Instructions { get; set; } = string.Empty;
+        public string? Instructions { get; set; } = null;
        
 
         [YamlMember(Alias = "echo")]
-        public string? Echo { get; set; } = string.Empty;
+        public string? Echo { get; set; } = null;
 
         // Collection is optional.
         [YamlMember(Alias = "collection")]

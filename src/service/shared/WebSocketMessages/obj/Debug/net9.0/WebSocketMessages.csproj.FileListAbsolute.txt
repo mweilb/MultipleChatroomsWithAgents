@@ -1,0 +1,12 @@
+C:\Github\MW\MultipleChatroomsWithAgents\src\service\shared\WebSocketMessages\bin\Debug\net9.0\WebSocketMessages.deps.json
+C:\Github\MW\MultipleChatroomsWithAgents\src\service\shared\WebSocketMessages\bin\Debug\net9.0\WebSocketMessages.dll
+C:\Github\MW\MultipleChatroomsWithAgents\src\service\shared\WebSocketMessages\bin\Debug\net9.0\WebSocketMessages.pdb
+C:\Github\MW\MultipleChatroomsWithAgents\src\service\shared\WebSocketMessages\obj\Debug\net9.0\WebSocketMessages.GeneratedMSBuildEditorConfig.editorconfig
+C:\Github\MW\MultipleChatroomsWithAgents\src\service\shared\WebSocketMessages\obj\Debug\net9.0\WebSocketMessages.AssemblyInfoInputs.cache
+C:\Github\MW\MultipleChatroomsWithAgents\src\service\shared\WebSocketMessages\obj\Debug\net9.0\WebSocketMessages.AssemblyInfo.cs
+C:\Github\MW\MultipleChatroomsWithAgents\src\service\shared\WebSocketMessages\obj\Debug\net9.0\WebSocketMessages.csproj.CoreCompileInputs.cache
+C:\Github\MW\MultipleChatroomsWithAgents\src\service\shared\WebSocketMessages\obj\Debug\net9.0\WebSocketMessages.sourcelink.json
+C:\Github\MW\MultipleChatroomsWithAgents\src\service\shared\WebSocketMessages\obj\Debug\net9.0\WebSocketMessages.dll
+C:\Github\MW\MultipleChatroomsWithAgents\src\service\shared\WebSocketMessages\obj\Debug\net9.0\refint\WebSocketMessages.dll
+C:\Github\MW\MultipleChatroomsWithAgents\src\service\shared\WebSocketMessages\obj\Debug\net9.0\WebSocketMessages.pdb
+C:\Github\MW\MultipleChatroomsWithAgents\src\service\shared\WebSocketMessages\obj\Debug\net9.0\ref\WebSocketMessages.dll

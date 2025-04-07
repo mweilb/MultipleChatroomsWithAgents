@@ -40,7 +40,7 @@ namespace YamlConfigurations.Validations
 
                     var validTerminationNames = room.Strategies?.Rules
                        .Where(rule => rule.Termination != null)
-                       .Select(rule => rule.Termination?.Name)
+                       .Select(rule => rule.Termination?.ContinuationAgentName)
                        .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
 

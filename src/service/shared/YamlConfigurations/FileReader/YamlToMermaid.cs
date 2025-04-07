@@ -10,7 +10,7 @@ namespace YamlConfigurations.FileReader
     public class TerminationUsage
     {
         public string Name = string.Empty;
-        public YamlDecisionConfig? Termination { get; set; }
+        public YamlTerminationDecisionConfig? Termination { get; set; }
         public List<string> RuleNames { get; set; } = new List<string>();
     }
 
@@ -133,14 +133,14 @@ namespace YamlConfigurations.FileReader
             var edges = new List<string>();
             if (rule.Termination != null)
             {
-               
-                string terminationNodeId = GenerateTerminationId(room.Name, rule.Termination.Name);
+
+                string terminationNodeId = GenerateTerminationId(room.Name, rule.Termination.ContinuationAgentName??"");
                 var nextAgents = GetNextAgents(agentsPerRoom, roomId, rule, room);
                 string ruleLabel = string.IsNullOrWhiteSpace(rule.Name) ? "Unnamed Rule" : rule.Name;
                 foreach (var agentId in nextAgents)
                 {
                     // Do not add a termination edge if the next agent is "user" or not in the same room.
-                    
+
                     if (agentId.Equals("start", StringComparison.OrdinalIgnoreCase))
                         continue;
                     if (!agentId.StartsWith(roomId))
@@ -151,6 +151,7 @@ namespace YamlConfigurations.FileReader
             }
             return edges;
         }
+ 
 
         // Scans all rooms to capture unique termination configurations and the rules that use them.
         private static Dictionary<string, Dictionary<string, TerminationUsage>> GetTerminationsByRoom(YamlMultipleChatRooms chatRooms)
@@ -172,8 +173,11 @@ namespace YamlConfigurations.FileReader
                     if (rule.Termination != null)
                     {
                         counter++;
-
-                        string key = GenerateTerminationId(room.Name, rule.Termination.Name);
+                        if (string.IsNullOrEmpty(rule.Termination.ContinuationAgentName))
+                        {
+                            rule.Termination.ContinuationAgentName = $"Unnamed {counter}";
+                        }
+                        string key = GenerateTerminationId(room.Name, rule.Termination.ContinuationAgentName);
                         if (!result.TryGetValue(roomId, out var terminations))
                         {
                             terminations = new Dictionary<string, TerminationUsage>();
@@ -181,11 +185,8 @@ namespace YamlConfigurations.FileReader
                         }
                         if (!terminations.TryGetValue(key, out var usage))
                         {
-                            if (string.IsNullOrEmpty(rule.Termination.Name))
-                            {
-                                rule.Termination.Name = $"Unnamed {counter}";
-                            }
-                            usage = new TerminationUsage { Termination = rule.Termination, Name = rule.Termination.Name };
+                            
+                            usage = new TerminationUsage { Termination = rule.Termination, Name = rule.Termination.ContinuationAgentName };
                             terminations[key] = usage;
                         }
                         // Use rule.Name if available; otherwise, fallback to "Unnamed Rule <counter>".
@@ -323,18 +324,18 @@ namespace YamlConfigurations.FileReader
                         // check if this name corresponds to a termination defined in the room.
                         bool isTermination = room.Strategies?.Rules?.Any(r =>
                             r.Termination != null &&
-                            string.Equals(r.Termination.Name, name, StringComparison.OrdinalIgnoreCase)) ?? false;
+                            string.Equals(r.Termination.ContinuationAgentName, name, StringComparison.OrdinalIgnoreCase)) ?? false;
                         if (isTermination)
                         {
                             // Get the first matching termination rule.
                             var terminationRule = room.Strategies?.Rules?.FirstOrDefault(r =>
                                 r.Termination != null &&
-                                string.Equals(r.Termination.Name, name, StringComparison.OrdinalIgnoreCase));
+                                string.Equals(r.Termination.ContinuationAgentName, name, StringComparison.OrdinalIgnoreCase));
                             if (terminationRule != null)
                             { 
                                 if (terminationRule.Termination != null)
                                 {
-                                    string key = GenerateTerminationId(room.Name, terminationRule.Termination.Name);
+                                    string key = GenerateTerminationId(room.Name, terminationRule.Termination.ContinuationAgentName??"");
                               
                                     result.Add(key);
                                 }

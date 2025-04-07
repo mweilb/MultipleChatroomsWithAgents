@@ -100,7 +100,7 @@ const DynamicRoomsList: React.FC<DynamicRoomsProps> = ({ isCollapsed, location }
     <div className="dynamic-rooms-container">
       <nav>
         <ul>
-          {rooms.length > 1 ? (
+          {rooms.length > 0 ? (
             renderRooms(rooms)
           ) : (
             <li>
