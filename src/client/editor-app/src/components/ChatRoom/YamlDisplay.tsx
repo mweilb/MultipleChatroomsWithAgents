@@ -29,13 +29,7 @@ ${room.Yaml}
   return (
     <div className="full-page-container">
       <div className="yaml-container">
-        <ReactMarkdown
-          components={{ code: CodeBlock }}
-          remarkPlugins={[remarkGfm]}
-          rehypePlugins={[rehypeHighlight]}
-        >
-          {yamlContent}
-        </ReactMarkdown>
+ 
         {room && room.Errors && room.Errors.length > 0 && (
           <div className="errors-container">
             <h3>Errors:</h3>
@@ -51,6 +45,13 @@ ${room.Yaml}
             </ul>
           </div>
         )}
+        <ReactMarkdown
+          components={{ code: CodeBlock }}
+          remarkPlugins={[remarkGfm]}
+          rehypePlugins={[rehypeHighlight]}
+        >
+          {yamlContent}
+        </ReactMarkdown>
       </div>
     </div>
   );

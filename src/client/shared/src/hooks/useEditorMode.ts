@@ -10,14 +10,14 @@ export function useEditorMode(mode: string) {
  
     // Create a message to request the editor mode change.
     const requestEditorMode: WebSocketBaseMessage = {
-      UserId: '',
+      UserId: 'app',
       TransactionId: 'mode-' + Date.now(),
       Action: 'mode',
       SubAction: appType,
       Content: '',  
       RoomName: '',
       SubRoomName: '',
-      Hints: {},
+      Mode: 'app',
     };
 
     // Send the request message.

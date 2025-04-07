@@ -19,11 +19,11 @@
     "react-router-dom": "^7.4.0",
     "rehype-highlight": "^7.0.2",
     "remark-gfm": "^4.0.1",
-    "shared": "file:../shared",
     "svg-pan-zoom": "^3.6.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",
+    "@types/node": "^22.14.1",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
     "@vitejs/plugin-react": "^4.3.4",

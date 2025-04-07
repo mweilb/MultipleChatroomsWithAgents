@@ -48,12 +48,7 @@ export function useMessageStore(
     (message: WebSocketBaseMessage): void => {
       if (message.Action !== 'rooms') {
         const newMessage: WebSocketReplyChatRoomMessage = {
-          ...message,
-          Hints: {
-            agent: {
-              content: message.Content,
-            },
-          },
+          ...message, 
           AgentName: 'User',
           Emoji: '🤓',
           SubRoomName: '',

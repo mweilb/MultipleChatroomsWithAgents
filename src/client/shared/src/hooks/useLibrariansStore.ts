@@ -136,14 +136,14 @@ export function useLibrariansStore(sender: (message: WebSocketBaseMessage) => vo
   // Sends a request message with action "librarians" to retrieve the library info.
   const requestLibrary = useCallback((socket: WebSocket) => {
     const message: WebSocketBaseMessage = {
-      UserId: '',
+      UserId: 'app',
       TransactionId: 'librarians-get-' + Date.now(),
       Action: 'librarians',
       SubAction: 'get',
       Content: '',
       RoomName: '',
       SubRoomName: '',
-      Hints: {},
+      Mode: 'app',
     };
     socket.send(JSON.stringify(message));
   }, []);
@@ -160,7 +160,7 @@ export function useLibrariansStore(sender: (message: WebSocketBaseMessage) => vo
         Content: JSON.stringify({ roomName, AgentName, text }),
         RoomName: '',
         SubRoomName: '',
-        Hints: {},
+        Mode: 'app' 
       };
       sender(message);
     },
@@ -179,7 +179,7 @@ export function useLibrariansStore(sender: (message: WebSocketBaseMessage) => vo
         Content: JSON.stringify({ roomName, AgentName, text }),
         SubRoomName: '',
         RoomName: '',
-        Hints: {},
+        Mode: 'app'
       };
       sender(message);
     },
@@ -199,7 +199,7 @@ export function useLibrariansStore(sender: (message: WebSocketBaseMessage) => vo
         Content: JSON.stringify({ roomName, AgentName, top, skip }),
         SubRoomName: '',
         RoomName: '',
-        Hints: {}
+        Mode: 'app',
       };
       sender(message);
     },

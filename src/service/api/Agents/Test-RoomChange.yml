@@ -1,0 +1,176 @@
+﻿Auto Room Change:
+  emoji: "💡"
+  start-room: Get To Know Us
+  agents:
+    # Global Agents - Defined Once, Used Everywhere
+    Inform Agent:
+      emoji: "💡"
+      model: gpt-4
+      echo: >
+        
+        An one line story about the Inform Agent!  
+    More About You Agent:
+      emoji: "🧠"
+      model: gpt-4
+      echo: >
+      
+        An one line review about the More About You Agent! 
+    Gather Agent:
+      emoji: "🔐"
+      model: gpt-4
+      echo: >
+        
+        An one line to promote of the Gather Agent!  
+    
+    Job Agent:
+      emoji: "🔐"
+      model: gpt-4
+      echo: >
+       
+        An one line to promote of the Job Agent!   
+    
+    Job Specialized Agent:
+      emoji: "🔐"
+      model: gpt-4
+      echo: >
+       
+        An one line to promote of the Job Specialized Agent!   
+    
+
+    Apply Agent:
+      emoji: "🔐"
+      model: gpt-4
+      echo: >
+       
+        An one line to promote of the Apply Agent!   
+ 
+  chatrooms:
+    Get To Know Us:
+      emoji: "🧠"
+      agents:
+        - name: Inform Agent
+     
+      strategies: 
+        
+
+        termination:
+            continuation-agent-name: By Pass Human
+
+            constant-termination:
+                value: no
+
+
+        selection:
+            sequential-selection:
+                initial-agent: Inform Agent           
+                  
+        rules:
+            # Rule 1: General agent flow
+            - name: Rule 1
+              current:
+                - name: start
+              next:
+                - name: Inform Agent
+              termination:
+                  continuation-agent-name: User Input 
+                  constant-termination:
+                        value: true
+          
+            # Rule 3: When the message comes from Assistant AI
+            - name: Rule 4
+              current:
+                - name: User Input 
+              next:
+                - name: Get To Know You
+                  context-transfer:
+                    prompt: >
+                        {{messages}}
+                        Summarize the conversation
+            
+          
+      moderation:
+        prompt: > 
+            Answer simple yes or no if this is hateful speach or voilence to others
+            {{messages}}
+        messages-preset-filters: [Last message]
+
+    Get To Know You:
+      emoji: "🧠"
+      agents:
+        - name: Gather Agent
+        - name: More About You Agent
+      strategies:
+        termination:
+            continuation-agent-name: Need Human
+
+            constant-termination:
+                value: true
+
+        rules:
+          - current:
+              - name: Get To Know You
+            next:
+              - name: Gather Agent
+          - current:
+              - name: Need Human
+            next:
+              - name: More About You Agent
+            termination:
+                continuation-agent-name: Need More Human
+
+          - current:
+              - name: Need More Human
+            next:
+              - name: Find The Job
+                context-transfer:
+                    prompt: >
+                        {{messages}}
+                        Summarize the conversation
+           
+
+    Find The Job:
+      emoji: "🧠"
+      agents:
+        - name: Job Agent
+        - name: Job Specialized Agent
+      strategies:
+        termination:
+            continuation-agent-name: Need Humans
+            constant-termination:
+                value: false
+        rules:
+          - current:
+              - name: Job Agent
+            next:
+              - name: Job Specialized Agent
+          - current:
+              - name: Job Specialized Agent
+            next:
+              - name: Apply For Job
+                context-transfer:
+                    prompt: >
+                        {{messages}}
+                        Summarize the conversation
+            
+    
+    Apply For Job:
+      emoji: "🧠"
+      agents:
+        - name: Apply Agent
+      
+      strategies:
+        termination:
+            continuation-agent-name: Need Humans
+            constant-termination:
+                value: true
+        rules:
+            - current:
+                - name: Find The Job
+              next:
+                - name: Apply Agent
+            
+            - current: 
+                - name: Need Humans
+              next:
+                - name: Apply Agent
+            

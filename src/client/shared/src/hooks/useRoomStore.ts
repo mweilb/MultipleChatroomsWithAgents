@@ -20,7 +20,7 @@ export function useRoomStore(sender: (message: WebSocketBaseMessage) => void) {
       Content: JSON.stringify({ Group: group, To: to }),
       RoomName: '',
       SubRoomName: '',
-      Hints: {},
+      Mode: 'app',
     };
   };
 
@@ -33,7 +33,7 @@ export function useRoomStore(sender: (message: WebSocketBaseMessage) => void) {
       Content: room,
       RoomName: '',
       SubRoomName: '',
-      Hints: {},
+      Mode: 'app',
     };
   };
   const triggerRoomsRequest = (socket:WebSocket ): void => {
@@ -46,7 +46,7 @@ export function useRoomStore(sender: (message: WebSocketBaseMessage) => void) {
       Content: '',
       RoomName: '',
       SubRoomName: '',
-      Hints: {},
+      Mode: 'app',
     };
     // Send the request message.
     socket.send(JSON.stringify(requestRoomsMessage));

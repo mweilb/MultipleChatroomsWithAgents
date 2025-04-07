@@ -1,0 +1,99 @@
+name: Syntax Error Test
+emoji: 💬
+
+agents:
+    - name: EchoAgent
+      emoji: 🎨 
+      
+      echo: >
+        Echo the the following with positivity:
+        {{messages}} 
+    
+    - name: InstructionAgent
+      emoji: 🎨 
+      
+      instructions: >
+        Echo the the following with positivity:
+        {{messages}}
+
+
+strategies:
+
+    termination:
+        
+        continuation-agent-name: By Pass Human
+
+        regex-termination:
+            agents: []
+            expressions:
+                - "(?i).*terminate.*"
+                - "(?i).*exit.*"              
+
+        constant-termination:
+            agents: []
+            value: true
+
+        prompt-termination:
+            agents: []
+            instructions: > 
+                Do something good
+                    {{$history}}
+            history-variable-name: history
+  
+            result-parser:
+                regex:
+                    - pattern: "(?i).*terminate.*"
+                      value: true
+                    - pattern: "(?i).*exit.*"
+                      value: false 
+
+            truncation-reducer:
+                target-count: 50
+                threshold-count: 10
+                    
+            summarization-reducer:
+                instructions: >
+                    Provide a concise and complete summarization of the entire dialog that does not exceed 5 sentences.
+                    This summary must always:
+                    - Consider both user and assistant interactions.
+                    - Maintain continuity for further dialog.
+                    - Include details from any existing summary.
+                    - Focus on the most significant aspects of the dialog.
+                    This summary must never:
+                    - Critique, correct, interpret, presume, or assume.
+                    - Identify faults, mistakes, misunderstanding, or correctness.
+                    - Analyze what has not occurred.
+                    - Exclude details from any existing summary.
+
+    selection:
+        sequential-selection:
+            initial-agent: agentName
+
+        round-robin-selection:
+            initial-agent: agentName
+            agents: [agent1, agent2]
+
+        prompt-select:
+            instructions: > 
+                Do something good
+                    {{$history}}
+            history-variable-name: history
+                
+            evaluate-name-only: true or yes
+                
+            result-parser:
+                    regex:
+                    - pattern: (\d{3})-(\d{3})-(\d{4})
+                      replacement: ($1) $2-$3
+                    - pattern: (\d{3})-(\d{3})-(\d{4})
+                      replacement: ($1)   
+                    json:
+                    - format: >
+                            {
+                            name: "*",
+                            reason: "*"
+                            }
+                    - variable: name
+
+
+

@@ -1,99 +1,126 @@
 {
-    "version": "0.2.0",
-    "configurations": [
-      {
-        "name": ".NET API",
-        "type": "coreclr",
-        "request": "launch",
-        "preLaunchTask": "build-api",
-        "program": "${workspaceFolder}/src/service/api/bin/Debug/net9.0/api.dll",
-        "args": [],
-        "cwd": "${workspaceFolder}/src/service/api",
-        "stopAtEntry": false,
-        "console": "internalConsole",
-        "env": {
-          "ASPNETCORE_ENVIRONMENT": "Development"
-        } 
-      },
-      {
-        "name": ".NET Load Documents",
-        "type": "coreclr",
-        "request": "launch",
-        "preLaunchTask": "build-api",
-        "program": "${workspaceFolder}/src/service/vectordb/load-vector-db-with-sk/bin/Debug/net9.0/load-vector-db-with-sk.dll",
-        "args": [],
-        "cwd": "${workspaceFolder}/src/service/vectordb/load-vector-db-with-sk",
-        "stopAtEntry": false,
-        "console": "internalConsole",
-        "env": {
-          "ASPNETCORE_ENVIRONMENT": "Development"
-        } 
-      },
-      {
-        "name": "Editor (via Edge)",
-        "type": "msedge",
-        "request": "launch",
-        "url": "http://localhost:3001",
-        "webRoot": "${workspaceFolder}/src/client/editor-app",
-        "userDataDir": true
-
-      },
-      {
-        "name": "Editor (via Chrome)",
-        "type": "chrome",
-        "request": "launch",
-        "url": "http://localhost:3001",
-        "webRoot": "${workspaceFolder}/src/client/editor-app",
-        "userDataDir": true
-      },
-      {
-        "name": "Sample App (via Edge)",
-        "type": "msedge",
-        "request": "launch",
-        "url": "http://localhost:5173",
-        "webRoot": "${workspaceFolder}/src/client/sample-app",
-        "userDataDir": true
-
-      },
-      {
-        "name": "Sample App (via Chrome)",
-        "type": "chrome",
-        "request": "launch",
-        "url": "http://localhost:5173",
-        "webRoot": "${workspaceFolder}/src/client/sample-app",
-        "userDataDir": true
-      },
-     
-    ],
-    "compounds": [
-      {
-        "name": "Editor and API (via Edge)",
-        "configurations": [
-          "Editor (via Edge)",
-          ".NET API"
-        ]
-      },
-      {
-        "name": "Editor and API (via Chrome)",
-        "configurations": [
-          "Editor (via Chrome)",
-          ".NET API"
-        ]
-      },
-      {
-        "name": "Sample App and API (via Edge)",
-        "configurations": [
-          "Sample App (via Edge)",
-          ".NET API"
-        ]
-      },
-      {
-        "name": "Sample App and API (via Chrome)",
-        "configurations": [
-          "Sample App (via Chrome)",
-          ".NET API"
-        ]
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": ".NET API",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build-api",
+      "program": "${workspaceFolder}/src/service/api/bin/Debug/net9.0/api.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/src/service/api",
+      "stopAtEntry": false,
+      "console": "internalConsole",
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
       }
-    ]
-  }
-  
+    },
+    {
+      "name": ".NET Load Documents",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build-api",
+      "program": "${workspaceFolder}/src/service/vectordb/load-vector-db-with-sk/bin/Debug/net9.0/load-vector-db-with-sk.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/src/service/vectordb/load-vector-db-with-sk",
+      "stopAtEntry": false,
+      "console": "internalConsole",
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    {
+      "name": "Editor (via Edge)",
+      "type": "msedge",
+      "request": "launch",
+      "url": "http://localhost:3001",
+      "webRoot": "${workspaceFolder}/src/client/editor-app",
+      "userDataDir": true,
+      "sourceMapPathOverrides": {
+        "http://localhost:3001/@fs/*": "${workspaceFolder}/*",
+      },
+    
+    },
+    {
+      "name": "Editor (via Chrome)",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:3001",
+      "webRoot": "${workspaceFolder}/src/client/editor-app",
+      "userDataDir": true,
+      "sourceMapPathOverrides": {
+        "http://localhost:3001/@fs/*": "${workspaceFolder}/*",
+      },
+      "resolveSourceMapLocations": [
+        "${workspaceFolder}/**",
+        "${workspaceFolder}/../shared/dist/**",
+        "${workspaceFolder}/../shared/**",
+        "!**/node_modules/**"
+      ]
+    },
+    {
+      "name": "Sample App (via Edge)",
+      "type": "msedge",
+      "request": "launch",
+      "url": "http://localhost:5173",
+      "webRoot": "${workspaceFolder}/src/client/sample-app",
+      "userDataDir": true,
+      "sourceMapPathOverrides": {
+        "http://localhost:5173/@fs/*": "${workspaceFolder}/*",
+      },
+      "resolveSourceMapLocations": [
+        "${workspaceFolder}/**",
+        "${workspaceFolder}/../shared/dist/**",
+        "${workspaceFolder}/../shared/**",
+        "!**/node_modules/**"
+      ]
+    },
+    {
+      "name": "Sample App (via Chrome)",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:5173",
+      "webRoot": "${workspaceFolder}/src/client/sample-app",
+      "userDataDir": true,
+      "sourceMapPathOverrides": {
+        "http://localhost:5173/@fs/*": "${workspaceFolder}/*",
+      },
+      "resolveSourceMapLocations": [
+        "${workspaceFolder}/**",
+        "${workspaceFolder}/../shared/dist/**",
+        "${workspaceFolder}/../shared/**",
+        "!**/node_modules/**"
+      ]
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Editor and API (via Edge)",
+      "configurations": [
+        "Editor (via Edge)",
+        ".NET API"
+      ]
+    },
+    {
+      "name": "Editor and API (via Chrome)",
+      "configurations": [
+        "Editor (via Chrome)",
+        ".NET API"
+      ]
+    },
+    {
+      "name": "Sample App and API (via Edge)",
+      "configurations": [
+        "Sample App (via Edge)",
+        ".NET API"
+      ]
+    },
+    {
+      "name": "Sample App and API (via Chrome)",
+      "configurations": [
+        "Sample App (via Chrome)",
+        ".NET API"
+      ]
+    }
+  ]
+}

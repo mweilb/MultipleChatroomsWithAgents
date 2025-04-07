@@ -1,0 +1,40 @@
+name: Test-Echo-RoundRobin-Const
+emoji: 💬
+
+agents:
+    - name: Positive Agent
+      emoji: 🎨 
+      
+      echo: >
+        Echo the the following with positivity - We are positivity
+   
+    - name: Negative Agent
+      emoji: 🎨 
+      
+      echo: >
+        Echo the the following with negavity - We need to be happy
+    
+strategies:
+    
+    termination:
+        
+        continuation-agent-name: Human Agent
+
+        constant-termination:
+             agents:
+                - Negative Agent
+             value: true
+                
+
+    selection:
+       
+        round-robin-selection:
+            agents:
+                - Positive Agent
+                - Negative Agent
+            initial-agent: Positive Agent
+
+    
+
+
+

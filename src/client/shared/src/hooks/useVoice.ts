@@ -33,7 +33,7 @@ export function useVoice(sender: (message: WebSocketBaseMessage) => void) {
         Content: '',
         RoomName: '',
         SubRoomName: '',
-        Hints: {},
+        Mode: 'app',
       };
       sender(message);
     },

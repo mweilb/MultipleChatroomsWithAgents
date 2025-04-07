@@ -130,7 +130,7 @@ export const WebSocketProvider = ({
       triggerRoomsRequest(socketConnection);
       triggerLibraryRequest(socketConnection);
     };
-
+ 
     socketConnection.onmessage = (event) => {
       let incomingMessage: any | null = null;
       try {
@@ -138,6 +138,10 @@ export const WebSocketProvider = ({
       } catch (err) {
         console.error('Invalid JSON:', event.data);
         return;
+      }
+      if (incomingMessage.Action === 'unknown') {
+        console.error('Unknown message sent:', incomingMessage);
+        return;  
       }
       if (
         !incomingMessage ||
@@ -149,7 +153,10 @@ export const WebSocketProvider = ({
         console.error('Malformed message:', incomingMessage);
         return;
       }
-      if (incomingMessage.Action === 'rooms') {
+       
+      if (incomingMessage.Action === 'editor') {
+      }
+      else if (incomingMessage.Action === 'rooms') {
         const roomsResponse = incomingMessage as WebSocketGetRoomsMessage;
         updateRooms(roomsResponse.Rooms ?? []);
       } else if (incomingMessage.Action === 'librarians') {

@@ -14,23 +14,14 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-
-
-  <ItemGroup>
-    <None Include="Experiences\**\*.yml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Experiences\**\*.yaml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
-
-  <ItemGroup>
-    <ProjectReference Include="..\shared\multi-agents-shared.csproj" />
-  </ItemGroup>
-
  
+  <ItemGroup>
+    <Compile Remove="Experiences\**" />
+    <Content Remove="Experiences\**" />
+    <EmbeddedResource Remove="Experiences\**" />
+    <None Remove="Experiences\**" />
+  </ItemGroup>
+
   <ItemGroup>
     <Content Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -40,8 +31,15 @@
     </Content>
   </ItemGroup>
 
- 
- 
- 
+  <ItemGroup>
+    <Folder Include="Tests\" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\shared\AppExtensions\AppExtensions.csproj" />
+    <ProjectReference Include="..\shared\SemanticKernelExtensions\SemanticKernelExtension\SemanticKernelExtension.csproj" />
+    <ProjectReference Include="..\shared\WebSocketMessages\WebSocketMessages.csproj" />
+    <ProjectReference Include="..\shared\YamlConfigurations\YamlConfigurations.csproj" />
+  </ItemGroup>
 
 </Project>

@@ -1,0 +1,47 @@
+name: Test-Echo-RoundRobin-LLM
+emoji: 💬
+
+agents:
+    - name: Positive Agent
+      emoji: 🎨 
+      
+      echo: >
+        Echo the the following with positivity - We are positivity
+   
+    - name: Negative Agent
+      emoji: 🎨 
+      
+      echo: >
+        Echo the the following with negavity - We need to be happy
+    
+strategies:
+    
+    termination:
+        
+        continuation-agent-name: Human Agent
+
+        constant-termination:
+        prompt-termination:
+            instructions: >
+                Message:
+                {{$history}}
+
+                Stop when the conversation is positive.
+             
+                Asnwer should be a single line with a True or False.
+            
+            history-variable-name: history  
+                
+
+    selection:
+       
+        round-robin-selection:
+            agents:
+                - Positive Agent
+                - Negative Agent
+            initial-agent: Positive Agent
+
+    
+
+
+

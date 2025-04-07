@@ -1,0 +1,29 @@
+name: Test-Echo-Sequence-Regex
+emoji: 💬
+
+agents:
+    - name: EchoAgent
+      emoji: 🎨 
+      
+      echo: >
+        Echo the the following with positivity - We are positivity
+    
+strategies:
+    
+    termination:
+        
+        continuation-agent-name: Ask Human
+
+        regex-termination:
+            expressions:
+                - (?i).*positivity.*
+
+    selection:
+       
+        sequential-selection:
+            initial-agent: EchoAgent
+
+    
+
+
+
