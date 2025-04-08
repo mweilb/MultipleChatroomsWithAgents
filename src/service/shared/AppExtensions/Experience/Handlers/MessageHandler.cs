@@ -77,7 +77,15 @@ namespace AppExtensions.Experience.Handlers
                     else if (streamingContent.Action == StreamingOrchestratorContent.ActionTypes.AgentFinsihed)
                     {
                         Console.WriteLine($"End Agent {streamingContent.Content?.ToString()}");
-                    }   
+                    }
+                    else if (streamingContent.Action == StreamingOrchestratorContent.ActionTypes.RoomChange)
+                    {
+                        roomMessage = CreateNewMessage(message.UserId, message.Action);
+                        roomMessage.AgentName = "Room Change";
+                        roomMessage.Content = $"Request to Change to {streamingContent.Content?.ToString() ?? ""}";
+                        await sender.SendAsync(roomMessage, mode, cancellationToken);
+                        Console.WriteLine($"Change Room {streamingContent.Content?.ToString()}");
+                    }
                 }
             }
             catch (Exception ex)

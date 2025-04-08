@@ -12,9 +12,10 @@ namespace  YamlConfigurations
 
         public void ApplyParentOverride( YamlAgentConfig parent)
         {
-            if (Emoji == string.Empty) { Emoji = parent.Emoji; }
-            if (Model == string.Empty) { Model = parent.Model; }
-            if (Instructions == string.Empty) { Instructions = parent.Instructions; }
+            if (string.IsNullOrEmpty(Emoji)) { Emoji = parent.Emoji; }
+            if (string.IsNullOrEmpty(Model)) { Model = parent.Model; }
+            if (string.IsNullOrEmpty(Instructions)) { Instructions = parent.Instructions; }
+            if (string.IsNullOrEmpty(Echo)) { Echo = parent.Echo; }
 
             if (Collection == null && parent.Collection != null)
             {

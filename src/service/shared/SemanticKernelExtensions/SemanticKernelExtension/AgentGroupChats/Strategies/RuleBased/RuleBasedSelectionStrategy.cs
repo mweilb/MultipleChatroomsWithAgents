@@ -98,9 +98,19 @@ namespace SemanticKernelExtension.AgentGroupChats.Strategies.RuleBased
             var filteredAgents = (rule.NextAgentsNames is { Count: > 0 })
                 ? [.. agents.Where(a => rule.NextAgentsNames.Contains(a.Name, StringComparer.OrdinalIgnoreCase))]
                 : agents;
+            
+      
+            Agent selectedAgent;
+            if (filteredAgents.Count > 1)
+            {
+                selectedAgent = await rule.Selection.NextAsync(filteredAgents, history, cancellationToken)
+                                                         .ConfigureAwait(false);
+            }
+            else
+            {
+                selectedAgent = filteredAgents[0];
+            }
 
-            Agent selectedAgent = await rule.Selection.NextAsync(filteredAgents, history, cancellationToken)
-                                                     .ConfigureAwait(false);
 
             if (selectedAgent is null)
             {

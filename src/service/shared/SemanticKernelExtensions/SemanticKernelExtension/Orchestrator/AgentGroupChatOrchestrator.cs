@@ -21,7 +21,7 @@ namespace SemanticKernelExtension.Orchestrator
         public string OrchestratorName = string.Empty;
         public bool YieldOnRoomChange = false;
 
-        public string RoomModelId { get; set; } = "Room";
+        public string RoomModelId { get; set; } = "room";
         public string UndefinedAuthorName { get; set; } = "undefined";
 
         public AgentGroupChatOrchestrator(ILogger<AgentGroupChatOrchestrator>? logger = null)
@@ -98,21 +98,23 @@ namespace SemanticKernelExtension.Orchestrator
         public async IAsyncEnumerable<StreamingOrchestratorContent> InvokeStreamingAsync(
             [EnumeratorCancellation] CancellationToken cancellationToken)
         {
-            var agentGroupChat = ActiveChat;
-
-            // If there's no active chat, yield an error and exit.
-            if (agentGroupChat == null)
-            {
-                _logger?.LogError("No active AgentGroupChat selected.");
-                var content = new StreamingChatMessageContent(AuthorRole.System, "No active AgentGroupChat selected.");
-                yield return new StreamingOrchestratorContent(StreamingOrchestratorContent.ActionTypes.Error, OrchestratorName, _activeChatName, string.Empty, content);
-                yield break;
-            }
+            
 
             bool roomChanged;
             string newRoomName;
             do
             {
+                var agentGroupChat = ActiveChat;
+
+                // If there's no active chat, yield an error and exit.
+                if (agentGroupChat == null)
+                {
+                    _logger?.LogError("No active AgentGroupChat selected.");
+                    var content = new StreamingChatMessageContent(AuthorRole.System, "No active AgentGroupChat selected.");
+                    yield return new StreamingOrchestratorContent(StreamingOrchestratorContent.ActionTypes.Error, OrchestratorName, _activeChatName, string.Empty, content);
+                    yield break;
+                }
+
                 roomChanged = false;
                 newRoomName = string.Empty;
 
@@ -137,20 +139,22 @@ namespace SemanticKernelExtension.Orchestrator
                             yield return new StreamingOrchestratorContent(StreamingOrchestratorContent.ActionTypes.AgentFinsihed, OrchestratorName, _activeChatName, currentAgent);
                         }
 
+                        if (agentChunk.Role == AuthorRole.Tool && agentChunk.ModelId == RoomModelId)
+                        {
+                            newRoomName = agentChunk.Content ?? "";
+                            yield return new StreamingOrchestratorContent(StreamingOrchestratorContent.ActionTypes.RoomChange, OrchestratorName, _activeChatName, currentAgent, agentChunk);
+                            roomChanged = true;
+                            break;
+                        }
+
+
                         currentAgent = agentChunk.AuthorName;
                         yield return new StreamingOrchestratorContent(StreamingOrchestratorContent.ActionTypes.AgentStarted, OrchestratorName, _activeChatName, currentAgent, agentChunk);
                         continue;
                     }
 
                     // If it's a "tool" message with ModelId == "Room", we can stop streaming altogether
-                    if (agentChunk.Role == AuthorRole.Tool && agentChunk.ModelId == RoomModelId)
-                    {
-                        newRoomName = agentChunk.Content ?? "";
-                        yield return new StreamingOrchestratorContent(StreamingOrchestratorContent.ActionTypes.RoomChange, OrchestratorName, _activeChatName, currentAgent, agentChunk);
-                        roomChanged = true;
-                        break;
-                    }
-
+   
 
                     yield return new StreamingOrchestratorContent(StreamingOrchestratorContent.ActionTypes.AgentUpdated, OrchestratorName, _activeChatName, currentAgent, agentChunk);
 

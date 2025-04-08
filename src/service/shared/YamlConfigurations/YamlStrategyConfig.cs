@@ -63,7 +63,20 @@ namespace YamlConfigurations
                     {
                         rule.Termination.ContinuationAgentName = $"{rule.Name} Termination";
                     }
-                }
+
+                    if (GlobalTermination != null)
+                    {
+                        if ((rule.Termination.RegexTermination == null) &&
+                            (rule.Termination.ConstantTermination == null) &&
+                            (rule.Termination.PromptTermination == null))
+                        {
+                            rule.Termination.RegexTermination = GlobalTermination.RegexTermination;
+                            rule.Termination.ConstantTermination = GlobalTermination.ConstantTermination;
+                            rule.Termination.PromptTermination = GlobalTermination.PromptTermination;
+                        }
+                    }
+                   
+            }
                  
  
                 

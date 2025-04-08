@@ -41,7 +41,7 @@ namespace AppExtensions.Experience.Factories
                     var otherRoomNames = room.Key;
                     if (otherRoomNames != roomName)
                     {
-                        completionAgents.Add(new EchoAgent(otherRoomNames, roomName, "room", roomName, false));
+                        completionAgents.Add(new EchoAgent(otherRoomNames, roomName, "room", otherRoomNames, false));
                     }
                 }
 
