@@ -108,7 +108,7 @@
 
         rules:
           - current:
-              - name: start
+              - name: Get To Know You
             next:
               - name: Gather Agent
           - current:
@@ -165,7 +165,7 @@
                 value: true
         rules:
             - current:
-                - name: start
+                - name: Find The Job
               next:
                 - name: Apply Agent
             

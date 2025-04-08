@@ -16,7 +16,7 @@ namespace SemanticKernelExtension.Agents
     {
         private readonly string _message;
         private readonly bool _visible;
-        private readonly string _agentName;
+        protected readonly string _agentName;
         private readonly string _modelId;
 
         public EchoAgent(string name, string agentName, string modelId, string message, bool visible)

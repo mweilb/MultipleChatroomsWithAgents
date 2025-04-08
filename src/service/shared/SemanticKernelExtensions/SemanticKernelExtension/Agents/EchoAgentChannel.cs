@@ -7,12 +7,13 @@ using System.Diagnostics.CodeAnalysis;
 
 
 namespace SemanticKernelExtension.Agents
-{ 
+{
 
     /// <summary>
     /// A <see cref="AgentChannel"/> specialization for use with <see cref="OpenAIAssistantAgent"/>.
     /// </summary>
-    [Experimental("SKEXP0110")]
+#pragma warning disable SKEXP0110
+ 
     internal sealed class EchoAgentChannel(ChatHistory history) : AgentChannel<EchoAgent>
     {
 

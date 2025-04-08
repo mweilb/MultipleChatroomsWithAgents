@@ -57,16 +57,16 @@ namespace AppExtensions.Experience.Handlers
                         continue;
                     }
 
-                    if (streamingContent.Action == StreamingOrchestratorContent.ActionTypes.AgentStarted)
-                    {
+                    if ((streamingContent.Action == StreamingOrchestratorContent.ActionTypes.AgentStarted) || 
+                        (streamingContent.Action == StreamingOrchestratorContent.ActionTypes.RoomMessageStarted)) { 
                         roomMessage = CreateNewMessage(message.UserId, message.Action);
                         roomMessage.AgentName = streamingContent.AgentName;
                         roomMessage.Content = streamingContent.Content?.ToString() ?? "";
                         await sender.SendAsync(roomMessage, mode, cancellationToken);
                         Console.WriteLine($"New Agent {streamingContent.Content?.ToString()}");
                     }
-                    else if (streamingContent.Action == StreamingOrchestratorContent.ActionTypes.AgentUpdated)
-                    {
+                    else if ((streamingContent.Action == StreamingOrchestratorContent.ActionTypes.AgentUpdated) ||
+                             (streamingContent.Action == StreamingOrchestratorContent.ActionTypes.RoomMessageUpdated)) {
                         Console.WriteLine($"Updated {streamingContent.Content?.ToString()}");
                         if (roomMessage != null)
                         {
@@ -74,8 +74,8 @@ namespace AppExtensions.Experience.Handlers
                             await sender.SendAsync(roomMessage, mode, cancellationToken);
                         }
                     }
-                    else if (streamingContent.Action == StreamingOrchestratorContent.ActionTypes.AgentFinsihed)
-                    {
+                    else if ((streamingContent.Action == StreamingOrchestratorContent.ActionTypes.AgentFinsihed) ||
+                             (streamingContent.Action == StreamingOrchestratorContent.ActionTypes.RoomMessageFinished)) { 
                         Console.WriteLine($"End Agent {streamingContent.Content?.ToString()}");
                     }
                     else if (streamingContent.Action == StreamingOrchestratorContent.ActionTypes.RoomChange)

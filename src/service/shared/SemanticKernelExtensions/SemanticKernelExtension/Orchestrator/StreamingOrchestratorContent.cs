@@ -14,7 +14,10 @@ namespace SemanticKernelExtension.Orchestrator
             AgentStarted,
             AgentUpdated,
             AgentFinsihed,
-            RoomChange
+            RoomChange,
+            RoomMessageStarted,
+            RoomMessageUpdated,
+            RoomMessageFinished,
         }
 
         /// <summary>

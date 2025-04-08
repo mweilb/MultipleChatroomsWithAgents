@@ -2,7 +2,9 @@
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Agents;
 using Microsoft.SemanticKernel.ChatCompletion;
+using SemanticKernelExtension.Agents;
 using System.Runtime.CompilerServices;
+using System.Text;
 
 
 #pragma warning disable SKEXP0110
@@ -17,7 +19,10 @@ namespace SemanticKernelExtension.Orchestrator
         private readonly ILogger<AgentGroupChatOrchestrator>? _logger;
 
         private string _activeChatName = string.Empty;
-        
+
+        private AgentGroupChat? _lastChatRoom = null;
+        private RoomAgent? _lastRoomAgent = null;
+
         public string OrchestratorName = string.Empty;
         public bool YieldOnRoomChange = false;
 
@@ -44,12 +49,21 @@ namespace SemanticKernelExtension.Orchestrator
 
         public bool SwitchTo(string name)
         {
-            if (_chats.ContainsKey(name))
+            if (name != _activeChatName)
             {
-                _activeChatName = name;
-                return true;
+                if (_chats.ContainsKey(name))
+                {
+                    _activeChatName = name;
+                    return true;
+                }
             }
-            return false;
+            else
+            {   //same room, user does not want to switch, cancel summary
+                _lastChatRoom = null;
+                _lastRoomAgent = null;
+                _logger?.LogWarning("Already in the requested chat '{name}' canceling summary", name);
+            }
+                return false;
         }
 
         public string? GetActiveChatName() => _activeChatName;
@@ -102,6 +116,7 @@ namespace SemanticKernelExtension.Orchestrator
 
             bool roomChanged;
             string newRoomName;
+
             do
             {
                 var agentGroupChat = ActiveChat;
@@ -114,6 +129,13 @@ namespace SemanticKernelExtension.Orchestrator
                     yield return new StreamingOrchestratorContent(StreamingOrchestratorContent.ActionTypes.Error, OrchestratorName, _activeChatName, string.Empty, content);
                     yield break;
                 }
+
+
+                await foreach (var content in SummarizeAndIntegratePreviousRoomChatAsync(cancellationToken))
+                {
+                    yield return content;
+                }
+
 
                 roomChanged = false;
                 newRoomName = string.Empty;
@@ -143,6 +165,20 @@ namespace SemanticKernelExtension.Orchestrator
                         {
                             newRoomName = agentChunk.Content ?? "";
                             yield return new StreamingOrchestratorContent(StreamingOrchestratorContent.ActionTypes.RoomChange, OrchestratorName, _activeChatName, currentAgent, agentChunk);
+
+                            // Try to find the agent with the new room name
+                            var matchingAgent = agentGroupChat.Agents.FirstOrDefault(a => (a.Name != null) && (a.Name.Equals(newRoomName, StringComparison.OrdinalIgnoreCase)));
+
+                            if (matchingAgent is RoomAgent roomAgent)
+                            {
+                                //used for summary later on
+                                _lastChatRoom = agentGroupChat;
+                                _lastRoomAgent = roomAgent;
+                                // Start summary invocation and cache for later use
+                                _logger?.LogInformation("Started summary generation for RoomAgent: {RoomAgent}", newRoomName);
+                            }
+
+
                             roomChanged = true;
                             break;
                         }
@@ -204,5 +240,77 @@ namespace SemanticKernelExtension.Orchestrator
             return true;
 
         }
+
+        /// <summary>
+        /// Summarizes the chat history of the previous room and adds it as a system message in the new active chat room.
+        /// </summary>
+        /// <param name="cancellationToken">Token to monitor for cancellation requests.</param>
+        /// <returns>An asynchronous stream of <see cref="StreamingOrchestratorContent"/> representing the summary process.</returns>
+        private async IAsyncEnumerable<StreamingOrchestratorContent> SummarizeAndIntegratePreviousRoomChatAsync(
+            [EnumeratorCancellation] CancellationToken cancellationToken)
+        {
+            if (_lastChatRoom == null || _lastRoomAgent == null)
+            {
+                yield break;
+            }
+
+            // Retrieve and reverse the chat history from the previous room
+            var lastHistory = await _lastChatRoom.GetChatMessagesAsync(cancellationToken)
+                                                 .Reverse()
+                                                 .ToArrayAsync(cancellationToken);
+
+            bool isFirstMessage = true;
+            var summaryBuilder = new StringBuilder();
+
+            // Generate the summary asynchronously
+            await foreach (var agentChunk in _lastRoomAgent.InvokeSummaryStreamingAsync(lastHistory, cancellationToken))
+            {
+                // Accumulate the summary content
+                summaryBuilder.Append(agentChunk.Content);
+
+                // Yield each chunk as it's received
+                yield return new StreamingOrchestratorContent(
+                    isFirstMessage ? StreamingOrchestratorContent.ActionTypes.RoomMessageStarted : StreamingOrchestratorContent.ActionTypes.RoomMessageUpdated,
+                    OrchestratorName,
+                    _activeChatName,
+                    _lastRoomAgent.Name ?? "Previous Room",
+                    agentChunk
+                );
+
+                isFirstMessage = false;
+            }
+
+            // Finalize the summary message
+            var consolidatedSummary = summaryBuilder.ToString().Trim();
+
+            if (!string.IsNullOrEmpty(consolidatedSummary))
+            {
+                // Add the consolidated summary to the new active chat room as a system message
+                var newChatRoom = ActiveChat;
+                if (newChatRoom != null)
+                {
+                    newChatRoom.AddChatMessage(new ChatMessageContent(AuthorRole.Assistant, consolidatedSummary)
+                    {
+                        AuthorName = _lastRoomAgent.GetAgentName()
+                    });
+
+                    _logger?.LogInformation("Added summary to the new chat room: {Summary}", consolidatedSummary);
+                }
+            }
+
+            // Yield the finalization action
+            yield return new StreamingOrchestratorContent(
+                StreamingOrchestratorContent.ActionTypes.RoomMessageFinished,
+                OrchestratorName,
+                _activeChatName,
+                _lastRoomAgent.Name ?? "Previous Room",
+                null
+            );
+
+            // Reset the last chat room and agent references
+            _lastChatRoom = null;
+            _lastRoomAgent = null;
+        }
+
     }
 }
