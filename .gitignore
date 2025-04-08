@@ -618,3 +618,5 @@ src/service/shared/YamlConfigurations/obj/YamlConfigurations.csproj.nuget.g.prop
 src/service/shared/AppExtensions/obj/AppExtensions.csproj.nuget.g.props
 src/service/shared/AppExtensions/obj/Debug/net9.0/AppExtensions.assets.cache
 src/service/shared/AppExtensions/obj/Debug/net9.0/AppExtensions.csproj.FileListAbsolute.txt
+src/service/shared/WebSocketMessages/obj/Debug/net9.0/WebSocketMessages.assets.cache
+src/service/shared/YamlConfigurations/obj/Debug/net9.0/YamlConfigurations.assets.cache
