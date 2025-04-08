@@ -41,13 +41,29 @@ namespace SemanticKernelExtension.ChatCompletionService
         /// <summary>
         /// Pass-through for multiple messages. No custom logic.
         /// </summary>
-        public Task<IReadOnlyList<ChatMessageContent>> GetChatMessageContentsAsync(
+        public async Task<IReadOnlyList<ChatMessageContent>> GetChatMessageContentsAsync(
             ChatHistory chatHistory,
             PromptExecutionSettings? settings = null,
             Kernel? kernel = null,
             CancellationToken cancellationToken = default)
-            => _inner.GetChatMessageContentsAsync(chatHistory, settings, kernel, cancellationToken);
+        {
+            var response = await _inner.GetChatMessageContentAsync(chatHistory, settings, kernel, cancellationToken);
 
+            var content = response.Content ?? string.Empty;
+            var match = Regex.Match(content, @"<think>(.*?)</think>", RegexOptions.Singleline);
+
+            string thought = match.Success ? match.Groups[1].Value.Trim() : string.Empty;
+            string main = match.Success ? Regex.Replace(content, @"<think>.*?</think>", "", RegexOptions.Singleline).Trim() : content.Trim();
+
+            var message = new ChatMessageContent(
+                AuthorRole.Assistant,
+                main,
+                response.ModelId,
+                metadata: new Dictionary<string, object?> { ["think"] = thought }
+            );
+
+            return new List<ChatMessageContent> { message };
+        }
         /// <summary>
         /// Intercepts streaming responses and attaches <think> block to metadata once complete.
         /// </summary>

@@ -76,10 +76,16 @@ namespace AppExtensions.Experience.Factories
 
             // Truncation
             else if (truncationReducer is not null
-                     && int.TryParse(truncationReducer.TargetCount, out int targetCount)
-                     && int.TryParse(truncationReducer.ThresholdCount, out int thresholdCount))
+                     && int.TryParse(truncationReducer.TargetCount, out int targetCount))
             {
-                return new ChatHistoryTruncationReducer(thresholdCount, targetCount);
+                if (int.TryParse(truncationReducer.ThresholdCount, out int thresholdCount))
+                {
+                    return new ChatHistoryTruncationReducer(targetCount, thresholdCount);
+                }
+                else
+                {
+                    return new ChatHistoryTruncationReducer(targetCount);
+                }
             }
 
             // Otherwise, no reducer

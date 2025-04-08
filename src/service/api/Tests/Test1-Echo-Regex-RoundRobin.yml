@@ -1,0 +1,38 @@
+name: Test-Echo-RoundRobin-Regex
+emoji: 💬
+
+agents:
+    - name: Positive Agent
+      emoji: 🎨 
+      
+      echo: >
+        Echo the the following with positivity - We are positivity
+   
+    - name: Negative Agent
+      emoji: 🎨 
+      
+      echo: >
+        Echo the the following with negavity - We need to be happy
+    
+strategies:
+    
+    termination:
+        
+        continuation-agent-name: Ask Human
+
+        regex-termination:
+            expressions:
+                - (?i).*positivity.*
+
+    selection:
+       
+        round-robin-selection:
+            agents:
+                - Positive Agent
+                - Negative Agent
+            initial-agent: Positive Agent
+
+    
+
+
+

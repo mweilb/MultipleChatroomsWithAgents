@@ -99,6 +99,8 @@ namespace AppExtensions.Experience.Factories
                 }
                 else if (selection.RoundRobinSelection != null)
                 {
+                    ruleForSK.Selection = RoundRobinSelectionStrategyFactory.Create(selection.RoundRobinSelection, agents);
+
                     Console.WriteLine("        → Round-robin selection in this rule.");
                 }
             }

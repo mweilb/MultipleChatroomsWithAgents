@@ -1,0 +1,46 @@
+name: Test-Echo-LLMs-Regex
+emoji: 💬
+
+agents:
+    - name: Positive Agent
+      emoji: 🎨 
+      
+      echo: >
+        Echo the the following with positivity - We are positivity
+   
+    - name: Negative Agent
+      emoji: 🎨 
+      
+      echo: >
+        Echo the the following with negavity - We need to be happy
+    
+strategies:
+    
+    termination:
+        
+        continuation-agent-name: Ask Human
+
+        regex-termination:
+            expressions:
+                - (?i).*positivity.*
+
+    selection:
+       
+        prompt-select:
+            instructions: >
+                {{$history}}
+
+                If the user is positive, then choose the Negative Agent.
+                Else If the user is negative, then choose the Positive Agent.
+ 
+                You answer should be a single line with the agent name.
+            
+            history-variable-name: history  
+            
+            truncation-reducer:
+                target-count: 1
+
+    
+
+
+
