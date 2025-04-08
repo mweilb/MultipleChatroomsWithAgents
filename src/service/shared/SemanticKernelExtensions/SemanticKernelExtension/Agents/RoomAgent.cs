@@ -1,12 +1,16 @@
 ﻿using Microsoft.SemanticKernel;
+using Microsoft.SemanticKernel.Agents;
 using Microsoft.SemanticKernel.ChatCompletion;
-using System.Collections.Generic;
+using SemanticKernelExtension.Orchestrator;
+ 
 using System.Runtime.CompilerServices;
-using System.Threading;
-using System.Threading.Tasks;
+using System.Text;
+ 
 
 namespace SemanticKernelExtension.Agents
 {
+#pragma warning disable SKEXP0001
+#pragma warning disable SKEXP0110
     public class RoomAgent : EchoAgent
     {
         private readonly string _instructionToSummary;
@@ -69,6 +73,69 @@ namespace SemanticKernelExtension.Agents
         internal string GetAgentName()
         {
            return _agentName;
+        }
+
+        /// <summary>
+        /// Summarizes the chat history of the previous room and adds it as a system message in the new active chat room.
+        /// </summary>
+        /// <param name="cancellationToken">Token to monitor for cancellation requests.</param>
+        /// <returns>An asynchronous stream of <see cref="StreamingOrchestratorContent"/> representing the summary process.</returns>
+        public async IAsyncEnumerable<StreamingOrchestratorContent> SummarizeAndIntegratePreviousRoomChatAsync(string orchestratorName, string currentChatRoomName, AgentGroupChat currentChatRoom, AgentGroupChat lastChatRoom,
+            [EnumeratorCancellation] CancellationToken cancellationToken)
+        {
+
+
+            // Retrieve and reverse the chat history from the previous room
+            var lastHistory = await lastChatRoom.GetChatMessagesAsync(cancellationToken)
+                                                 .Reverse()
+                                                 .ToArrayAsync(cancellationToken);
+
+            bool isFirstMessage = true;
+            var summaryBuilder = new StringBuilder();
+
+            // Generate the summary asynchronously
+            await foreach (var agentChunk in this.InvokeSummaryStreamingAsync(lastHistory, cancellationToken))
+            {
+                // Accumulate the summary content
+                summaryBuilder.Append(agentChunk.Content);
+
+                // Yield each chunk as it's received
+                yield return new StreamingOrchestratorContent(
+                    isFirstMessage ? StreamingOrchestratorContent.ActionTypes.RoomMessageStarted : StreamingOrchestratorContent.ActionTypes.RoomMessageUpdated,
+                    orchestratorName,
+                    currentChatRoomName,
+                    this.Name ?? "Previous Room",
+                    agentChunk
+                );
+
+                isFirstMessage = false;
+            }
+
+            // Finalize the summary message
+            var consolidatedSummary = summaryBuilder.ToString().Trim();
+
+            if (!string.IsNullOrEmpty(consolidatedSummary))
+            {
+                // Add the consolidated summary to the new active chat room as a system message
+                var newChatRoom = currentChatRoom;
+                if (newChatRoom != null)
+                {
+                    newChatRoom.AddChatMessage(new ChatMessageContent(AuthorRole.Assistant, consolidatedSummary)
+                    {
+                        AuthorName = this.GetAgentName()
+                    });
+
+                 }
+            }
+
+            // Yield the finalization action
+            yield return new StreamingOrchestratorContent(
+                StreamingOrchestratorContent.ActionTypes.RoomMessageFinished,
+                orchestratorName,
+                currentChatRoomName,
+                this.Name ?? "Previous Room",
+                null
+            );
         }
     }
 }

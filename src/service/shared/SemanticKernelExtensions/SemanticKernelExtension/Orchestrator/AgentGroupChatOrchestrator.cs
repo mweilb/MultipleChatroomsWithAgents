@@ -130,10 +130,15 @@ namespace SemanticKernelExtension.Orchestrator
                     yield break;
                 }
 
-
-                await foreach (var content in SummarizeAndIntegratePreviousRoomChatAsync(cancellationToken))
+                if (_lastChatRoom != null && _lastRoomAgent != null)
                 {
-                    yield return content;
+                    await foreach (var content in _lastRoomAgent.SummarizeAndIntegratePreviousRoomChatAsync(OrchestratorName, _activeChatName, agentGroupChat, _lastChatRoom,cancellationToken))
+                    {
+                        yield return content;
+                    }
+
+                    _lastChatRoom = null;
+                    _lastRoomAgent = null;
                 }
 
 
@@ -241,76 +246,7 @@ namespace SemanticKernelExtension.Orchestrator
 
         }
 
-        /// <summary>
-        /// Summarizes the chat history of the previous room and adds it as a system message in the new active chat room.
-        /// </summary>
-        /// <param name="cancellationToken">Token to monitor for cancellation requests.</param>
-        /// <returns>An asynchronous stream of <see cref="StreamingOrchestratorContent"/> representing the summary process.</returns>
-        private async IAsyncEnumerable<StreamingOrchestratorContent> SummarizeAndIntegratePreviousRoomChatAsync(
-            [EnumeratorCancellation] CancellationToken cancellationToken)
-        {
-            if (_lastChatRoom == null || _lastRoomAgent == null)
-            {
-                yield break;
-            }
-
-            // Retrieve and reverse the chat history from the previous room
-            var lastHistory = await _lastChatRoom.GetChatMessagesAsync(cancellationToken)
-                                                 .Reverse()
-                                                 .ToArrayAsync(cancellationToken);
-
-            bool isFirstMessage = true;
-            var summaryBuilder = new StringBuilder();
-
-            // Generate the summary asynchronously
-            await foreach (var agentChunk in _lastRoomAgent.InvokeSummaryStreamingAsync(lastHistory, cancellationToken))
-            {
-                // Accumulate the summary content
-                summaryBuilder.Append(agentChunk.Content);
-
-                // Yield each chunk as it's received
-                yield return new StreamingOrchestratorContent(
-                    isFirstMessage ? StreamingOrchestratorContent.ActionTypes.RoomMessageStarted : StreamingOrchestratorContent.ActionTypes.RoomMessageUpdated,
-                    OrchestratorName,
-                    _activeChatName,
-                    _lastRoomAgent.Name ?? "Previous Room",
-                    agentChunk
-                );
-
-                isFirstMessage = false;
-            }
-
-            // Finalize the summary message
-            var consolidatedSummary = summaryBuilder.ToString().Trim();
-
-            if (!string.IsNullOrEmpty(consolidatedSummary))
-            {
-                // Add the consolidated summary to the new active chat room as a system message
-                var newChatRoom = ActiveChat;
-                if (newChatRoom != null)
-                {
-                    newChatRoom.AddChatMessage(new ChatMessageContent(AuthorRole.Assistant, consolidatedSummary)
-                    {
-                        AuthorName = _lastRoomAgent.GetAgentName()
-                    });
-
-                    _logger?.LogInformation("Added summary to the new chat room: {Summary}", consolidatedSummary);
-                }
-            }
-
-            // Yield the finalization action
-            yield return new StreamingOrchestratorContent(
-                StreamingOrchestratorContent.ActionTypes.RoomMessageFinished,
-                OrchestratorName,
-                _activeChatName,
-                _lastRoomAgent.Name ?? "Previous Room",
-                null
-            );
-
-            // Reset the last chat room and agent references
-            _lastChatRoom = null;
-            _lastRoomAgent = null;
-        }
+      
 
     }
 }
