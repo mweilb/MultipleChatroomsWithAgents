@@ -149,8 +149,12 @@ namespace AppExtensions.Experience.Factories
             List<YamlExpression>? expressions)
         {
             // Default to false
-            Func<FunctionResult, bool> defaultParser = _ => false;
-
+            Func<FunctionResult, bool> defaultParser = (fr) =>
+            {
+                string resultValue = fr.GetValue<string>() ?? string.Empty;
+                return IsTrue(resultValue);
+            };
+            
             if (expressions is { Count: > 0 })
             {
                 return (fr) =>

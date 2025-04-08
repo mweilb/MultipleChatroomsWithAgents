@@ -1,4 +1,4 @@
-name: Test-Echo-LLMs-Regex
+name: Test-Echo-RoundRobin-LLM
 emoji: 💬
 
 agents:
@@ -18,27 +18,28 @@ strategies:
     
     termination:
         
-        continuation-agent-name: Ask Human
+        continuation-agent-name: Human Agent
 
-        regex-termination:
-            expressions:
-                - (?i).*positivity.*
+        constant-termination:
+        prompt-termination:
+            instructions: >
+                Message:
+                {{$history}}
+
+                Stop when the conversation is positive.
+             
+                Asnwer should be a single line with a True or False.
+            
+            history-variable-name: history  
+                
 
     selection:
        
-        prompt-select:
-            instructions: >
-                {{$history}}
-
-                If the user is positive, then choose the Negative Agent.
-                Else If the user is negative, then choose the Positive Agent.
- 
-                You answer should be a single line with the agent name.
-            
-            history-variable-name: history  
-            
-            truncation-reducer:
-                target-count: 1
+        round-robin-selection:
+            agents:
+                - Positive Agent
+                - Negative Agent
+            initial-agent: Positive Agent
 
     
 

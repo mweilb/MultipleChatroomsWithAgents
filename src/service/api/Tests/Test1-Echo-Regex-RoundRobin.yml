@@ -1,4 +1,4 @@
-name: Test-Echo-RoundRobin-Regex
+name: Test-Echo-RoundRobin-Const
 emoji: 💬
 
 agents:
@@ -18,11 +18,13 @@ strategies:
     
     termination:
         
-        continuation-agent-name: Ask Human
+        continuation-agent-name: Human Agent
 
-        regex-termination:
-            expressions:
-                - (?i).*positivity.*
+        constant-termination:
+             agents:
+                - Negative Agent
+             value: true
+                
 
     selection:
        
