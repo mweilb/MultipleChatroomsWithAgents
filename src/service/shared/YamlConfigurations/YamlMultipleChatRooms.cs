@@ -1,4 +1,4 @@
-﻿
+﻿﻿﻿
  
 using YamlDotNet.Serialization;
 
@@ -33,7 +33,7 @@ namespace YamlConfigurations
         //track the original Yaml file
         public string Yaml { get; internal set; } = string.Empty;
        
-        public List<string> Errors { get; internal set; } = [];
+        public List<YamlConfigurations.Validations.ValidationError> Errors { get; internal set; } = new();
 
       
         public void ApplyParentOverride()

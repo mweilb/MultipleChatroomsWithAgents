@@ -2,6 +2,6 @@
 {
     public interface IValidationPass
     {
-        IEnumerable<ValidationError> Validate(YamlMultipleChatRooms config);
+        IEnumerable<ValidationError> Validate(YamlMultipleChatRooms config, string? yamlText = null);
     }
 }

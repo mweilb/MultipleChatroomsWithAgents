@@ -29,5 +29,8 @@ namespace YamlConfigurations
         // Indicates if the room should yield on change ("yes", "true", etc.)
         [YamlMember(Alias = "yield-on-room-change")]
         public string? YieldOnRoomChange { get; set; }
+
+        [YamlMember(Alias = "yield-user-canceled")]
+        public string? YieldCanceledName { get; internal set; }
     }
 }

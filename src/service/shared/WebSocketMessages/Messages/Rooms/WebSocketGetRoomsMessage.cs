@@ -1,4 +1,5 @@
 using WebSocketMessages.Messages;
+ 
 
 namespace WebSocketMessages.Messages.Rooms
 {
@@ -18,7 +19,7 @@ namespace WebSocketMessages.Messages.Rooms
         /// <summary>
         /// Gets or sets the list of agents representing the chat room.
         /// </summary>
-        public List<WebSocketAgentProfile> Agents { get; set; } = new List<WebSocketAgentProfile>();
+        public List<WebSocketAgentProfile> Agents { get; set; } = [];
     }
 
     /// <summary>
@@ -38,6 +39,17 @@ namespace WebSocketMessages.Messages.Rooms
     }
 
     /// <summary>
+    /// Represents a validation error for WebSocket messages.
+    /// </summary>
+    public class WebSocketValidationError
+    {
+        public string Message { get; set; } = string.Empty;
+        public string Location { get; set; } = string.Empty;
+        public int? LineNumber { get; set; }
+        public int? CharPosition { get; set; }
+    }
+
+    /// <summary>
     /// Represents a WebSocket message that contains information about a specific chat room,
     /// including its associated room and actor details.
     /// </summary>
@@ -53,8 +65,10 @@ namespace WebSocketMessages.Messages.Rooms
         /// </summary>
         public string Emoji { get; set; } = string.Empty;
 
-        //public part of 
-        public string AutoStart = string.Empty;
+        /// <summary>
+        /// Gets or sets the auto start setting for the room.
+        /// </summary>
+        public string AutoStart { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the MerMaid representing the room.
@@ -66,9 +80,9 @@ namespace WebSocketMessages.Messages.Rooms
         /// </summary>
         public string Yaml { get; set; } = string.Empty;
 
-        public List<string> Errors { get; set; } = [];
+        public List<WebSocketValidationError> Errors { get; set; } = [];
 
-        public List<WebSocketRoomProfile> Rooms { get; set; } = new List<WebSocketRoomProfile>();
+        public List<WebSocketRoomProfile> Rooms { get; set; } = [];
 
        
     }
@@ -82,6 +96,6 @@ namespace WebSocketMessages.Messages.Rooms
         /// <summary>
         /// Gets or sets the list of chat room messages.
         /// </summary>
-        public List<WebSocketGetRooms> Rooms { get; set; } = new List<WebSocketGetRooms>();
+        public List<WebSocketGetRooms> Rooms { get; set; } = [];
     }
 }

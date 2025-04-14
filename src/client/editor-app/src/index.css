@@ -1,70 +1,34 @@
-/* Ensure the entire page fills the viewport */
-html, body, #root {
+/* CSS Reset and base styles */
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+
+html {
+  box-sizing: border-box;
+  height: 100%;
+  min-height: 100%;
+  font-family: system-ui, Arial, sans-serif;
+  background: #f8f9fa;
+  color: #222;
+}
+
+body, #root {
+  height: 100%;
+  min-height: 100%;
   margin: 0;
   padding: 0;
-  height: 100%;
-  overflow: hidden;
-}
-
-/* App wrapper fills the viewport */
-.app-wrapper {
   display: flex;
   flex-direction: column;
-  height: 100%;
 }
 
-/* App container holds Navigator and main content */
-.app-container {
-  display: flex;
-  flex: 1;
-  overflow: hidden;
+body {
+  width: 100vw;
+  overflow-x: hidden;
+  background: inherit;
 }
 
-/* Main content area scrolls if needed */
-.main-content {
-  flex: 1;
-  overflow: hidden;
-  background-color: #371010; /* optional background */
-}
-
-/* Existing App styles */
-.App {
-  text-align: center;
-  height: 100%;
-  overflow: hidden;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+#root {
+  flex: 1 1 auto;
 }

@@ -76,6 +76,7 @@ namespace AppExtensions.Experience
                 {
                     group.handler = new MessageHandler(group, key);
                     webSocketHandler.RegisterCommand(key, group.handler.HandleCommandAsync);
+                    webSocketHandler.RegisterCommand(key+"-change-room", group.handler.HandleChangeRoomRequestAsync);
                 }
             }
             

@@ -47,8 +47,18 @@ export default class MermaidComponent extends React.Component<MermaidComponentPr
     }
   }
 
+  resizeTimeout: any = null;
+
+  handleResize = () => {
+    if (this.resizeTimeout) clearTimeout(this.resizeTimeout);
+    this.resizeTimeout = setTimeout(() => {
+      this.renderMermaid();
+    }, 200);
+  };
+
   componentDidMount() {
     this.renderMermaid();
+    window.addEventListener("resize", this.handleResize);
   }
 
   componentDidUpdate(prevProps: MermaidComponentProps) {
@@ -61,6 +71,8 @@ export default class MermaidComponent extends React.Component<MermaidComponentPr
     if (this.panZoomInstance) {
       this.panZoomInstance.destroy();
     }
+    window.removeEventListener("resize", this.handleResize);
+    if (this.resizeTimeout) clearTimeout(this.resizeTimeout);
   }
 
   render() {

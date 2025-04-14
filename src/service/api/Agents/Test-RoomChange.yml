@@ -54,8 +54,7 @@
         
 
         termination:
-            continuation-agent-name: By Pass Human
-
+    
             constant-termination:
                 value: no
 
@@ -83,7 +82,7 @@
               next:
                 - name: Get To Know You
                   context-transfer:
-                    prompt: >
+                    instructions: >
                         {{messages}}
                         Summarize the conversation
             
@@ -101,9 +100,8 @@
         - name: More About You Agent
       strategies:
         termination:
-            continuation-agent-name: Need Human
-
-            constant-termination:
+             continuation-agent-name: Need Human
+             constant-termination:
                 value: true
 
         rules:
@@ -111,6 +109,7 @@
               - name: Get To Know You
             next:
               - name: Gather Agent
+          
           - current:
               - name: Need Human
             next:
@@ -123,7 +122,7 @@
             next:
               - name: Find The Job
                 context-transfer:
-                    prompt: >
+                    instructions: >
                         {{messages}}
                         Summarize the conversation
            
@@ -135,7 +134,6 @@
         - name: Job Specialized Agent
       strategies:
         termination:
-            continuation-agent-name: Need Humans
             constant-termination:
                 value: false
         rules:
@@ -148,9 +146,11 @@
             next:
               - name: Apply For Job
                 context-transfer:
-                    prompt: >
+                    instructions: >
                         {{messages}}
                         Summarize the conversation
+                    need-user-approval: yes
+                    cancellation-agent-name: Job Agent
             
     
     Apply For Job:

@@ -1,34 +1,52 @@
 /* General Navigator styling */
 .navigator {
-  height: calc(100vh - 80px); /* Full height minus header */
-  width: 240px;
-  background-color: #fff;
-  border-right: 1px solid #ddd;
-  box-shadow: 2px 0 4px rgba(0, 0, 0, 0.05);
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 250px;
+  background: linear-gradient(135deg, #23395d 0%, #1e2a38 100%);
+  border-right: 1px solid #23395d;
+  border-left: none;
+  box-shadow: 4px 0 16px rgba(35, 57, 93, 0.10);
   display: flex;
   flex-direction: column;
-  overflow: hidden; /* Prevent overall overflow */
-  padding: 20px 15px;
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  color: #333;
-  transition: width 0.3s ease, padding 0.3s ease;
+  overflow: hidden;
+  padding: 28px 18px 18px 18px;
+  font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+  color: #f5f7fa;
+  transition: width 0.3s cubic-bezier(.4,2,.6,1), padding 0.3s cubic-bezier(.4,2,.6,1), background 0.3s;
+  border-radius: 18px 0 0 18px;
+  z-index: 1000;
 }
 
 .navigator.collapsed {
   width: 70px;
-  padding: 20px 5px;
+  padding: 28px 6px 18px 6px;
 }
-
 
 /* Toggle button styling */
 .toggle-button {
-  align-self: flex-end;
-  margin-bottom: 4px;
-  background: none;
+  align-self: flex-start;
+  margin-bottom: 12px;
+  background: #23395d;
   border: none;
-  font-size: 20px;
+  font-size: 22px;
   cursor: pointer;
-  color: #333;
+  color: #b0c4de;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  box-shadow: 0 2px 8px rgba(35, 57, 93, 0.08);
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.toggle-button:hover {
+  background: #2d4a7a;
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(35, 57, 93, 0.16);
 }
 
 /* Navigation list styling */
@@ -46,31 +64,58 @@
   display: flex;
   align-items: center;
   text-decoration: none;
-  color: #333;
-  padding: 8px 12px;
-  border-radius: 4px;
-  transition: background-color 0.2s;
+  color: #222b38;
+  padding: 6px 16px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  gap: 12px;
+  transition: background 0.18s, color 0.18s, box-shadow 0.18s;
+  position: relative;
+  box-shadow: none;
 }
 
 .navigator nav li a:hover {
-  background-color: #f5f5f5;
+  background: linear-gradient(90deg, #2d4a7a 0%, #23395d 100%);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(35, 57, 93, 0.10);
 }
 
 .navigator nav li a span {
-  margin-left: 12px;
-  font-size: 16px;
+  margin-left: 8px;
+  font-size: 12px;
 }
 
 .navigator nav li.active a {
-  background-color: #e0e0e0;
+  background: linear-gradient(90deg, #3a5ba0 0%, #23395d 100%);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(35, 57, 93, 0.14);
+}
+
+.nav-admin-group li.active a {
+  font-size: 12px;
+  background: linear-gradient(90deg, #3a5ba0 0%, #23395d 100%);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(35, 57, 93, 0.14);
+}
+
+.nav-admin-group li a {
+  font-size: 12px;
+  background: linear-gradient(90deg, #7090d4 0%, #23395d 100%);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(35, 57, 93, 0.14);
 }
 
 /* Connection status styling */
 .connection-status {
-  font-size: 10px;
+  font-size: 11px;
   text-align: center;
-  padding-top: 10px;
-  border-top: 1px solid #ddd;
+  padding-top: 12px;
+  border-top: 1px solid #2d4a7a;
+  color: #b0c4de;
+  letter-spacing: 0.03em;
+  
 }
 
 /* Grouping container */
@@ -84,17 +129,21 @@
   font-weight: 600;
   margin-bottom: 5px;
   padding-left: 5px;
-  color: #444;
+  color: #b0c4de;
+  letter-spacing: 0.02em;
 }
 
 /* Dynamic Rooms Container - takes available vertical space */
-.navigation-tab-container,
-.dynamic-rooms-container {
+.navigation-tab-container {
   flex: 1; /* Take available space */
   /*overflow-y: hidden;*/
 }
+.dynamic-rooms-container {
+  flex: 1; /* Take available space */
+  /*overflow-y: hidden;*/
+  background-color: rgb(244, 237, 199);
+}
 
- 
  
 
 /* Rooms list styling */
@@ -102,6 +151,11 @@
   list-style: none;
   padding: 0;
   margin: 0;
+}
+
+/* Make room links smaller */
+.rooms-list ul li a {
+  font-size: 13px;
 }
 
 .rooms-list p.no-rooms {
@@ -127,6 +181,10 @@
 .filters-controls {
   display: flex;
   flex-direction: column;
+}
+
+.toggle-container {
+  color: black;
 }
 
 /* Global toggle container */
@@ -206,16 +264,22 @@
   background-color: #f0f0f0;
 }
 
+.nav-room {
+  font-size: 12px;
+}
+
 /* Emoji styling */
 .nav-emoji {
-  transform: scale(1.5);
-  margin-right: 0.5rem;
-  transition: transform 0.2s ease;
+  transform: scale(1.9);
+  margin-right: 0.7rem;
+  transition: transform 0.18s cubic-bezier(.4,2,.6,1);
   display: inline-block;
+  filter: drop-shadow(0 1px 2px rgba(35,57,93,0.10));
 }
 
 .nav-emoji:hover {
-  transform: scale(2.0);
+  transform: scale(2.5);
+  filter: drop-shadow(0 2px 6px rgba(35,57,93,0.18));
 }
 
 /* Additional spacing for dynamic rooms list */
@@ -231,11 +295,14 @@
 
   /* Header with a light background to connect the tabs with the content */
   .navigation-tab-header {
-    background-color: #f5f5f5; /* Light background behind the tabs */
-    border-bottom: 1px solid #ccc;
-    padding: 0.5rem 1rem;
+    background: linear-gradient(90deg, #f5f7fa 0%, #e3e8f0 100%);
+    border-bottom: 1.5px solid #d1d9e6;
+    padding: 0.75rem 1.25rem 0.25rem 1.25rem;
     display: flex;
-    gap: 0.5rem; /* Buttons are closer together */
+    gap: 0.75rem;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    box-shadow: 0 2px 8px rgba(35, 57, 93, 0.04);
   }
   /* Toggle button container */
   .navigation-tab-content {
@@ -248,33 +315,47 @@
   }
   /* Base style for tab buttons */
   .navigation-tab-button {
-    padding: 0.5rem 1rem;
+    padding: 0.35rem 0.7rem;
     cursor: pointer;
-    transition: all 0.3s ease;
-    background-color: #e0e0e0; /* Non-active tabs are a little darker */
+    transition: background 0.22s, color 0.22s, box-shadow 0.22s, transform 0.22s;
+    background: #e3e8f0;
+    color: #23395d;
     border: none;
     outline: none;
     border-top-left-radius: 8px;
     border-top-right-radius: 8px;
     margin: 0;
+    font-size: 0.97rem;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    box-shadow: none;
+    position: relative;
   }
   
-  /* Active tab styling: lighter background, bold text, and a slight scale effect */
+  /* Active tab styling: blue gradient background and white text */
   .navigation-tab-button.active {
-    background-color: #fff; /* Lighter to appear "on top" of the header */
-    font-weight: bold;
-    transform: scale(1.1);
-    box-shadow: 0px -2px 5px rgba(0, 0, 0, 0.1);
+    background: linear-gradient(90deg, #3a5ba0 0%, #23395d 100%);
+    color: #fff;
+    font-weight: 700;
+    transform: scale(1.08);
+    box-shadow: 0px -4px 16px rgba(35, 57, 93, 0.10), 0 2px 8px rgba(35, 57, 93, 0.04);
+    z-index: 2;
+    border-bottom: 2.5px solid transparent;
   }
   
-  /* Non-active tabs remain at regular scale and full opacity */
+  /* Non-active tabs: white background, blue border, and dark text */
   .navigation-tab-button:not(.active) {
+    background: #fff;
+    color: #1e2a38;
     transform: scale(1);
     opacity: 1;
+    box-shadow: none;
+    border-bottom: 2.5px solid #3a5ba0;
   }
 
   .nested-rooms {
     margin-left: 40px;
+    font-size: 12px;
     font-style: italic; /* To visually distinguish nested rooms */
     color: gray; /* Optional: Lighten the color of nested rooms */
   }

@@ -34,7 +34,7 @@ namespace AppExtensions.Experience.Factories
                         RuleBasedDefinition ruleForSK = new();
 
                         index++;
-                        Console.WriteLine($"    [{index}] Rule Name: {rule.Name}");
+                        Console.WriteLine($"    [{index}] Rule Name: {rule.Name}"); 
 
                         AddCurrentAgents(rule, ruleForSK);
                         AddNextAgents(rule, ruleForSK);
@@ -42,8 +42,6 @@ namespace AppExtensions.Experience.Factories
                         AddTerminationStrategy(rule.Termination, ruleForSK, completionAgents, kernel);
 
                         ruleForSK.Name = rule.Name;
-                        SetYieldOnRoomChange(rule, ruleForSK);
-
                         listSKRules.Add(ruleForSK);
                     }
                 }
@@ -59,12 +57,7 @@ namespace AppExtensions.Experience.Factories
 
             return listSKRules;
         }
-
-        private static void SetYieldOnRoomChange(YamlStratergyRules rule, RuleBasedDefinition ruleForSK)
-        {
-            ruleForSK.ShouldYield = rule.YieldOnRoomChange != null &&
-                                   (rule.YieldOnRoomChange.Equals("yes", StringComparison.OrdinalIgnoreCase) || rule.YieldOnRoomChange.Equals("true", StringComparison.OrdinalIgnoreCase));
-        }
+ 
 
         private static void AddCurrentAgents(YamlStratergyRules rule, SemanticKernelExtension.AgentGroupChats.Strategies.RuleBased.RuleBasedDefinition ruleForSK)
         {

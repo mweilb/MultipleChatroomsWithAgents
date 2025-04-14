@@ -1,4 +1,6 @@
-﻿ 
+﻿﻿﻿
+using DocumentFormat.OpenXml.Math;
+using System.Data;
 using System.Text;
 using System.Text.RegularExpressions;
 using YamlConfigurations;
@@ -64,7 +66,7 @@ namespace YamlConfigurations.FileReader
             allEdges.AddRange(BuildWithinRoomEdges(chatRooms, agentsPerRoom));
 
             // 5b. Cross-room edges
-            allEdges.AddRange(BuildCrossRoomEdges(chatRooms, agentsPerRoom));
+            allEdges.AddRange(BuildCrossRoomEdges(chatRooms, sb,  agentsPerRoom));
 
             // 6. Render the edges (in the order we collected them)
             foreach (var edgeItem in allEdges)
@@ -313,6 +315,7 @@ namespace YamlConfigurations.FileReader
                     var currentAgents = GetRuleAgents(agentsPerRoom, roomId, rule.Current, room, chatRooms);
                     var nextAgents = GetRuleAgents(agentsPerRoom, roomId, rule.Next, room, chatRooms);
 
+
                     // Edge from each "current" to each "next" if they're in the same room
                     foreach (var cA in currentAgents)
                     {
@@ -320,7 +323,7 @@ namespace YamlConfigurations.FileReader
                         {
                             if (cA == nA) continue;
                             if (nA.StartsWith(roomId)  && (cA.StartsWith(roomId) || cA.StartsWith("start")))
-                            {
+                            {    
                                 edges.Add(new DiagramEdge
                                 {
                                     EdgeDefinition = $"{cA} -->|{ruleLabel}| {nA}",
@@ -372,6 +375,7 @@ namespace YamlConfigurations.FileReader
         /// </summary>
         private static List<DiagramEdge> BuildCrossRoomEdges(
             YamlMultipleChatRooms chatRooms,
+            StringBuilder sb,
             Dictionary<string, List<string>> agentsPerRoom)
         {
             var edges = new List<DiagramEdge>();
@@ -395,21 +399,53 @@ namespace YamlConfigurations.FileReader
                         : rule.Name;
 
                     var currentAgents = GetRuleAgents(agentsPerRoom, roomId, rule.Current, room, chatRooms);
-                    var nextAgents = GetRuleAgents(agentsPerRoom, roomId, rule.Next, room, chatRooms);
-
-
-                    foreach (var cA in currentAgents)
+                    // For each nextAgent, generate edges using its own yieldOnRoomChange and yieldCanceledName
+                    for (int i = 0; i < rule.Next.Count; i++)
                     {
-                        foreach (var nA in nextAgents)
+                        var nextAgentConfig = rule.Next[i];
+                        var nAList = GetRuleAgents(agentsPerRoom, roomId, new List<YamlNextAgentConfig> { nextAgentConfig }, room, chatRooms);
+                        string? yieldCanceledName = nextAgentConfig.ContextTransfer?.YieldCanceledName;
+                        bool yieldOnRoomChange = nextAgentConfig.ContextTransfer != null &&
+                                                 MermaidGenerator.IsTrue(nextAgentConfig.ContextTransfer.YieldOnRoomChange);
+
+                        foreach (var cA in currentAgents)
                         {
-                            // If nA doesn't start with roomId => different room
-                            if (!nA.StartsWith(roomId))
+                            foreach (var nA in nAList)
                             {
-                                edges.Add(new DiagramEdge
+                                if (!nA.StartsWith(roomId))
                                 {
-                                    EdgeDefinition = $"{cA} -->|{ruleLabel}| {nA}",
-                                    StyleGroup = "crossStyle"
-                                });
+                                    if (yieldOnRoomChange)
+                                    {
+                                        string roomCanceledID = GenerateAgentId(roomId, yieldCanceledName ?? "System");
+                                        string roomNameChangeID = GenerateRuleId(roomKey, rule.Name + "_" + nextAgentConfig.Name);
+
+                                        sb.AppendLine($"    {roomNameChangeID}[/Change Room Requested To User/]");
+
+                                        edges.Add(new DiagramEdge
+                                        {
+                                            EdgeDefinition = $"{cA} -->|{ruleLabel}| {roomNameChangeID}",
+                                            StyleGroup = "crossStyle"
+                                        });
+                                        edges.Add(new DiagramEdge
+                                        {
+                                            EdgeDefinition = $"{roomNameChangeID} -->|{ruleLabel}: Yes| {nA}",
+                                            StyleGroup = "crossStyle"
+                                        });
+                                        edges.Add(new DiagramEdge
+                                        {
+                                            EdgeDefinition = $"{roomNameChangeID} -->|{ruleLabel}: No| {roomCanceledID}",
+                                            StyleGroup = "crossStyle"
+                                        });
+                                    }
+                                    else
+                                    {
+                                        edges.Add(new DiagramEdge
+                                        {
+                                            EdgeDefinition = $"{cA} -->|{ruleLabel}| {nA}",
+                                            StyleGroup = "crossStyle"
+                                        });
+                                    }
+                                }
                             }
                         }
                     }
@@ -564,10 +600,22 @@ namespace YamlConfigurations.FileReader
         private static string GenerateAgentId(string roomId, string agentName)
             => $"{roomId}_Agent_{SanitizeId(agentName)}";
 
+        private static string GenerateRuleId(string roomKey, string ruleName) => $"ChangeRoom_{SanitizeId(roomKey)}_{SanitizeId(ruleName)}";
+
         private static string SanitizeId(string input)
             => string.IsNullOrEmpty(input)
                 ? string.Empty
                 : Regex.Replace(input, @"[^\w]", "_");
+
+        /// <summary>
+        /// A helper to see if the user input indicates "yes" or "true".
+        /// </summary>
+        public static bool IsTrue(string? value)
+        {
+            return value != null &&
+                   (value.Contains("yes", StringComparison.OrdinalIgnoreCase) ||
+                    value.Contains("true", StringComparison.OrdinalIgnoreCase));
+        }
 
         #endregion
     }

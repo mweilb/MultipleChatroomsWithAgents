@@ -46,19 +46,7 @@ namespace YamlConfigurations
                     rule.Name = $"Rule {ruleCount}";
                 }
 
-                if (string.IsNullOrEmpty(rule.YieldOnRoomChange))
-                {
-                    if (string.IsNullOrEmpty(room.YieldOnRoomChange))
-                    {
-                        rule.YieldOnRoomChange = "false";
-                    }
-                    else
-                    {
-                        rule.YieldOnRoomChange = room.YieldOnRoomChange;
-                    }
-                }
-
-                    // If the rule does not have a selection configuration, assign the global one.
+                // If the rule does not have a selection configuration, assign the global one.
                 if (rule.Selection == null && GlobalSelection != null)
                 {
                     rule.Selection = GlobalSelection;

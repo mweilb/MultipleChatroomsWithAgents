@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import MessageList from './MessageList';  // Component that handles rendering messages
 import ChatInput from './ChatInput';      // Component that handles input field and send button
-import { useWebSocketContext, WebSocketBaseMessage, WebSocketAudioMessage } from 'shared'; // Custom hook for WebSocket context
+import { useWebSocketContext, WebSocketBaseMessage, WebSocketAudioMessage, WebSocketNewRoomMessage } from 'shared'; // Custom hook for WebSocket context
 import { AudioPlayer } from "../../audio/AudioPlayer";
 import './ChatRoom.css';
-import ChatSettingComponent from './ChatSetttingComponent';
 
 interface ChatRoomProps {
   /** The type of the chat, used to filter and display relevant messages */
@@ -18,27 +17,17 @@ interface ChatRoomProps {
 }
 
 const ChatRoom: React.FC<ChatRoomProps> = ({ chatType, title, userId }) => {
-  const { getMessages, sendMessage, setAudioMessageListener, resetChat, } = useWebSocketContext();
+  const { getMessages, sendMessage, setAudioMessageListener, resetChat, requestRoomChange, rooms, addOrUpdateMessage } = useWebSocketContext();
   const [input, setInput] = useState('');
-  
-  // State to toggle display of rationales and settings
   const [showRationales, setShowRationales] = useState(false);
-  const [showSettings, setShowSettings] = useState(true);
+  const [selectedRoom, setSelectedRoom] = useState(chatType);
 
-  // Toggle Rationales: if showing rationales, hide settings.
+  useEffect(() => {
+    setSelectedRoom(chatType);
+  }, [chatType]);
+
   const toggleRationales = () => {
-    setShowRationales(prev => {
-      const newVal = !prev;
-      return newVal;
-    });
-  };
-
-  // Toggle Settings: if showing settings, hide rationales.
-  const toggleSettings = () => {
-    setShowSettings(prev => {
-      const newVal = !prev;
-      return newVal;
-    });
+    setShowRationales(prev => !prev);
   };
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -47,7 +36,7 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ chatType, title, userId }) => {
   const messages = getMessages(chatType);
 
   useEffect(() => {
-    // Optionally, scroll to the bottom when new messages arrive
+    // Always scroll to the bottom when messages change
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
@@ -96,42 +85,84 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ chatType, title, userId }) => {
       <div className="chat-room-header">
         <div className="chat-room-title">{title}</div>
         <div className="chat-room-controls">
+          <select
+            value={selectedRoom}
+            onChange={e => {
+              const newRoom = e.target.value;
+              if (newRoom !== chatType) {
+                setSelectedRoom(newRoom);
+
+                const roomMessage: WebSocketNewRoomMessage = {
+                  UserId: userId,
+                  TransactionId: crypto.randomUUID(),
+                  Action: chatType,
+                  RoomName: newRoom,
+                  SubRoomName: "",
+                  Mode: "App",
+                  AgentName: 'User',
+                  Emoji: '🤓',
+                  To: newRoom,
+                  From: chatType,
+                  SubAction: "change-room-yield",
+                  Content: `Do you want to change the room to "${newRoom}"?`,
+                };
+
+
+                // Prompt user for confirmation before changing room
+                addOrUpdateMessage(roomMessage);
+              }
+            }}
+            className="toggle-button select-room">
+            {(rooms?.find(r => r.Name === chatType)?.Rooms || []).map((subroom, idx) => (
+              <option key={subroom.Name || idx} value={subroom.Name}>
+                {subroom.Emoji ? subroom.Emoji : ''} {subroom.Name} 
+              </option>
+            ))}
+          </select>
           <button
             onClick={toggleRationales}
-            className={`toggle-button ${showRationales ? 'active' : ''}`}
+            className={`toggle-button rationales ${showRationales ? 'active' : ''}`}
           >
             {showRationales ? 'Hide Rationales' : 'Show Rationales'}
           </button>
           <button
-            onClick={toggleSettings}
-            className={`toggle-button ${showSettings ? 'active' : ''}`}
+            onClick={handleReset}
+            className="reset-to-top-button"
+            disabled={messages.length === 0}
           >
-            {showSettings ? 'Hide Settings' : 'Show Settings'}
+            Reset Chat
           </button>
-        
-            <button
-              onClick={handleReset}
-              className="reset-to-top-button"
-              disabled={messages.length === 0}
-            >
-              Reset Chat
-            </button>
-           
         </div>
       </div>
 
       <div className="chat-room-body">
-        {showSettings && (
-          <div className="chat-room-settings">
-            <ChatSettingComponent currentRoomName={chatType} />
-          </div>
-        )}
+        {/* Settings panel removed as features are now in the toolbar */}
         <div className="chat-interface">
           <div className="messages-container" ref={messagesContainerRef}>
             <MessageList 
               messages={messages} 
               chatType={chatType} 
-              showRationales={showRationales}  // Pass down the flag to MessageList
+              showRationales={showRationales}
+              onRoomChange={(message) => {
+                // Extract the new room name from RoomName or fallback to Content
+                const newRoom = (message as WebSocketNewRoomMessage);
+               
+                if (newRoom) {
+                  setSelectedRoom(newRoom.To);
+                }
+              }}
+              onRoomChangeYieldAnswer={(message, answer) => {
+                // You can handle the answer here, e.g., send to server or update state
+                var roomMessage = message as WebSocketNewRoomMessage;
+                if (roomMessage != null){
+                  if (answer == "Yes"){
+                    requestRoomChange(userId, message.Action, roomMessage.To);
+                  }else{
+                    requestRoomChange(userId,message.Action, roomMessage.From);
+                  }
+                }
+
+              }}
             />
             <div ref={messagesEndRef} />
           </div>

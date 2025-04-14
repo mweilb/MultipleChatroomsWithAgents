@@ -11,11 +11,11 @@ export function useRoomStore(sender: (message: WebSocketBaseMessage) => void) {
     setRooms(newRooms);
   };
 
-  const createRoomChangeMessage = (group: string, to: string): WebSocketBaseMessage => {
+  const createRoomChangedMessage = (userId:string, group: string, to: string): WebSocketBaseMessage => {
     return {
-      UserId: '',
+      UserId: userId,
       TransactionId: 'rooms-change-' + Date.now(),
-      Action: 'rooms',
+      Action: group + '-change-room',
       SubAction: 'change',
       Content: JSON.stringify({ Group: group, To: to }),
       RoomName: '',
@@ -52,8 +52,8 @@ export function useRoomStore(sender: (message: WebSocketBaseMessage) => void) {
     socket.send(JSON.stringify(requestRoomsMessage));
   }
   // Function to send a room change message.
-  const changeRoom = (group: string, to: string) => {
-    const message = createRoomChangeMessage(group, to);
+  const changeRoom = (userId:string, group: string, to: string) => {
+    const message = createRoomChangedMessage(userId, group, to);
     sender(message);
   };
 
@@ -80,7 +80,7 @@ export function useRoomStore(sender: (message: WebSocketBaseMessage) => void) {
   return {
     rooms,
     updateRooms,
-    createRoomChangeMessage,
+    createRoomChangedMessage,
     createRoomResetMessage,
     changeRoom,
     resetRoom,

@@ -1,40 +1,272 @@
 .full-page-container {
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    
-  }
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  width: 100%;;
+  max-width: calc(100% - 20px);
+  min-width: calc(100% - 20px);
+  align-self: flex-start;
+  overflow: hidden;
+  border-radius: 18px;
+  border: 2px solid #3a3f51;
+  background: linear-gradient(135deg, #23272e 80%, #394867 100%);
+  box-shadow: 0 4px 24px 0 rgba(60, 80, 120, 0.18), 0 1.5px 6px 0 rgba(60, 80, 120, 0.10);
+ 
+  margin: 10px 10px 10px 10px;
+}
 
-  .yaml-container {
-    min-height: calc(100vh - 220px); /* Adjust as needed, e.g., 80% of viewport height */
-    max-height: calc(100vh - 220px); /* Adjust as needed, e.g., 80% of viewport height */
-    overflow-y: auto; /* Adds vertical scrollbar if content overflows */
-    padding: 1rem;
-    border: 1px solid #ddd; /* Optional: border for definition */
-    border-radius: 5px; /* Optional: rounded corners */
-  }
-  
-  /* Errors container styling */
-.errors-container {
-    margin-top: 1rem;
-  }
-  
-  /* General error row styling */
-  .error-row {
-    padding: 8px;
-    /* Optional: add a border or margin if needed */
-    border-bottom: 1px solid #ccc;
-  }
-  
-  /* Alternating error row colors */
-  .error-row-0 {
-    background-color: #ffffff; /* White */
-  }
-  
-  .error-row-1 {
-    background-color: #f2f2f2; /* Light grey */
-  }
-  
-  .error-row-2 {
-    background-color: #e6e6e6; /* Slightly darker grey */
-  }
+.yaml-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  min-width: 100%;
+  max-width: 100%;
+  min-height: 100%;
+  max-height: 100%;
+  flex: 1 1 0;
+}
+
+.yaml-inline-error-block {
+  background: #23272e;
+  color: #eaeaea;
+  padding: 1em;
+  border-radius: 8px;
+  font-family: 'Fira Mono', 'Consolas', monospace;
+  font-size: 1em;
+  overflow-x: auto;
+  overflow-y: auto;
+  min-width: 0;
+  flex: 1 1 0;
+  height: 100%;
+}
+
+.yaml-line-container {
+  display: flex;
+  align-items: flex-start;
+  padding: 0.1em 0.5em;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.yaml-line-number {
+  display: inline-block;
+  width: 2em;
+  color: #888;
+  user-select: none;
+  text-align: right;
+  margin-right: 0.75em;
+}
+
+.yaml-line {
+  white-space: pre;
+  flex: 1;
+  display: flex;
+  gap: 0.25em;
+  align-items: baseline;
+}
+
+.yaml-line-container .yaml-error-message {
+  margin-left: 1.5em;
+  margin-top: 0.1em;
+  background: #ffeded;
+  color: #b30000;
+  border-left: 3px solid #ff4d4f;
+  padding: 0.1em 0.5em;
+  border-radius: 4px;
+  font-size: 0.95em;
+  font-family: inherit;
+  word-break: break-word;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  max-width: 60vw;
+}
+
+.yaml-line-container.has-error {
+  background: #3a2323;
+  color: #fff;
+}
+
+.yaml-error-message .error-pos {
+  color: #b36b00;
+  margin-left: 0.5em;
+  font-size: 0.9em;
+}
+
+.no-yaml {
+  color: #888;
+  font-style: italic;
+  padding: 1em;
+}
+
+/* YAML Error Toolbar Styles */
+.yaml-error-toolbar {
+  display: flex;
+  width: 100%;
+  box-sizing: border-box;
+  align-items: center;
+  background: #fffbe6;
+  color: #b59a00;
+  border: 1px solid #ffe58f;
+  border-radius: 6px;
+  padding: 0.5em 0.5em;
+ 
+  font-size: 1em;
+  box-shadow: 0 1px 4px rgba(180, 153, 0, 0.07);
+  gap: 0.75em;
+}
+
+.toolbar-icon {
+  font-size: 1.4em;
+  margin-right: 0.5em;
+}
+
+.toolbar-title {
+  font-weight: bold;
+  font-size: 1.08em;
+  margin-right: 0.5em;
+}
+
+.toolbar-divider {
+  width: 1px;
+  height: 1.5em;
+  background: #ffe58f;
+  margin: 0 0.75em;
+  display: inline-block;
+}
+
+.toolbar-count {
+  font-weight: 500;
+  color: #b59a00;
+  margin-right: 0.5em;
+}
+
+.toolbar-btn {
+  background: #fffbe6;
+  border: 1px solid #ffe58f;
+  color: #b59a00;
+  border-radius: 4px;
+  padding: 0.15em 0.7em;
+  margin: 0 0.1em;
+  font-size: 1.1em;
+  cursor: pointer;
+  transition: background 0.15s, border 0.15s;
+}
+.toolbar-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.toolbar-btn:not(:disabled):hover {
+  background: #fff1b8;
+  border-color: #ffd666;
+}
+
+.toolbar-index {
+  margin: 0 0.5em;
+  font-size: 0.98em;
+  color: #b59a00;
+}
+
+.toolbar-tip {
+  margin-left: auto;
+  font-size: 0.95em;
+  color: #8c6d1f;
+  font-style: italic;
+}
+
+/* YAML syntax highlighting */
+.yaml-key {
+  color: #e6c07b !important;
+  font-weight: bold;
+}
+.yaml-key-section {
+  color: #ffffff !important;
+  background: #394867 !important;
+  padding: 0 0.25em;
+  border-radius: 3px;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+}
+.yaml-value {
+  color: #7fd1b9 !important;
+}
+.yaml-value-level-1 { color: #7fd1b9 !important; }
+.yaml-value-level-2 { color: #ffb347 !important; }
+.yaml-value-level-3 { color: #e6c07b !important; }
+.yaml-value-level-4 { color: #f78c6c !important; }
+.yaml-value-level-5 { color: #82aaff !important; }
+.yaml-value-level-6 { color: #c792ea !important; }
+.yaml-value-level-7 { color: #addb67 !important; }
+.yaml-value-level-8 { color: #ff5370 !important; }
+
+.ident1 { color: #e6c07b !important; font-weight: bold; }
+.ident2 { color: #7fd1b9 !important; font-weight: bold; }
+.ident3 { color: #ffb347 !important; font-weight: bold; }
+.ident4 { color: #f78c6c !important; font-weight: bold; }
+.ident5 { color: #82aaff !important; font-weight: bold; }
+.ident6 { color: #c792ea !important; font-weight: bold; }
+.ident7 { color: #addb67 !important; font-weight: bold; }
+.ident8 { color: #ff5370 !important; font-weight: bold; }
+.yaml-bool-null {
+  color: #f78c6c !important;
+  font-style: italic;
+  font-weight: bold;
+}
+.yaml-indent {
+  white-space: pre !important;
+  font-weight: bold;
+  /* fallback color if no level class matches */
+  color: #ffb347 !important;
+}
+.yaml-indent-new {
+  background: #2d3a4a !important;
+  border-radius: 2px;
+}
+
+/* Indent level colors */
+.yaml-indent-level-1 { color: #ffb347 !important; }
+.yaml-indent-level-2 { color: #7fd1b9 !important; }
+.yaml-indent-level-3 { color: #e6c07b !important; }
+.yaml-indent-level-4 { color: #f78c6c !important; }
+.yaml-indent-level-5 { color: #82aaff !important; }
+.yaml-indent-level-6 { color: #c792ea !important; }
+.yaml-indent-level-7 { color: #addb67 !important; }
+.yaml-indent-level-8 { color: #ff5370 !important; }
+
+/* Custom Scrollbar Styles */
+.full-page-container,
+.yaml-inline-error-block,
+.yaml-container {
+  scrollbar-width: thin;
+  scrollbar-color: #394867 #23272e;
+}
+
+/* Chrome, Edge, Safari */
+.full-page-container::-webkit-scrollbar,
+.yaml-inline-error-block::-webkit-scrollbar,
+.yaml-container::-webkit-scrollbar {
+  height: 10px;
+  width: 10px;
+  background: #23272e;
+  border-radius: 8px;
+}
+
+.full-page-container::-webkit-scrollbar-thumb,
+.yaml-inline-error-block::-webkit-scrollbar-thumb,
+.yaml-container::-webkit-scrollbar-thumb {
+  background: #394867;
+  border-radius: 8px;
+  border: 2px solid #23272e;
+}
+
+.full-page-container::-webkit-scrollbar-thumb:hover,
+.yaml-inline-error-block::-webkit-scrollbar-thumb:hover,
+.yaml-container::-webkit-scrollbar-thumb:hover {
+  background: #4e5a7a;
+}
+
+.full-page-container::-webkit-scrollbar-track,
+.yaml-inline-error-block::-webkit-scrollbar-track,
+.yaml-container::-webkit-scrollbar-track {
+  background: #23272e;
+  border-radius: 8px;
+}

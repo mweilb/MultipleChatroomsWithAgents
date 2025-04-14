@@ -1,11 +1,12 @@
 ﻿using AppExtensions.AISpeech;
+using DocumentFormat.OpenXml.ExtendedProperties;
 using DocumentFormat.OpenXml.Wordprocessing;
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
 using SemanticKernelExtension.Orchestrator;
 using System.Net.WebSockets;
-using System.Threading;
-using System.Threading.Tasks;
+using System.Text;
+using System.Text.Json;
 using WebSocketMessages;
 using WebSocketMessages.AgentLifecycle;
 using WebSocketMessages.Messages;
@@ -37,6 +38,45 @@ namespace AppExtensions.Experience.Handlers
         }
 
         /// <summary>
+        /// Handles the "rooms/change" subcommand: changes the current room.
+        /// </summary>
+        public async Task HandleChangeRoomRequestAsync(
+            WebSocketBaseMessage message,
+            WebSocket webSocket,
+            ConnectionMode mode)
+        {
+            try
+            {
+                var payload = JsonSerializer.Deserialize<JsonContentPayLoadIForChangeRoom>(message.Content);
+                if (payload != null)
+                {
+                    var chatRoomGroup = _trackingInfo.agentGroupChatOrchestrator;
+                    if (chatRoomGroup == null)
+                    {
+                        await SendErrorAsync(webSocket, "change", $"No chat room group found for: {payload.Group}");
+                        return;
+                    }
+
+                    // e.g., chatRoomGroup.ChangeRoom(payload.To);
+                    // If your chatRoomGroup has a method for changing a room:
+                    chatRoomGroup.UserRequestSwitchTo(payload.To);
+ 
+                    message.Action = this._name;
+
+                    await ProcessMessage(message,mode, new WebSocketSender(webSocket), chatRoomGroup, CancellationToken.None);
+
+
+                }
+                await SendErrorAsync(webSocket, "change", "Room change payload invalid or group not found.");
+            }
+            catch (Exception ex)
+            {
+                await SendErrorAsync(webSocket, "change", $"Exception: {ex.Message}");
+            }
+        }
+
+
+        /// <summary>
         /// Processes an incoming command message over a WebSocket.
         /// </summary>
         /// <param name="message">The incoming WebSocket message.</param>
@@ -63,46 +103,51 @@ namespace AppExtensions.Experience.Handlers
                 // Add incoming message to conversation history.
                 orchestrator.AddChatMessage(message.Content);
 
-                // Variables to hold reply messages for the chat room.
-                WebSocketReplyChatRoomMessage? roomMessage = null;
-                WebSocketReplyChatRoomMessage? rationaleMessage = null;
-
-                // Set global orchestrator name for lifecycle reporting.
-                WebSocketAgentLifecycleSender.OrchestratorName = orchestrator.Name;
-
-                // Process streaming responses from the orchestrator.
-                await foreach (var streamingContent in orchestrator.InvokeStreamingAsync(cancellationToken))
-                {
-                    if (streamingContent == null)
-                    {
-                        logger?.LogWarning("Received null streaming content for {CommandName}", _name);
-                        continue;
-                    }
-
-                    // Choose sub-function based on the streaming content action.
-                    if (IsStartEvent(streamingContent))
-                    {
-                        (roomMessage, rationaleMessage) = await HandleStartEventAsync(sender, streamingContent, message, mode, cancellationToken);
-                    }
-                    else if (IsUpdateEvent(streamingContent))
-                    {
-                        await HandleUpdateEventAsync(sender, streamingContent, mode, cancellationToken, roomMessage, rationaleMessage);
-                    }
-                    else if (streamingContent.Action == StreamingOrchestratorContent.ActionTypes.RoomChange)
-                    {
-                        await HandleRoomChangeEventAsync(sender, streamingContent, message, mode, cancellationToken);
-                    }
-                    // If the event is AgentFinished or RoomMessageFinished, do nothing.
-                }
-
-                // Clear global orchestrator name.
-                WebSocketAgentLifecycleSender.OrchestratorName = string.Empty;
+                await ProcessMessage(message, mode, sender, orchestrator, cancellationToken);
             }
             catch (Exception ex)
             {
                 logger?.LogError(ex, "Error occurred handling command {CommandName}", _name);
                 await sender.SendError(message.UserId, _name, "message processing", $"Initialization or logic error: {ex.Message}");
             }
+        }
+
+        private async Task ProcessMessage(WebSocketBaseMessage message, ConnectionMode mode, WebSocketSender sender, AgentGroupChatOrchestrator orchestrator, CancellationToken cancellationToken)
+        {
+            // Variables to hold reply messages for the chat room.
+            WebSocketReplyChatRoomMessage? roomMessage = null;
+            WebSocketReplyChatRoomMessage? rationaleMessage = null;
+
+            // Set global orchestrator name for lifecycle reporting.
+            WebSocketAgentLifecycleSender.OrchestratorName = orchestrator.Name;
+
+            // Process streaming responses from the orchestrator.
+            await foreach (var streamingContent in orchestrator.InvokeStreamingAsync(cancellationToken))
+            {
+                if (streamingContent == null)
+                {
+                    logger?.LogWarning("Received null streaming content for {CommandName}", _name);
+                    continue;
+                }
+
+                // Choose sub-function based on the streaming content action.
+                if (IsStartEvent(streamingContent))
+                {
+                    (roomMessage, rationaleMessage) = await HandleStartEventAsync(sender, streamingContent, message, mode, cancellationToken);
+                }
+                else if (IsUpdateEvent(streamingContent))
+                {
+                    await HandleUpdateEventAsync(sender, streamingContent, mode, cancellationToken, roomMessage, rationaleMessage);
+                }
+                else if (streamingContent.Action == StreamingOrchestratorContent.ActionTypes.RoomChange)
+                {
+                    await HandleRoomChangeEventAsync(sender, streamingContent, message, mode, cancellationToken);
+                }
+                // If the event is AgentFinished or RoomMessageFinished, do nothing.
+            }
+
+            // Clear global orchestrator name.
+            WebSocketAgentLifecycleSender.OrchestratorName = string.Empty;
         }
 
         /// <summary>
@@ -205,10 +250,13 @@ namespace AppExtensions.Experience.Handlers
             ConnectionMode mode,
             CancellationToken cancellationToken)
         {
-            var roomMsg = CreateNewMessage(originalMessage.UserId, originalMessage.Action);
+            var roomMsg = CreateChangeRoomMessage(originalMessage.UserId, originalMessage.Action);
             roomMsg.AgentName = "Room Change";
-            roomMsg.SubAction = streamingContent.YieldOnRoomChange?"yes":"no";
-            roomMsg.Content = $"Request to Change to {streamingContent.Content?.ToString() ?? ""}";
+            roomMsg.SubAction = streamingContent.YieldOnRoomChange?"change-room-yield": "change-room";
+            roomMsg.To = streamingContent.Content?.ToString() ?? "";
+            roomMsg.From = streamingContent.ChatName;
+            roomMsg.Content = (!streamingContent.YieldOnRoomChange ?  "Auto Change " : "Request " ) + $"to '{roomMsg.To}' from '{roomMsg.From}'";
+  
             await sender.SendAsync(roomMsg, mode, cancellationToken);
         }
 
@@ -246,5 +294,46 @@ namespace AppExtensions.Experience.Handlers
                 Content = string.Empty,
                 AgentName = "Unknown"
             };
+
+        /// <summary>
+        /// Creates a new WebSocket reply message for the chat room.
+        /// </summary>
+        /// <param name="userId">The user identifier.</param>
+        /// <param name="command">The command or action name.</param>
+        public static WebSocketChangeRoom CreateChangeRoomMessage(
+            string userId,
+            string command) => new WebSocketChangeRoom()
+            {
+                UserId = userId,
+                TransactionId = Guid.NewGuid().ToString(),
+                Action = command,
+                SubAction = "chunk",
+                AgentName = "Unknown",
+              
+            };
+
+
+        /// <summary>
+        /// Sends an error message over the WebSocket.
+        /// </summary>
+        private async Task SendErrorAsync(WebSocket webSocket, string? subAction, string errorMessage)
+        {
+            var errorResponse = new WebSocketBaseMessage
+            {
+                Action = "error",
+                SubAction = subAction ?? string.Empty,
+                Content = errorMessage
+            };
+
+            var errorJson = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(errorResponse));
+            await webSocket.SendAsync(
+                new ArraySegment<byte>(errorJson),
+                WebSocketMessageType.Text,
+                true,
+                CancellationToken.None
+            );
+        }
+
+
     }
 }

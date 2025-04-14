@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useLocation } from 'react-router-dom';
  
 import { navItems } from '../../../configs/NavigationItems';
@@ -8,8 +8,12 @@ import ConnectionStatus from './ConnectionStatus';
 import NavigationTabContainer from './NavigationTabContainer';
 import './Navigator.css';
 
-const Navigator: React.FC = () => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+interface NavigatorProps {
+  isCollapsed: boolean;
+  setIsCollapsed: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const Navigator: React.FC<NavigatorProps> = ({ isCollapsed, setIsCollapsed }) => {
   const location = useLocation();
 
 

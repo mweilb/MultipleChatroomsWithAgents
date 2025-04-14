@@ -14,14 +14,14 @@ const AdminNav: React.FC<AdminNavProps> = ({ isCollapsed, navItems, location }) 
   );
 
   return (
-    <div className="nav-group">
-      {!isCollapsed && <h3 className="group-label">Administration</h3>}
+    <div className="nav-admin-group">
+      {!isCollapsed && <h3 className="group-admin-label">Administration</h3>}
       <nav>
         <ul>
           {adminNavItems.map((item) => (
             <li key={item.path} className={location.pathname === item.path ? 'active' : ''}>
               <Link to={item.path}>
-                {item.emoji ? <span className="nav-emoji">{item.emoji}</span> : item.icon}
+                {item.emoji ? <span className="nav-admin-emoji">{item.emoji}</span> : item.icon}
                 {!isCollapsed && <span>{item.label}</span>}
               </Link>
             </li>

@@ -38,11 +38,10 @@ ExperienceManager manager = new(kernel);
 // Determine the base directory and the Agents directory
 string baseDirectory = AppContext.BaseDirectory;
 string agentsDirectory = Path.Combine(baseDirectory, "Agents");
-string expereincesDirectory = Path.Combine(baseDirectory, "Experiences");
+ 
 
 bool resultOfAction;
 resultOfAction = await manager.ReadDirectoryAsync(agentsDirectory);
-resultOfAction = await manager.ReadDirectoryAsync(expereincesDirectory);
 resultOfAction = await manager.CreateOrchestratorsAsync();
 
 

@@ -35,24 +35,26 @@ const GraphOfChartRoom: React.FC<GraphOfChartRoomProps> = ({ roomName }) => {
 
   return (
     <div className="full-page-container">
-      <div style={{ marginBottom: "1rem" }}>
-        <label htmlFor="orientation-select" style={{ marginRight: 8 }}>
-          Orientation:
-        </label>
-        <select
-          id="orientation-select"
-          value={orientation}
-          onChange={(e) => setOrientation(e.target.value as "TD" | "LR")}
-        >
-          {ORIENTATIONS.map((opt) => (
-            <option key={opt.value} value={opt.value}>
-              {opt.label}
-            </option>
-          ))}
-        </select>
-      </div>
-      <div className="graph-container">
-        <MermaidComponent chart={graphDefinition} />
+      <div className="card-container">
+        <div className="orientation-row">
+          <label htmlFor="orientation-select">
+            Orientation:
+          </label>
+          <select
+            id="orientation-select"
+            value={orientation}
+            onChange={(e) => setOrientation(e.target.value as "TD" | "LR")}
+          >
+            {ORIENTATIONS.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="graph-container">
+          <MermaidComponent chart={graphDefinition} />
+        </div>
       </div>
     </div>
   );

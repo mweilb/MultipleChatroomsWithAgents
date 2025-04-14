@@ -1,6 +1,6 @@
-import { WebSocketBaseMessage } from './WebSocketBaseMessage';
+import { WebSocketReplyChatRoomMessage } from "./WebSocketReplyChatRoomMessages";
 
-export interface WebSocketNewRoomMessage extends WebSocketBaseMessage {
+export interface WebSocketNewRoomMessage extends WebSocketReplyChatRoomMessage {
   From: string;
   To: string;
 }

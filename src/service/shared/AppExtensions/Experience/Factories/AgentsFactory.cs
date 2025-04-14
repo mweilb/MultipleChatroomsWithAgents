@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using DocumentFormat.OpenXml.Vml.Office;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.SemanticKernel;
@@ -54,17 +55,35 @@ namespace AppExtensions.Experience.Factories
                     Console.WriteLine($"    • Agent Name: {agent.Name}, Model: {agent.Model}, Emoji: {agent.Emoji}");
                 }
 
-                //Need to add all the rooms as they echo agents
-                foreach (var room in experience.Rooms ?? [])
+                // Find the parent room by key, or use the first as fallback
+ 
+                // Add all other rooms as echo agents with rules
+                foreach (var (otherRoomName, otherRoom) in experience.Rooms ?? [])
                 {
-                    var otherRoomNames = room.Key;
-                    if (otherRoomNames != roomName)
+                    if (otherRoomName == roomName) continue;
+
+                    var roomAgent = new RoomRuleBasedAgent(otherRoomName, roomName, "room", otherRoomName, false, kernel, null);
+
+                    completionAgents.Add(roomAgent);
+                    agentIcons[roomAgent] = otherRoom.Emoji ?? "";
+
+                    var strategies = roomConfig.Strategies?.Rules ?? [];
+                    foreach (var rule in strategies)
                     {
-                        var roomAgent = new RoomRuleBasedAgent(otherRoomNames, roomName, "room", otherRoomNames, false, kernel);
-                        completionAgents.Add(roomAgent);
-                        agentIcons[roomAgent] = ""; // No emoji/icon for RoomAgent
+                        foreach (var next in strategies.SelectMany(r => r.Next).Where(a => a.Name == otherRoomName))
+                        {
+                            if (next.Name != otherRoomName) { continue; }
+
+                            string instructions = next.ContextTransfer?.Prompt ?? "Summarize the Conversations as concise as possible and dont try to answer questions.";
+                            var yieldOnChange = IsTrue(next.ContextTransfer?.YieldOnRoomChange);
+                            var yieldCanceledName = next.ContextTransfer?.YieldCanceledName ?? string.Empty;
+
+                            roomAgent.InsertRuleInfo(roomName, rule.Name, instructions, yieldOnChange, yieldCanceledName);
+                        }
                     }
+                    
                 }
+                 
             }
             else
             {
@@ -72,6 +91,13 @@ namespace AppExtensions.Experience.Factories
             }
 
             return (completionAgents, agentIcons);
+        }
+
+        public static bool IsTrue(string? value)
+        {
+            return value != null &&
+                   (value.Contains("yes", StringComparison.OrdinalIgnoreCase) ||
+                    value.Contains("true", StringComparison.OrdinalIgnoreCase));
         }
 
     }

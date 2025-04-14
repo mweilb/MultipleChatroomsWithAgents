@@ -7,7 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Messages\Chats\" />
+    <Compile Remove="Messages\Chats\**" />
+    <EmbeddedResource Remove="Messages\Chats\**" />
+    <None Remove="Messages\Chats\**" />
   </ItemGroup>
 
 </Project>

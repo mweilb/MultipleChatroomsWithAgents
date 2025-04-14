@@ -9,7 +9,7 @@ interface ChatInputProps {
   onKeyDown: React.KeyboardEventHandler<HTMLTextAreaElement>; /** Callback to handle keyboard events, like Enter key to send message */
 }
 
-const MAX_ROWS = 5; // Maximum number of rows the textarea can grow to
+const MAX_ROWS = 8; // Maximum number of rows the textarea can grow to
 
 const ChatInput: React.FC<ChatInputProps> = ({
   input,
@@ -39,18 +39,27 @@ const ChatInput: React.FC<ChatInputProps> = ({
   return (
     <div className="chat-input">
       <textarea
-        rows={rows} // Dynamically set the rows based on input
-        value={input} // Set the value of the textarea to the input state
-        onChange={(e) => onInputChange(e.target.value)} // Update the input state when the user types
-        onKeyDown={onKeyDown} // Handle keyboard events (e.g., Enter to send)
+        rows={rows}
+        value={input}
+        onChange={(e) => onInputChange(e.target.value)}
+        onKeyDown={onKeyDown}
         placeholder={
           connectionStatus === 'Connected'
-            ? 'Type a message' // Show message when connected
-            : 'Waiting for connection...' // Show message when not connected
+            ? 'Type your message here… 😊'
+            : 'Waiting for connection…'
         }
-        disabled={connectionStatus !== 'Connected'} // Disable input if not connected
+        disabled={connectionStatus !== 'Connected'}
+        className="chat-input-textarea"
       />
-      <button onClick={handleSend} disabled={connectionStatus !== 'Connected'}>
+      <button
+        onClick={handleSend}
+        disabled={connectionStatus !== 'Connected'}
+        className="chat-input-send-btn"
+        aria-label="Send"
+      >
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" style={{marginRight: '0.3em'}} xmlns="http://www.w3.org/2000/svg">
+          <path d="M2 20L20 11L2 2V9.5L15 11L2 12.5V20Z" fill="currentColor"/>
+        </svg>
         Send
       </button>
     </div>

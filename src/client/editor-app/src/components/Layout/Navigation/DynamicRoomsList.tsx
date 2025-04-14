@@ -58,39 +58,16 @@ const DynamicRoomsList: React.FC<DynamicRoomsProps> = ({ isCollapsed, location }
               onClick={handleClick}
             >
               {room.Emoji && <span className="nav-emoji">{room.Emoji}</span>}
-              {!isCollapsed && <span>{room.Name}</span>}
+              {!isCollapsed && <span className="nav-room">{room.Name}</span>}
             </Link>
           ) : (
             <div className="nested-rooms" onClick={handleClick}>
               {room.Emoji && <span className="nav-sub-emoji">{room.Emoji}</span>}
-              {!isCollapsed && <span>{room.Name}</span>}
+              {!isCollapsed && <span className="nav-sub-room">{room.Name}</span>}
             </div>
           )}
 
-          {/* Render toggle below the room title if there are subrooms */}
-          {hasSubrooms && (
-            <div
-              className="toggle-container"
-              onClick={(e) => {
-                e.stopPropagation();
-                e.preventDefault();
-                setExpandedRooms(prev => ({
-                  ...prev,
-                  [room.Name]: !prev[room.Name]
-                }));
-              }}
-              style={{ cursor: 'pointer', marginLeft: isParent ? '36px' : '35' }}
-            >
-              {!isCollapsed && (expandedRooms[room.Name] ? '▼ rooms' : '► rooms')}
-            </div>
-          )}
-
-          {/* Render nested rooms only if they exist and are expanded */}
-          {!isCollapsed && hasSubrooms && expandedRooms[room.Name] && (
-            <ul className="nested-rooms">
-              {renderRooms(subrooms, false)}
-            </ul>
-          )}
+           
         </li>
       );
     });

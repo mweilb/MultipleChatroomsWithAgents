@@ -45,6 +45,11 @@ namespace SemanticKernelExtension.AgentGroupChats.Strategies.RuleBased
         /// Should we yield on this ro
         /// </summary>
         public bool ShouldYield { get; set; } = false;
- 
+
+        /// <summary>
+        /// Should we yield on this ro
+        /// </summary>
+        public string YieldCanceledName { get; set; } = string.Empty;
+
     }
 }

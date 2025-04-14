@@ -37,10 +37,6 @@ namespace AppExtensions.Experience.Handlers
                         await HandleGetRequestAsync(message, webSocket, mode);
                         break;
 
-                    case "change":
-                        await HandleChangeRoomRequestAsync(message, webSocket, mode);
-                        break;
-
                     case "reset":
                         // If you need speech, pass it in from the constructor or arguments
                         // await HandleResetChatRequestAsync(message, webSocket, mode, speech);
@@ -98,13 +94,23 @@ namespace AppExtensions.Experience.Handlers
                     })
                 ?? [];
 
+                // Convert YAML errors to WebSocketValidationError objects before constructing the response
+                List<WebSocketValidationError> wsErrors = group.Errors?
+                    .Select(e => new WebSocketValidationError
+                    {
+                        Message = e.Message,
+                        Location = e.Location,
+                        LineNumber = e.LineNumber,
+                        CharPosition = e.CharPosition
+                    }).ToList() ?? new List<WebSocketValidationError>();
+
                 response.Rooms.Add(new WebSocketGetRooms
                 {
                     Name = name,
                     Emoji = group.Emoji,
                     MerMaidGraph = MermaidGenerator.GenerateMermaidDiagram(group),
                     Yaml = group.Yaml,
-                    Errors = group.Errors,
+                    Errors = wsErrors,
                     AutoStart = group.AutoStart,
                     Rooms = [.. rooms]
                 });
@@ -119,54 +125,7 @@ namespace AppExtensions.Experience.Handlers
             );
         }
 
-        /// <summary>
-        /// Handles the "rooms/change" subcommand: changes the current room.
-        /// </summary>
-        private async Task HandleChangeRoomRequestAsync(
-            WebSocketBaseMessage message,
-            WebSocket webSocket,
-            ConnectionMode mode)
-        {
-            try
-            {
-                var payload = JsonSerializer.Deserialize<JsonContentPayLoadIForChangeRoom>(message.Content);
-                if (payload != null)
-                {
-                    if (_manager.Experiences.TryGetValue(payload.Group, out var experience))
-                    {
-                        var chatRoomGroup  = experience.Experience;
-                        // e.g., chatRoomGroup.ChangeRoom(payload.To);
-                        // If your chatRoomGroup has a method for changing a room:
-                        bool changed = true; // or chatRoomGroup.ChangeRoom(payload.To);
-                        if (!changed)
-                        {
-                            await SendErrorAsync(webSocket, "change", $"Failed to change to room: {payload.To}");
-                            return;
-                        }
-                        // If successful, you might send a confirmation back:
-                        var successResponse = new WebSocketBaseMessage
-                        {
-                            Action = "rooms",
-                            SubAction = "change",
-                            Content = $"Changed to {payload.To} in group {payload.Group}"
-                        };
-                        var successJson = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(successResponse));
-                        await webSocket.SendAsync(
-                            new ArraySegment<byte>(successJson),
-                            WebSocketMessageType.Text,
-                            true,
-                            CancellationToken.None);
-                        return;
-                    }
-                }
-                await SendErrorAsync(webSocket, "change", "Room change payload invalid or group not found.");
-            }
-            catch (Exception ex)
-            {
-                await SendErrorAsync(webSocket, "change", $"Exception: {ex.Message}");
-            }
-        }
-
+     
         /// <summary>
         /// Handles the "rooms/reset" subcommand: resets a chat room.
         /// </summary>
@@ -258,5 +217,3 @@ namespace AppExtensions.Experience.Handlers
         }
     }
 }
-
-

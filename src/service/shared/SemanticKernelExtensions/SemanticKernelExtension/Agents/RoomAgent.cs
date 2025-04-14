@@ -1,6 +1,7 @@
 ﻿using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Agents;
 using Microsoft.SemanticKernel.ChatCompletion;
+using SemanticKernelExtension.Hacks;
 using SemanticKernelExtension.Orchestrator;
  
 using System.Runtime.CompilerServices;
@@ -13,19 +14,31 @@ namespace SemanticKernelExtension.Agents
 #pragma warning disable SKEXP0110
     public class RoomAgent : EchoAgent
     {
-        private readonly string _instructionToSummary;
-
+        private string _instructionToSummary;
+ 
         private readonly bool _yieldOnRoomChange = false;
+        private readonly string _yieldCanceledName = string.Empty;
 
         /// <summary>
         /// Suggests whether the room should yield or not.
         /// Override this method to provide custom yield logic.
         /// </summary>
         /// <returns>True if the room should yield, otherwise false.</returns>
-        public virtual bool ShouldYield()
+        public virtual bool ShouldYield(string roomName)
         {
             return _yieldOnRoomChange;
         }
+
+        public virtual void ReportRoomChangeRquest(bool changed)
+        {
+           
+        }
+
+        public void setInstructions(string instructions)
+        {
+            _instructionToSummary = instructions;
+        }
+
 
         private readonly Kernel _kernel;
 
@@ -37,12 +50,14 @@ namespace SemanticKernelExtension.Agents
             bool visible,
             Kernel kernel,
             bool yieldOnRoomChange = false,
+            string yieldCanceledName = "System",
             string summarizeInstructions = "Summarize the Conversations as concise as possible and dont try to answer questions."
         ) : base(name, agentName, modelId, message, visible)
         {
             _instructionToSummary = summarizeInstructions;
             _kernel = kernel ?? throw new ArgumentNullException(nameof(kernel), "Kernel is required to invoke the summary.");
             _yieldOnRoomChange = yieldOnRoomChange;
+            _yieldCanceledName = yieldCanceledName;
         }
 
         public async IAsyncEnumerable<StreamingChatMessageContent> InvokeSummaryStreamingAsync(
@@ -95,11 +110,33 @@ namespace SemanticKernelExtension.Agents
         /// </summary>
         /// <param name="cancellationToken">Token to monitor for cancellation requests.</param>
         /// <returns>An asynchronous stream of <see cref="StreamingOrchestratorContent"/> representing the summary process.</returns>
-        public async IAsyncEnumerable<StreamingOrchestratorContent> SummarizeAndIntegratePreviousRoomChatAsync(string orchestratorName, string currentChatRoomName, AgentGroupChat currentChatRoom, AgentGroupChat lastChatRoom,
+        public virtual async IAsyncEnumerable<StreamingOrchestratorContent> RespondToRoomChange(string orchestratorName, string currentChatRoomName, AgentGroupChat currentChatRoom, AgentGroupChat lastChatRoom,
             [EnumeratorCancellation] CancellationToken cancellationToken)
         {
 
 
+            if (currentChatRoom != lastChatRoom)
+            {
+                await foreach (var agentChunk in SuccesfullChangedRoom(orchestratorName, currentChatRoomName, currentChatRoom, lastChatRoom, cancellationToken))
+                {
+                    // Yield each chunk as it's received
+                    yield return agentChunk;
+                }
+            }
+            else
+            {
+                if (currentChatRoom != null)
+                {
+                    currentChatRoom.AddChatMessage(new ChatMessageContent(AuthorRole.System, "User Canceled Room Change")
+                    {
+                        AuthorName = this._yieldCanceledName,
+                    });
+                }
+            }
+        }
+
+        protected async IAsyncEnumerable<StreamingOrchestratorContent> SuccesfullChangedRoom(string orchestratorName, string currentChatRoomName, AgentGroupChat currentChatRoom, AgentGroupChat lastChatRoom, [EnumeratorCancellation] CancellationToken cancellationToken)
+        {
             // Retrieve and reverse the chat history from the previous room
             var lastHistory = await lastChatRoom.GetChatMessagesAsync(cancellationToken)
                                                  .Reverse()
@@ -141,7 +178,7 @@ namespace SemanticKernelExtension.Agents
                         AuthorName = this.GetAgentName()
                     });
 
-                 }
+                }
             }
 
             // Yield the finalization action

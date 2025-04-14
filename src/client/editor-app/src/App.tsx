@@ -12,14 +12,17 @@ import DynamicLibrarianRouter from './components/Layout/Navigation/DynanicLibrar
 import './App.css';
 
 const App: React.FC = () => {
+  const [isNavCollapsed, setIsNavCollapsed] = React.useState(false);
+
   return (
     <WebSocketProvider url="ws://127.0.0.1:5000/ws?token=expected_token" appType="editor">
       <Router>
         <div className="app-wrapper">
-          <TitleBar />
           <div className="app-container">
-            <Navigator />
-            <div className="main-content">
+            <Navigator isCollapsed={isNavCollapsed} setIsCollapsed={setIsNavCollapsed} />
+            <div className={`main-content${isNavCollapsed ? ' collapsed' : ''}`}>
+              
+              <TitleBar />
               <Routes>
                 {navItems.map((item) => (
                   <Route key={item.path} path={item.path} element={item.element} />

@@ -15,6 +15,7 @@ interface TabContainerProps {
 const TabContainer: React.FC<TabContainerProps> = ({ roomName }) => {
   // Expanded union type to include 'error'
   const [activeTab, setActiveTab] = useState<'chat' | 'graph' | 'text' | 'moderation' | 'error'>('chat');
+  const [yamlErrorCount, setYamlErrorCount] = useState(0);
 
   // Get moderation and error histories from the context.
   const { moderationHistory, errorHistory } = useWebSocketContext();
@@ -50,7 +51,7 @@ const TabContainer: React.FC<TabContainerProps> = ({ roomName }) => {
           onClick={() => setActiveTab('text')}
           className={`tab-button ${activeTab === 'text' ? 'active' : ''}`}
         >
-          Yaml
+          Yaml <span className={`badge${yamlErrorCount === 0 ? " badge-green" : ""}`}>{yamlErrorCount}</span>
         </button>
         <button 
           onClick={() => setActiveTab('moderation')}
@@ -74,7 +75,12 @@ const TabContainer: React.FC<TabContainerProps> = ({ roomName }) => {
           />
         )}
         {activeTab === 'graph' && <GraphOfChartRoom roomName={`${roomName}`} />}
-        {activeTab === 'text' && <YamlDisplay roomName={`${roomName}`} />}
+        {activeTab === 'text' && (
+          <YamlDisplay
+            roomName={`${roomName}`}
+            onErrorCountChange={setYamlErrorCount}
+          />
+        )}
         {activeTab === 'moderation' && <Moderation roomName={`${roomName}`} />}
         {activeTab === 'error' && <ErrorPage roomName={`${roomName}`} />}
       </div>

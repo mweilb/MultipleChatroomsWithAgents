@@ -2,7 +2,7 @@
 {
     public class PromptNotEmptyValidation : IValidationPass
     {
-        public IEnumerable<ValidationError> Validate(YamlMultipleChatRooms config)
+        public IEnumerable<ValidationError> Validate(YamlMultipleChatRooms config, string? yamlText = null)
         {
             var errors = new List<ValidationError>();
 

@@ -19,6 +19,13 @@ export interface WebSocketRoomProfile {
   Agents: WebSocketAgentProfile[];
 }
 
+/** Validation error with location and position info */
+export interface ValidationError {
+  Message: string;
+  Location: string;
+  LineNumber?: number;
+  CharPosition?: number;
+}
 
 /** WebSocket message for a chat room with its agents */
 export interface WebSocketRoom extends WebSocketBaseMessage {
@@ -33,10 +40,12 @@ export interface WebSocketRoom extends WebSocketBaseMessage {
     /** Raw Yaml Text */
     Yaml: string;
     /** Errors for Yaml **/
-    Errors: string[];
+    Errors: ValidationError[];
     /** Agents in the room */
     Rooms: WebSocketRoomProfile[];
 }
+
+
 
 /** WebSocket message carrying a list of chat rooms */
 export interface WebSocketGetRoomsMessage extends WebSocketBaseMessage {

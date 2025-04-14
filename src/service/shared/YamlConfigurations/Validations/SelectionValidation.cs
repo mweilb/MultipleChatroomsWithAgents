@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Linq;
@@ -8,7 +8,7 @@ namespace YamlConfigurations.Validations
 {
     public class SelectionValidation : IValidationPass
     {
-        public IEnumerable<ValidationError> Validate(YamlMultipleChatRooms config)
+        public IEnumerable<ValidationError> Validate(YamlMultipleChatRooms config, string? yamlText = null)
         {
             var errors = new List<ValidationError>();
 
@@ -34,7 +34,7 @@ namespace YamlConfigurations.Validations
                     {
                         string globalLocation = $"Rooms[{roomName}].Strategies.GlobalTermination.Termination";
 
-                        ValidateSelections(globalTerm, globalLocation, validAgentNames, errors);
+                        ValidateSelections(globalTerm, globalLocation, validAgentNames, errors, yamlText);
 
 
                         foreach (var rule in room.Strategies.Rules)
@@ -44,7 +44,7 @@ namespace YamlConfigurations.Validations
                             {
                                 if (ruleTerm != globalTerm)
                                 {
-                                    ValidateSelections(ruleTerm, ruleLocation, validAgentNames, errors);
+                                    ValidateSelections(ruleTerm, ruleLocation, validAgentNames, errors, yamlText);
                                 }
                             }
                         }
@@ -57,7 +57,7 @@ namespace YamlConfigurations.Validations
                             string ruleLocation = $"Rooms[{roomName}].Strategies.Rule[{rule.Name}].Termination.Termination";
                             if (rule.Selection is YamlSelectionConfig ruleTerm)
                             {
-                                ValidateSelections(ruleTerm, ruleLocation, validAgentNames, errors);
+                                ValidateSelections(ruleTerm, ruleLocation, validAgentNames, errors, yamlText);
                             }
                         }
                     }
@@ -71,7 +71,7 @@ namespace YamlConfigurations.Validations
 
 
 
-        private void ValidateSelections(YamlSelectionConfig selection,string location, HashSet<string> validAgentNames,List<ValidationError> errors)
+        private void ValidateSelections(YamlSelectionConfig selection, string location, HashSet<string> validAgentNames, List<ValidationError> errors, string? yamlText = null)
         {
             var nonNullMembers = new List<string>();
 
@@ -84,30 +84,51 @@ namespace YamlConfigurations.Validations
             if (selection.SequentialSelection != null)
                 nonNullMembers.Add("sequential-selection");
 
+            int? line = null, ch = null;
+            if (nonNullMembers.Count > 1 && yamlText != null)
+            {
+                var lines = yamlText.Split('\n');
+                foreach (var selType in nonNullMembers)
+                {
+                    for (int i = 0; i < lines.Length; i++)
+                    {
+                        var idx = lines[i].IndexOf(selType, StringComparison.OrdinalIgnoreCase);
+                        if (idx >= 0)
+                        {
+                            line = i + 1;
+                            ch = idx + 1;
+                            break;
+                        }
+                    }
+                    if (line != null) break;
+                }
+            }
             if (nonNullMembers.Count > 1)
             {
                 errors.Add(new ValidationError(
                     $"Only one selection type may be specified, but found multiple: {string.Join(", ", nonNullMembers)}.",
-                    location
+                    location,
+                    line,
+                    ch
                 ));
             }
 
-            ValidateAgents(selection, location, validAgentNames, errors);
+            ValidateAgents(selection, location, validAgentNames, errors, yamlText);
 
         }
 
-        private static void ValidateAgents(YamlSelectionConfig selection, string location, HashSet<string> validAgentNames, List<ValidationError> errors)
+        private static void ValidateAgents(YamlSelectionConfig selection, string location, HashSet<string> validAgentNames, List<ValidationError> errors, string? yamlText = null)
         {
             // Validate SequentialSelection's InitialAgent
             if (selection.SequentialSelection?.InitialAgent is string seqAgent && !string.IsNullOrWhiteSpace(seqAgent))
             {
-                ValidateAgentName(seqAgent, validAgentNames, $"{location}.sequential-selection.initial-agent", errors);
+                ValidateAgentName(seqAgent, validAgentNames, $"{location}.sequential-selection.initial-agent", errors, yamlText);
             }
 
             // Validate RoundRobinSelection's InitialAgent
             if (selection.RoundRobinSelection?.InitialAgent is string rrAgent && !string.IsNullOrWhiteSpace(rrAgent))
             {
-                ValidateAgentName(rrAgent, validAgentNames, $"{location}.round-robin-selection.initial-agent", errors);
+                ValidateAgentName(rrAgent, validAgentNames, $"{location}.round-robin-selection.initial-agent", errors, yamlText);
             }
 
             // Validate RoundRobinSelection's Agents list
@@ -118,19 +139,36 @@ namespace YamlConfigurations.Validations
                     var agentName = rrAgents[i];
                     if (!string.IsNullOrWhiteSpace(agentName))
                     {
-                        ValidateAgentName(agentName, validAgentNames, $"{location}.round-robin-selection.agents[{i}]", errors);
+                        ValidateAgentName(agentName, validAgentNames, $"{location}.round-robin-selection.agents[{i}]", errors, yamlText);
                     }
                 }
             }
         }
 
-        private static void ValidateAgentName(string agentName,HashSet<string> validAgentNames, string location,List<ValidationError> errors)
+        private static void ValidateAgentName(string agentName, HashSet<string> validAgentNames, string location, List<ValidationError> errors, string? yamlText = null)
         {
             if (!validAgentNames.Contains(agentName))
             {
+                int? line = null, ch = null;
+                if (yamlText != null)
+                {
+                    var lines = yamlText.Split('\n');
+                    for (int i = 0; i < lines.Length; i++)
+                    {
+                        var idx = lines[i].IndexOf(agentName, StringComparison.OrdinalIgnoreCase);
+                        if (idx >= 0)
+                        {
+                            line = i + 1;
+                            ch = idx + 1;
+                            break;
+                        }
+                    }
+                }
                 errors.Add(new ValidationError(
                     $"Unknown agent name '{agentName}'. Must be one of: {string.Join(", ", validAgentNames)}",
-                    location
+                    location,
+                    line,
+                    ch
                 ));
             }
         }

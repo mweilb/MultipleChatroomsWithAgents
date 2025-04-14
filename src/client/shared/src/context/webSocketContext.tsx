@@ -29,11 +29,12 @@ import { useEditorMode } from '../hooks/useEditorMode';
 interface IWebSocketContext {
   getMessages(action: string): WebSocketReplyChatRoomMessage[];
   sendMessage: (message: WebSocketBaseMessage) => void;
+  addOrUpdateMessage: (message: WebSocketReplyChatRoomMessage) => void;
   connectionStatus: 'Connected' | 'Disconnected' | 'Reconnecting';
   rooms: WebSocketRoom[];
   setAudioMessageListener: (listener: (msg: WebSocketAudioMessage) => void) => void;
   requestNewRoomListener: (listener: (msg: WebSocketNewRoomMessage) => void) => void;
-  requestRoomChange: (group: string, to: string) => void;
+  requestRoomChange: (userId:string, group: string, to: string) => void;
   toggleVoice: (isOn: boolean) => void;
   setModeratorMessageListener: (listener: (msg: WebSocketModeration) => void) => void;
   moderationHistory: { [room: string]: WebSocketModeration[] };
@@ -231,12 +232,13 @@ export const WebSocketProvider = ({
     resetErrors(room);
     resetRoom(room);
   };
-
+ 
   return (
     <WebSocketContext.Provider
       value={{
         getMessages,
         sendMessage,
+        addOrUpdateMessage,
         connectionStatus,
         rooms,
         setAudioMessageListener,

@@ -1,4 +1,4 @@
-﻿ 
+﻿﻿﻿ 
 using YamlConfigurations;
 
 namespace YamlConfigurations.Validations
@@ -23,12 +23,12 @@ namespace YamlConfigurations.Validations
         };
         }
 
-        public IEnumerable<ValidationError> Validate(YamlMultipleChatRooms config)
+        public IEnumerable<ValidationError> Validate(YamlMultipleChatRooms config, string? yamlText = null)
         {
             var errors = new List<ValidationError>();
             foreach (var pass in _validationPasses)
             {
-                errors.AddRange(pass.Validate(config));
+                errors.AddRange(pass.Validate(config, yamlText));
             }
             return errors;
         }

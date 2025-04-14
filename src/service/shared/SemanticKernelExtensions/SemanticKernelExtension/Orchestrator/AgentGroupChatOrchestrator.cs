@@ -28,7 +28,7 @@ namespace SemanticKernelExtension.Orchestrator
         private string _activeChatName = string.Empty;
 
         // Stores previous room data for generating summaries if needed.
-        private AgentGroupChat? _lastChatRoom = null;
+        private AgentGroupChat? _lastagentGroupChat = null;
         private RoomAgent? _lastRoomAgent = null;
         private string _lastRoomName = string.Empty;
 
@@ -119,7 +119,7 @@ namespace SemanticKernelExtension.Orchestrator
         /// <returns>True if the room switch was successful; otherwise, false.</returns>
         public bool UserRequestSwitchTo(string name)
         {
-            if (_lastChatRoom != null && _lastRoomAgent != null)
+            if (_lastagentGroupChat != null && _lastRoomAgent != null)
             {
                 if (name == _activeChatName)
                 {
@@ -152,8 +152,6 @@ namespace SemanticKernelExtension.Orchestrator
             }
 
             _logger?.LogRoomChangeCanceled(OrchestratorName, nameof(SwitchTo), name);
-            _lastChatRoom = null;
-            _lastRoomAgent = null;
             return false;
         }
 
@@ -237,18 +235,18 @@ namespace SemanticKernelExtension.Orchestrator
                 }
 
                 // If there is a previous room pending, summarize its chat.
-                if (_lastChatRoom != null && _lastRoomAgent != null && _lastChatRoom != agentGroupChat)
+                if (_lastagentGroupChat != null && _lastRoomAgent != null)
                 {
-                    _logger?.LogInformation("Started summary generation for RoomAgent: {0}", _lastRoomName);
-                    await foreach (var content in _lastRoomAgent.SummarizeAndIntegratePreviousRoomChatAsync(OrchestratorName, _activeChatName, agentGroupChat, _lastChatRoom, cancellationToken))
+                    await foreach (var content in _lastRoomAgent.RespondToRoomChange(OrchestratorName, _activeChatName, agentGroupChat, _lastagentGroupChat, cancellationToken))
                     {
                         yield return content;
                     }
+
+                    // Reset previous room tracking.
+                    _lastagentGroupChat = null;
+                    _lastRoomAgent = null;
                 }
 
-                // Reset previous room tracking.
-                _lastChatRoom = null;
-                _lastRoomAgent = null;
 
                 roomChanged = false;
                 newRoomName = string.Empty;
@@ -288,12 +286,12 @@ namespace SemanticKernelExtension.Orchestrator
 
                             if (matchingAgent is RoomAgent roomAgent)
                             {
-                                _lastChatRoom = agentGroupChat;
+                                _lastagentGroupChat = agentGroupChat;
                                 _lastRoomAgent = roomAgent;
 
                                 // Respect the RoomAgent's ShouldYield decision
-                                YieldOnRoomChange = roomAgent.ShouldYield();
-                               
+                                YieldOnRoomChange = roomAgent.ShouldYield(_activeChatName);
+
                             }
 
                             yield return new StreamingOrchestratorContent(StreamingOrchestratorContent.ActionTypes.RoomChange, OrchestratorName, _activeChatName, currentAgent, YieldOnRoomChange, agentChunk);
@@ -326,7 +324,9 @@ namespace SemanticKernelExtension.Orchestrator
                     }
                     else
                     {
+                     
                         Logger.LogInformation("Waiting for input to switch to room '{0}'", newRoomName);
+                        yield break;
                     }
                 }
 
@@ -373,6 +373,8 @@ namespace SemanticKernelExtension.Orchestrator
                 _logger?.LogWarning("Reset complete, but no chats are available.");
             }
 
+            _lastagentGroupChat = null;
+            _lastRoomAgent = null;
 
             return true;
         }

@@ -14,20 +14,11 @@ namespace YamlConfigurations.FileReader
             experience.ApplyParentOverride();
 
             var validator = new YamlChatRoomsValidator();
-            var errors = validator.Validate(experience);
+            var errors = validator.Validate(experience, yamlText);
             if (errors.Any())
             {
-                List<string> errorResults = [];
-                foreach (var error in errors)
-                {
-                    if (error != null)
-                    {
-                        errorResults.Add(error.ToString());
-                    }
-                }
-           
-                // Assign the error string to the Errors property of YamlMultipleChatRooms
-                experience.Errors = errorResults;
+                // Assign the error objects directly to the Errors property of YamlMultipleChatRooms
+                experience.Errors = errors.ToList();
             }
         }
 

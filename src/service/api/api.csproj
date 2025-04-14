@@ -15,12 +15,7 @@
     </None>
   </ItemGroup>
  
-  <ItemGroup>
-    <Compile Remove="Experiences\**" />
-    <Content Remove="Experiences\**" />
-    <EmbeddedResource Remove="Experiences\**" />
-    <None Remove="Experiences\**" />
-  </ItemGroup>
+
 
   <ItemGroup>
     <Content Update="appsettings.json">
