@@ -207,6 +207,7 @@ namespace AppExtensions.Experience.Handlers
         {
             var roomMsg = CreateNewMessage(originalMessage.UserId, originalMessage.Action);
             roomMsg.AgentName = "Room Change";
+            roomMsg.SubAction = streamingContent.YieldOnRoomChange?"yes":"no";
             roomMsg.Content = $"Request to Change to {streamingContent.Content?.ToString() ?? ""}";
             await sender.SendAsync(roomMsg, mode, cancellationToken);
         }

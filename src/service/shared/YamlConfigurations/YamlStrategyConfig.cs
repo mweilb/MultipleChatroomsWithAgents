@@ -27,6 +27,7 @@ namespace YamlConfigurations
             {
                 Rules =[new YamlStratergyRules()];
             }
+
             if (GlobalTermination != null)
             {
                 if (string.IsNullOrEmpty(GlobalTermination.ContinuationAgentName))
@@ -43,6 +44,18 @@ namespace YamlConfigurations
                 if (string.IsNullOrEmpty(rule.Name))
                 {
                     rule.Name = $"Rule {ruleCount}";
+                }
+
+                if (string.IsNullOrEmpty(rule.YieldOnRoomChange))
+                {
+                    if (string.IsNullOrEmpty(room.YieldOnRoomChange))
+                    {
+                        rule.YieldOnRoomChange = "false";
+                    }
+                    else
+                    {
+                        rule.YieldOnRoomChange = room.YieldOnRoomChange;
+                    }
                 }
 
                     // If the rule does not have a selection configuration, assign the global one.

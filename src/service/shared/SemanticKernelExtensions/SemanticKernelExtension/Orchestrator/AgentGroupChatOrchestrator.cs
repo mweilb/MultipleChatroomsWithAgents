@@ -3,16 +3,9 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Agents;
 using Microsoft.SemanticKernel.ChatCompletion;
-using SemanticKernelExtension.Agents;
-using System.Buffers.Text;
-using System.Collections;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using SemanticKernelExtension.Agents; 
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+ 
 
 #pragma warning disable SKEXP0110
 #pragma warning disable SKEXP0001
@@ -239,7 +232,7 @@ namespace SemanticKernelExtension.Orchestrator
                 {
                     _logger?.LogError("No active AgentGroupChat selected.");
                     var errorContent = new StreamingChatMessageContent(AuthorRole.System, "No active AgentGroupChat selected.");
-                    yield return new StreamingOrchestratorContent(StreamingOrchestratorContent.ActionTypes.Error, OrchestratorName, _activeChatName, string.Empty, errorContent);
+                    yield return new StreamingOrchestratorContent(StreamingOrchestratorContent.ActionTypes.Error, OrchestratorName, _activeChatName, string.Empty,false, errorContent);
                     yield break;
                 }
 
@@ -287,8 +280,7 @@ namespace SemanticKernelExtension.Orchestrator
                             _lastRoomName = _activeChatName;
                             Logger.LogInformation("Room Agent was selected: '{0}'", newRoomName);
 
-                            yield return new StreamingOrchestratorContent(StreamingOrchestratorContent.ActionTypes.RoomChange, OrchestratorName, _activeChatName, currentAgent, agentChunk);
-
+        
                             // Find and assign the corresponding room agent.
                             var matchingAgent = agentGroupChat.Agents.FirstOrDefault(a =>
                                 !string.IsNullOrEmpty(a.Name) &&
@@ -298,18 +290,25 @@ namespace SemanticKernelExtension.Orchestrator
                             {
                                 _lastChatRoom = agentGroupChat;
                                 _lastRoomAgent = roomAgent;
+
+                                // Respect the RoomAgent's ShouldYield decision
+                                YieldOnRoomChange = roomAgent.ShouldYield();
+                               
                             }
+
+                            yield return new StreamingOrchestratorContent(StreamingOrchestratorContent.ActionTypes.RoomChange, OrchestratorName, _activeChatName, currentAgent, YieldOnRoomChange, agentChunk);
+
 
                             roomChanged = true;
                             break;
                         }
 
                         currentAgent = agentChunk.AuthorName;
-                        yield return new StreamingOrchestratorContent(StreamingOrchestratorContent.ActionTypes.AgentStarted, OrchestratorName, _activeChatName, currentAgent, agentChunk);
+                        yield return new StreamingOrchestratorContent(StreamingOrchestratorContent.ActionTypes.AgentStarted, OrchestratorName, _activeChatName, currentAgent,false,  agentChunk);
                         continue;
                     }
 
-                    yield return new StreamingOrchestratorContent(StreamingOrchestratorContent.ActionTypes.AgentUpdated, OrchestratorName, _activeChatName, currentAgent, agentChunk);
+                    yield return new StreamingOrchestratorContent(StreamingOrchestratorContent.ActionTypes.AgentUpdated, OrchestratorName, _activeChatName, currentAgent, false, agentChunk);
                 }
 
                 if (!string.IsNullOrEmpty(currentAgent))

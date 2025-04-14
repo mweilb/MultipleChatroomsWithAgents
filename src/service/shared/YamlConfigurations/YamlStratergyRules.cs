@@ -26,10 +26,9 @@ namespace  YamlConfigurations
         [YamlMember(Alias = "next")]
         public List<YamlNextAgentConfig> Next { get; set; } = [];
 
-        //Implemenation details 
-
-       
-
-        
+        // Indicates if the room should yield on change ("yes", "true", etc.)
+        [YamlMember(Alias = "yield-on-room-change")]
+        public string? YieldOnRoomChange { get; set; }
     }
+
 }

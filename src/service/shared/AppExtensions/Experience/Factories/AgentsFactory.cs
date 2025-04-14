@@ -60,7 +60,7 @@ namespace AppExtensions.Experience.Factories
                     var otherRoomNames = room.Key;
                     if (otherRoomNames != roomName)
                     {
-                        var roomAgent = new RoomAgent(otherRoomNames, roomName, "room", otherRoomNames, false, kernel);
+                        var roomAgent = new RoomRuleBasedAgent(otherRoomNames, roomName, "room", otherRoomNames, false, kernel);
                         completionAgents.Add(roomAgent);
                         agentIcons[roomAgent] = ""; // No emoji/icon for RoomAgent
                     }
@@ -73,5 +73,6 @@ namespace AppExtensions.Experience.Factories
 
             return (completionAgents, agentIcons);
         }
+
     }
 }

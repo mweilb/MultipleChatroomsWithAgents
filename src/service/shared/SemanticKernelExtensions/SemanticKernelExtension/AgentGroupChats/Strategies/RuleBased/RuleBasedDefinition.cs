@@ -1,6 +1,5 @@
 ﻿using Microsoft.SemanticKernel.Agents.Chat;
 
-
 namespace SemanticKernelExtension.AgentGroupChats.Strategies.RuleBased
 {
     /// <summary>
@@ -41,5 +40,11 @@ namespace SemanticKernelExtension.AgentGroupChats.Strategies.RuleBased
         /// The name of the agent that will continue the conversation after termination.
         /// </summary>
         public string ContinuationAgentName { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Should we yield on this ro
+        /// </summary>
+        public bool ShouldYield { get; set; } = false;
+ 
     }
 }

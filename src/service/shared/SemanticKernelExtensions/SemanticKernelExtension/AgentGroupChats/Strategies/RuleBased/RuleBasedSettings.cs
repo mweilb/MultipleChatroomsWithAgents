@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel.Agents.Chat;
- 
 
 namespace SemanticKernelExtension.AgentGroupChats.Strategies.RuleBased
 {
@@ -40,6 +39,11 @@ namespace SemanticKernelExtension.AgentGroupChats.Strategies.RuleBased
 
             // Initialize the termination strategy using the current settings.
             TerminationStrategy = new RuleBasedTerminationStrategy(this, factory.CreateLogger<RuleBasedSelectionStrategy>());
+        }
+
+        internal bool ShouldYield()
+        {
+            return CurrentRule?.ShouldYield ?? false;
         }
     }
 }

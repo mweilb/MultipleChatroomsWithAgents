@@ -14,6 +14,19 @@ namespace SemanticKernelExtension.Agents
     public class RoomAgent : EchoAgent
     {
         private readonly string _instructionToSummary;
+
+        private readonly bool _yieldOnRoomChange = false;
+
+        /// <summary>
+        /// Suggests whether the room should yield or not.
+        /// Override this method to provide custom yield logic.
+        /// </summary>
+        /// <returns>True if the room should yield, otherwise false.</returns>
+        public virtual bool ShouldYield()
+        {
+            return _yieldOnRoomChange;
+        }
+
         private readonly Kernel _kernel;
 
         public RoomAgent(
@@ -23,11 +36,13 @@ namespace SemanticKernelExtension.Agents
             string message,
             bool visible,
             Kernel kernel,
+            bool yieldOnRoomChange = false,
             string summarizeInstructions = "Summarize the Conversations as concise as possible and dont try to answer questions."
         ) : base(name, agentName, modelId, message, visible)
         {
             _instructionToSummary = summarizeInstructions;
             _kernel = kernel ?? throw new ArgumentNullException(nameof(kernel), "Kernel is required to invoke the summary.");
+            _yieldOnRoomChange = yieldOnRoomChange;
         }
 
         public async IAsyncEnumerable<StreamingChatMessageContent> InvokeSummaryStreamingAsync(
@@ -105,6 +120,7 @@ namespace SemanticKernelExtension.Agents
                     orchestratorName,
                     currentChatRoomName,
                     this.Name ?? "Previous Room",
+                    false,
                     agentChunk
                 );
 
@@ -134,6 +150,7 @@ namespace SemanticKernelExtension.Agents
                 orchestratorName,
                 currentChatRoomName,
                 this.Name ?? "Previous Room",
+                false,
                 null
             );
         }

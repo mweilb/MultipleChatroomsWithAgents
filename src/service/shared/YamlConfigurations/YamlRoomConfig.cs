@@ -26,6 +26,8 @@ namespace YamlConfigurations
         [YamlMember(Alias = "moderation")]
         public YamlModerationConfig? Moderation { get; set; }
 
-        
+        // Indicates if the room should yield on change ("yes", "true", etc.)
+        [YamlMember(Alias = "yield-on-room-change")]
+        public string? YieldOnRoomChange { get; set; }
     }
 }

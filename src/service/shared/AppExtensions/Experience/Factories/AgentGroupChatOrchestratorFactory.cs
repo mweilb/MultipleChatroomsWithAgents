@@ -74,6 +74,17 @@ namespace AppExtensions.Experience.Factories
                     ExecutionSettings = new RuleBasedSettings(listSKRules, factory)
                 };
 
+                foreach(var agent in completionAgents)
+                {
+                    if (agent is RoomRuleBasedAgent roomAgent)
+                    {
+                        roomAgent.SetExecutionSettings(groupChat.ExecutionSettings as RuleBasedSettings);
+                    }
+                }
+
+
+
+
                 orchestrator.Add(roomName, groupChat);
             }
 
