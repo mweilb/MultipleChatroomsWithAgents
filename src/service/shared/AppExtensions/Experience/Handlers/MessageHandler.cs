@@ -112,7 +112,7 @@ namespace AppExtensions.Experience.Handlers
             }
         }
 
-        private async Task ProcessMessage(WebSocketBaseMessage message, ConnectionMode mode, WebSocketSender sender, AgentGroupChatOrchestrator orchestrator, CancellationToken cancellationToken)
+        public async Task ProcessMessage(WebSocketBaseMessage message, ConnectionMode mode, WebSocketSender sender, AgentGroupChatOrchestrator orchestrator, CancellationToken cancellationToken)
         {
             // Variables to hold reply messages for the chat room.
             WebSocketReplyChatRoomMessage? roomMessage = null;

@@ -1,5 +1,6 @@
 ﻿Auto Room Change:
   emoji: "💡"
+  auto-start: true
   start-room: Get To Know Us
   agents:
     # Global Agents - Defined Once, Used Everywhere

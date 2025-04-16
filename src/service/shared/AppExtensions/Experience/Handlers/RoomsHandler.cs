@@ -18,7 +18,7 @@ namespace AppExtensions.Experience.Handlers
     public class RoomsHandler(ExperienceManager experienceManager)
     {
         private readonly ExperienceManager _manager = experienceManager;
-
+ 
         /// <summary>
         /// The entry point that the WebSocket command dispatcher calls for "rooms" commands.
         /// Dispatches to the appropriate sub-handler method based on SubAction.
@@ -167,7 +167,28 @@ namespace AppExtensions.Experience.Handlers
                                         || string.Equals(chatRoomGroup.AutoStart, "true", StringComparison.OrdinalIgnoreCase);
                     if (autoStart)
                     {
-                        // e.g., chatRoomGroup.SendMessageToRoomAsync("start", message, webSocket, speech, mode);
+                     
+
+                        if (_manager.Experiences.TryGetValue(chatRoomGroup.Name, out var tracking)){
+                           
+                            
+                            var agentGroupChatOrchestrator = tracking.agentGroupChatOrchestrator;
+                            var messageHandler = tracking.handler;
+                            if ((agentGroupChatOrchestrator != null)  && (messageHandler != null))
+                            {
+                                var sender = new WebSocketSender(webSocket);
+                                using var cts = new CancellationTokenSource();
+                                CancellationToken cancellationToken = cts.Token;
+                                message.Action = chatRoomGroup.Name;
+                                message.UserId = "system";
+                                await messageHandler.ProcessMessage(message, mode, sender, agentGroupChatOrchestrator, cancellationToken);
+                            }
+                          
+                        }
+                        
+                       
+
+                        
                     }
 
                     // Otherwise, confirm success:

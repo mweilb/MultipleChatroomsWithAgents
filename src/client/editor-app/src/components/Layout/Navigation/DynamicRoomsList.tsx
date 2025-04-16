@@ -13,8 +13,7 @@ const DynamicRoomsList: React.FC<DynamicRoomsProps> = ({ isCollapsed, location }
   const { rooms, resetChat } = useWebSocketContext();
   // Track if a room has been clicked (true) keyed by room name
   const [clickedRooms, setClickedRooms] = useState<{ [key: string]: boolean }>({});
-  // Track if a room's subrooms are expanded (true) keyed by room name
-  const [expandedRooms, setExpandedRooms] = useState<{ [key: string]: boolean }>({});
+
 
   // Pre-initialize each room with subrooms as collapsed (false)
   useEffect(() => {
@@ -22,7 +21,7 @@ const DynamicRoomsList: React.FC<DynamicRoomsProps> = ({ isCollapsed, location }
     rooms.forEach((room) => {
       initialExpandedState[room.Name] = false;
     });
-    setExpandedRooms(initialExpandedState);
+
   }, [rooms]);
 
   // Call this only once per room when it is clicked for the first time
@@ -42,11 +41,6 @@ const DynamicRoomsList: React.FC<DynamicRoomsProps> = ({ isCollapsed, location }
       };
 
       // Determine subrooms for this room
-      const roomData = room as WebSocketRoom;
-      const subrooms = roomData.Rooms || [];
-      // If there is only one subroom and its name is the same as the parent, treat it as no subrooms.
-      const hasSubrooms = subrooms.length > 0 && !(subrooms.length === 1 && subrooms[0].Name === room.Name);
-
       return (
         <li
           key={room.Name}

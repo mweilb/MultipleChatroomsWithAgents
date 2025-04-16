@@ -14,6 +14,7 @@ export default defineConfig({
       // Map 'shared' to the shared folder
       shared: path.resolve(__dirname, '../shared'),
     },
+    preserveSymlinks: true,
   },
   server: {
     port: 3001,
@@ -23,6 +24,7 @@ export default defineConfig({
     },
   },
   optimizeDeps: {
-    include: ['shared'],
+    // Do not pre-bundle shared to allow live updates
+    exclude: ['shared'],
   },
 });
