@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
-import { useWebSocketContext } from '../contexts/webSocketContext';
-import { WebSocketNewRoomMessage } from '../models/WebSocketNewRoomMessage';
-import { WebSocketReplyChatRoomMessage } from '../models/WebSocketReplyChatRoomMessages';
+import { useWebSocketContext } from 'shared';
+import { WebSocketNewRoomMessage,WebSocketReplyChatRoomMessage } from 'shared';
+ 
 
 interface AppStateContextProps {
   activeChatRoomName: string;
@@ -14,6 +14,8 @@ interface AppStateContextProps {
   setActiveChannel: (channel: number) => void;
   getMessagesForChannel: () => WebSocketReplyChatRoomMessage[];
   requestRoomChange: boolean;
+  requestRoomPause: boolean;
+  requestRestart: boolean;
   setDidRoomChange: (change: roomChangePrompt) => void;
   nextRoom: string;
 }
@@ -24,19 +26,21 @@ interface AppStateProviderProps {
   children: ReactNode;
 }
 
-type roomChangePrompt = 'noSignal' | 'noChange' | 'changeRoom';
+type roomChangePrompt = 'noSignal' | 'noChange' | 'changeRoom' | 'waiting';
 
 export const AppStateProvider = ({ children }: AppStateProviderProps) => {
   const [activeChatRoomName, setActiveChatRoomName] = useState<string>('');
   const [activeChatSubRoomName, setActiveChatSubRoomName] = useState<string>('');
   const [availableRoomNames, setAvailableRoomNames] = useState<string[]>([]);
   const [activeChannel, setActiveChannel] = useState<number>(0);
-  const [requestRoomChange, setRequestRoomChange] = useState<boolean>(false);
+  const [requestRoomChangeFlag, setRequestRoomChangeFlag] = useState<boolean>(false);
+  const [requestRoomPauseFlag, setRequestRoomPauseFlag] = useState<boolean>(false);
+  const [requestRestartFlag, setRequestRestartFlag] = useState<boolean>(false);
   const [didRoomChange, setDidRoomChange] = useState<roomChangePrompt>('noSignal');
   const [nextRoom, setNextRoom] = useState<string>('');
  
   // Get the subroom change listener and getMessages function from the WebSocket context.
-  const { requestNewRoomListener, getMessages } = useWebSocketContext();
+  const { requestNewRoomListener, getMessages, requestRoomChange} = useWebSocketContext();
 
   // When availableRoomNames are set (or updated) and no subroom is selected yet,
   // default to the first subroom (index 0).
@@ -50,31 +54,53 @@ export const AppStateProvider = ({ children }: AppStateProviderProps) => {
   // Listen for subroom change messages.
   useEffect(() => {
     requestNewRoomListener((msg: WebSocketNewRoomMessage) => {
-      console.log("Room change request recieved")
-      setRequestRoomChange(true);
-      setNextRoom(msg.To);
+      if (msg.SubAction === "change-room") {
+        setNextRoom(msg.To);
+        setRequestRoomPauseFlag(true);
+      }
+      else {
+        console.log("Room change request recieved")      
+        setNextRoom(msg.To);
+        setRequestRoomChangeFlag(true);
+      }
     });
   }, [requestNewRoomListener]);
 
   useEffect(() => {
-    if (didRoomChange === "changeRoom") {
+    
+    if (didRoomChange === "changeRoom") {1
       console.log("Changing room to:", nextRoom);
+      
       setActiveChatSubRoomName(nextRoom);
+
+      if (requestRoomChangeFlag) {
+        requestRoomChange("userid",activeChatRoomName, nextRoom);
+      }
+
       const index = availableRoomNames.indexOf(nextRoom);
       if (index !== -1) {
         setActiveChannel(index);
       } else {
         console.warn("Sub room not found:", nextRoom);
       }
+      
       // Clear pending request after processing the change
-      setRequestRoomChange(false);
+      setRequestRoomChangeFlag(false);
+      setRequestRoomPauseFlag(false);
+      setRequestRestartFlag(false);
       setDidRoomChange("noSignal");
+    
     } else if (didRoomChange === "noChange") {
       console.log("Room change declined; staying in:", activeChatSubRoomName);
-      // Optionally, you might want to send a “decline” message back to the server here.
-      setRequestRoomChange(false);
+      // Clear pending request after processing the change
+      setRequestRoomChangeFlag(false);
+      setRequestRoomPauseFlag(false);
+      setRequestRestartFlag(false);
       setDidRoomChange("noSignal");
     }
+
+    
+
   }, [didRoomChange, nextRoom, availableRoomNames, activeChatSubRoomName]);  
 
   // Function to retrieve messages for the active channel.
@@ -84,8 +110,8 @@ export const AppStateProvider = ({ children }: AppStateProviderProps) => {
     // Return only those messages where both the RoomName and SubRoomName match.
     return messages.filter(
       (msg) =>
-        msg.RoomName === activeChatRoomName &&
-        msg.SubRoomName === activeChatSubRoomName
+        msg.RoomName === activeChatSubRoomName &&
+        (msg.SubAction === 'chunk' || msg.SubAction === 'ask')  
     );
   };
 
@@ -101,7 +127,9 @@ export const AppStateProvider = ({ children }: AppStateProviderProps) => {
         activeChannel,
         setActiveChannel,
         getMessagesForChannel,
-        requestRoomChange,
+        requestRoomChange: requestRoomChangeFlag,
+        requestRoomPause: requestRoomPauseFlag,
+        requestRestart: requestRestartFlag,
         setDidRoomChange,
         nextRoom,
       }}

@@ -2,20 +2,18 @@ import  { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import logo from "./assets/peckham-logo-vertical.png";
 import "./BeforeWeStart.css";
-import { useWebSocketContext } from './contexts/webSocketContext';
+import { useWebSocketContext } from 'shared';
 import { useAppStateContext } from './context-app/AppStateContext';
  
 
 const BeforeWeStart = () => {
   const navigate = useNavigate();
   const { rooms, toggleVoice , resetChat} = useWebSocketContext();
-  const { setActiveChatRoomName, setAvailableRoomNames, setActiveChatSubRoomName } = useAppStateContext();
+  const { setActiveChatRoomName, setAvailableRoomNames, setActiveChatSubRoomName,setActiveChannel } = useAppStateContext();
   const [selectedRoom, setSelectedRoom] = useState<string>('');
 
   // Filter rooms to only include those that have exactly 4 items in the nested Rooms array.
   const filteredRooms = rooms.filter(room => room.Rooms && room.Rooms.length <= 5);
-  // Create an array of available room names from the filtered rooms.
-  const availableRoomNames = filteredRooms.flatMap(room => room.Rooms.map(subRoom => subRoom.Name));
 
   const getAvailableRoomNames = (targetRoom: String) => {
     return filteredRooms.find(room => room.Name === targetRoom)?.Rooms.map(subRoom => subRoom.Name) || [];
@@ -23,12 +21,11 @@ const BeforeWeStart = () => {
 
   const goToLanding = () => {
     if (selectedRoom) {
-      // Set the active chat room name in global state.
+      // Send reset event before any state changes or navigation.
+      resetChat(selectedRoom);
       setActiveChatRoomName(selectedRoom);
-      resetChat(selectedRoom);
-      // Set the available room names (all rooms that have exactly 4 sub-rooms) in global state.
       setAvailableRoomNames(getAvailableRoomNames(selectedRoom));
-      resetChat(selectedRoom);
+      setActiveChannel(0);
       setActiveChatSubRoomName(getAvailableRoomNames(selectedRoom)[0]);
       toggleVoice(true);
       navigate('/chatroom', { state: { room: selectedRoom } });

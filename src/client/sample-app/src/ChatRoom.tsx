@@ -14,18 +14,18 @@ import { Steps } from "primereact/steps";
 import { useNavigate } from 'react-router-dom';
 
 
-import { useWebSocketContext } from "./contexts/webSocketContext";
-import { WebSocketBaseMessage } from "./models/WebSocketBaseMessage";
+import { useWebSocketContext } from "shared";
+import { WebSocketBaseMessage, WebSocketReplyChatRoomMessage, WebSocketAudioMessage } from "shared";
 import ReactMarkdown from "react-markdown";
-import { WebSocketReplyChatRoomMessage } from "./models/WebSocketReplyChatRoomMessages";
+ 
 import { useAppStateContext } from "./context-app/AppStateContext";
 import VoiceControl from "./context-app/voiceControl";
 import { AudioPlayer } from "./AudioPlayer";
-import { WebSocketAudioMessage } from "./models/WebSocketVoiceMessage";
+ 
 
 const ChatRoomSave = (): JSX.Element => {
   // Context from your existing app state.
-  const { activeChatRoomName, activeChannel, activeChatSubRoomName, availableRoomNames, requestRoomChange, getMessagesForChannel, setDidRoomChange, nextRoom } = useAppStateContext();
+  const { activeChatRoomName, activeChannel, activeChatSubRoomName, availableRoomNames, requestRoomChange,requestRoomPause, getMessagesForChannel, setDidRoomChange, nextRoom } = useAppStateContext();
   const { sendMessage, setAudioMessageListener } = useWebSocketContext();
   
   // Get messages filtered by active room and subroom.
@@ -63,12 +63,11 @@ const ChatRoomSave = (): JSX.Element => {
           TransactionId: crypto.randomUUID(),
           Action: activeChatRoomName,
           SubAction: "ask",
-          RoomName: activeChatRoomName,
-          SubRoomName: activeChatSubRoomName,
           Content: contentToSend,
+          Mode: "App"
         };
 
-        sendMessage(socketMessage);
+        sendMessage(socketMessage, activeChatRoomName,activeChatSubRoomName );
         setMessage("");
       }
     },
@@ -191,6 +190,16 @@ const ChatRoomSave = (): JSX.Element => {
           </div>
         </div>
       )}
+
+      {requestRoomPause && (
+        <div className="change-room-container">
+          <p> When are ready to go the next room:<br />{nextRoom}?</p>
+          <div className="change-button-container">
+            <Button className="change-button yes" onClick={() => roomChange(true)}>Continue</Button>
+          </div>
+        </div>
+      )}
+
 
       <div className="chat-input">
         <InputTextarea

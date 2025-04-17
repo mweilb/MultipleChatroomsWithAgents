@@ -62,11 +62,11 @@
       "name": "Sample App (via Edge)",
       "type": "msedge",
       "request": "launch",
-      "url": "http://localhost:5173",
+      "url": "http://localhost:3002",
       "webRoot": "${workspaceFolder}/src/client/sample-app",
       "userDataDir": true,
       "sourceMapPathOverrides": {
-        "http://localhost:5173/@fs/*": "${workspaceFolder}/*",
+        "http://localhost:3002/@fs/*": "${workspaceFolder}/*",
       },
       "resolveSourceMapLocations": [
         "${workspaceFolder}/**",
@@ -79,11 +79,11 @@
       "name": "Sample App (via Chrome)",
       "type": "chrome",
       "request": "launch",
-      "url": "http://localhost:5173",
+      "url": "http://localhost:3002",
       "webRoot": "${workspaceFolder}/src/client/sample-app",
       "userDataDir": true,
       "sourceMapPathOverrides": {
-        "http://localhost:5173/@fs/*": "${workspaceFolder}/*",
+        "http://localhost:3002/@fs/*": "${workspaceFolder}/*",
       },
       "resolveSourceMapLocations": [
         "${workspaceFolder}/**",
