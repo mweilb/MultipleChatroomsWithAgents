@@ -39,7 +39,7 @@ namespace YamlConfigurations.Validations
                 return (null, null);
             }
 
-            bool IsValidReference(string name, HashSet<string> validAgentNames, HashSet<string> validRoomNames, HashSet<string>? validTerminationNames)
+            bool IsValidReference(string name, HashSet<string> validAgentNames, HashSet<string> validRoomNames, HashSet<string?>? validTerminationNames)
             {
                 return validAgentNames.Contains(name)
                     || validRoomNames.Contains(name)

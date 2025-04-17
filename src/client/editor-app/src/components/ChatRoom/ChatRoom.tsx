@@ -59,12 +59,10 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ chatType, title, userId }) => {
       Action: chatType,
       SubAction: 'ask',
       Content: input,
-      SubRoomName: "",
-      RoomName: "",
       Mode: 'App',  
     };
     
-    sendMessage(message);
+    sendMessage(message, chatType, selectedRoom);
     setInput('');
   }, [input, userId, chatType, sendMessage]);
 
@@ -97,7 +95,6 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ chatType, title, userId }) => {
                   TransactionId: crypto.randomUUID(),
                   Action: chatType,
                   RoomName: newRoom,
-                  SubRoomName: "",
                   Mode: "App",
                   AgentName: 'User',
                   Emoji: '🤓',
@@ -105,6 +102,7 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ chatType, title, userId }) => {
                   From: chatType,
                   SubAction: "change-room-yield",
                   Content: `Do you want to change the room to "${newRoom}"?`,
+                  Orchestrator: ''
                 };
 
 

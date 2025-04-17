@@ -42,6 +42,7 @@ namespace AppExtensions.Experience.Factories
                 LoggerFactory = kernel.Services.GetService<ILoggerFactory>() ?? NullLoggerFactory.Instance,
             };
 
+
             var roomAgentEmojis = new Dictionary<string, Dictionary<string, string>>();
 
             // Iterate over each room

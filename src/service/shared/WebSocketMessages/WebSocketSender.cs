@@ -50,7 +50,13 @@ namespace WebSocketMessages
                 {
                     return;
                 }
+
+                if (string.Compare(message.Mode, "App",true)  != 0)
+                {
+                    return;
+                }
             }
+
     		
             // Serialize the message to a JSON string.
             string json = JsonSerializer.Serialize(message, options);

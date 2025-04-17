@@ -16,6 +16,9 @@ namespace WebSocketMessages.AgentLifecycle
         private WebSocket? _webSocket;
         private readonly string _userId;
 
+        public ConnectionMode CurrentConnectionMode { get; set; } = ConnectionMode.App;
+
+
         /// <summary>
         /// Gets or sets the WebSocket instance used to send messages.
         /// </summary>
@@ -46,6 +49,9 @@ namespace WebSocketMessages.AgentLifecycle
         /// </summary>
         private async void GlobalLifecycleEventHandler(AgentLifecycleEventData eventData)
         {
+            //The app does not need log eventgs
+            if (CurrentConnectionMode == ConnectionMode.App) { return; }
+  
             try
             {
                 if (WebSocket == null)
@@ -67,6 +73,9 @@ namespace WebSocketMessages.AgentLifecycle
         /// </summary>
         private async void GlobalChatMessageHandler(ChatMessageEventData eventData)
         {
+            //The app does not need log eventgs
+            if (CurrentConnectionMode == ConnectionMode.App) { return; }
+
             try
             {
                 if (WebSocket == null)
@@ -89,6 +98,9 @@ namespace WebSocketMessages.AgentLifecycle
         /// </summary>
         private async void GlobalStreamingChatMessageHandler(StreamingChatMessageEventData eventData)
         {
+            //The app does not need log eventgs
+            if (CurrentConnectionMode == ConnectionMode.App) { return; }
+
             try
             {
                 if (WebSocket == null)
@@ -112,6 +124,9 @@ namespace WebSocketMessages.AgentLifecycle
         /// <param name="userId">The user identifier.</param>
         public async Task SendAsync(AgentLifecycleEventData eventData, string userId, CancellationToken cancellationToken = default)
         {
+            //The app does not need log eventgs
+            if (CurrentConnectionMode == ConnectionMode.App) { return; }
+
             if (WebSocket == null || string.IsNullOrEmpty(OrchestratorName))
             {
                 Console.WriteLine("WebSocket not set or OrchestratorName is empty; cannot send lifecycle message.");

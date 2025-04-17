@@ -65,6 +65,7 @@ app.Map("/ws", async context =>
         using var webSocket = await context.WebSockets.AcceptWebSocketAsync();
         Console.WriteLine("WebSocket connection established");
         webSocketAgentLifecycleSender.WebSocket = webSocket;
+        webSocketAgentLifecycleSender.CurrentConnectionMode = webSocketHandler.CurrentConnectionMode;
         await webSocketHandler.HandleRequestAsync(webSocket);
     }
     else

@@ -15,8 +15,8 @@ export function useEditorMode(mode: string) {
       Action: 'mode',
       SubAction: appType,
       Content: '',  
+      Orchestrator: '',
       RoomName: '',
-      SubRoomName: '',
       Mode: 'app',
     };
 

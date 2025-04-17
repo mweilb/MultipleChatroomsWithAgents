@@ -75,33 +75,44 @@ namespace SemanticKernelExtension.ChatCompletionService
         {
            
             bool captureThinking = false;
-            bool oneTimeThiking = true;
+            string thinkingChunk;
+            string responseChunk;
             await foreach (var chunk in _inner.GetStreamingChatMessageContentsAsync(chatHistory, settings, kernel, cancellationToken))
             {
-
-                if(chunk.Content is not null && oneTimeThiking)
-                {
-                    if (chunk.Content == "<think>")
+                thinkingChunk = "";
+                responseChunk = "";
+                if (chunk.Content is not null)
+                {        
+                    if (chunk.Content.StartsWith("<think>"))
                     {
                         captureThinking = true;
                     }
-                    else if (chunk.Content == "</think>")
+                    
+                    int index = chunk.Content.IndexOf("</think>");
+                    if (index >= 0 && captureThinking)
                     {
-                        oneTimeThiking = false;
+                        captureThinking = false;
+                        thinkingChunk = chunk.Content.Substring(0, index);
+                        responseChunk = chunk.Content.Substring(index, chunk.Content.Length - "</think>".Length);
                     }
+                    else if (captureThinking)
+                    {
+                        thinkingChunk = chunk.Content;
+                    }
+                    else
+                    {
+                        responseChunk = chunk.Content;
+                    }
+
                 }
-                //next token
-                else
-                {
-                    captureThinking = false;
-                }
+                
 
                 // Attach thought to all subsequent chunks as metadata
                 var metadata = captureThinking
-                        ? new Dictionary<string, object?> { ["think"] = chunk.Content }
+                        ? new Dictionary<string, object?> { ["think"] = thinkingChunk }
                         : new Dictionary<string, object?> { ["think"] = "" };
 
-                yield return new StreamingChatMessageContent(chunk.Role, captureThinking ? "": chunk.Content, metadata:metadata)
+                yield return new StreamingChatMessageContent(chunk.Role, responseChunk, metadata:metadata)
                 {
                     Encoding = chunk.Encoding
                 };

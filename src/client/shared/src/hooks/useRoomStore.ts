@@ -18,8 +18,6 @@ export function useRoomStore(sender: (message: WebSocketBaseMessage) => void) {
       Action: group + '-change-room',
       SubAction: 'change',
       Content: JSON.stringify({ Group: group, To: to }),
-      RoomName: '',
-      SubRoomName: '',
       Mode: 'app',
     };
   };
@@ -31,8 +29,7 @@ export function useRoomStore(sender: (message: WebSocketBaseMessage) => void) {
       Action: 'rooms',
       SubAction: 'reset',
       Content: room,
-      RoomName: '',
-      SubRoomName: '',
+
       Mode: 'app',
     };
   };
@@ -44,8 +41,6 @@ export function useRoomStore(sender: (message: WebSocketBaseMessage) => void) {
       Action: 'rooms',
       SubAction: 'get',
       Content: '',
-      RoomName: '',
-      SubRoomName: '',
       Mode: 'app',
     };
     // Send the request message.

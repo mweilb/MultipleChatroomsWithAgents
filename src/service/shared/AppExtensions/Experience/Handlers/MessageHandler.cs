@@ -65,6 +65,7 @@ namespace AppExtensions.Experience.Handlers
 
                     await ProcessMessage(message,mode, new WebSocketSender(webSocket), chatRoomGroup, CancellationToken.None);
 
+                    return;
 
                 }
                 await SendErrorAsync(webSocket, "change", "Room change payload invalid or group not found.");
@@ -178,23 +179,31 @@ namespace AppExtensions.Experience.Handlers
         {
             // Extract hint (editor suggestion) from the streaming content.
             string hintInfo = GetHint(streamingContent);
-            // Create a rationale message for the editor.
-            var rationaleMsg = CreateNewMessage(originalMessage.UserId, originalMessage.Action);
-            rationaleMsg.AgentName = streamingContent.AgentName;
-            rationaleMsg.Content = hintInfo;
-            rationaleMsg.Mode = "Editor";
-            rationaleMsg.Emoji = _trackingInfo.RoomAgentEmojis?[streamingContent.ChatName]?
-                .TryGetValue(streamingContent.AgentName ?? "", out var emoji1) == true ? emoji1 : "";
-
-            if (!string.IsNullOrWhiteSpace(hintInfo))
+            if (mode != ConnectionMode.App)
             {
-                await sender.SendAsync(rationaleMsg, mode, cancellationToken);
+                // Create a rationale message for the editor.
+                var rationaleMsg = CreateNewMessage(originalMessage.UserId, streamingContent.OrchestratorName);
+                rationaleMsg.AgentName = streamingContent.AgentName;
+                rationaleMsg.Orchestrator = streamingContent.OrchestratorName;
+                rationaleMsg.RoomName = streamingContent.ChatName;
+                rationaleMsg.Content = hintInfo;
+                rationaleMsg.Mode = "Editor";
+                rationaleMsg.Emoji = _trackingInfo.RoomAgentEmojis?[streamingContent.ChatName]?
+                    .TryGetValue(streamingContent.AgentName ?? "", out var emoji1) == true ? emoji1 : "";
+
+                if (!string.IsNullOrWhiteSpace(hintInfo))
+                {
+                    await sender.SendAsync(rationaleMsg, mode, cancellationToken);
+                }
             }
 
             // Create the room message using content info.
             string contentInfo = streamingContent.Content?.ToString() ?? "";
-            var roomMsg = CreateNewMessage(originalMessage.UserId, originalMessage.Action);
+            var roomMsg = CreateNewMessage(originalMessage.UserId, streamingContent.OrchestratorName);
             roomMsg.AgentName = streamingContent.AgentName ?? "Not Set Agent Name";
+            roomMsg.Orchestrator = streamingContent.OrchestratorName;
+            roomMsg.RoomName = streamingContent.ChatName;
+
             roomMsg.Content = contentInfo;
             roomMsg.Emoji = _trackingInfo.RoomAgentEmojis?[streamingContent.ChatName]?
                 .TryGetValue(streamingContent.AgentName ?? "", out var emoji2) == true ? emoji2 : "";
@@ -204,7 +213,7 @@ namespace AppExtensions.Experience.Handlers
                 await sender.SendAsync(roomMsg, mode, cancellationToken);
             }
 
-            return (roomMsg, rationaleMsg);
+            return (roomMsg, roomMsg);
         }
 
         /// <summary>
@@ -221,7 +230,7 @@ namespace AppExtensions.Experience.Handlers
             if (roomMsg != null)
             {
                 // Update rationale message if available.
-                if (rationaleMsg != null)
+                if (rationaleMsg != null && mode == ConnectionMode.Editor)
                 {
                     string hintInfo = GetHint(streamingContent);
                     if (!string.IsNullOrWhiteSpace(hintInfo))

@@ -45,8 +45,6 @@ namespace SemanticKernelExtension.Orchestrator
         /// </summary>
         protected ILogger Logger => _logger ??= LoggerFactory.CreateLogger(GetType());
 
-        // Orchestrator group name.
-        public string OrchestratorName = string.Empty;
 
         // Indicates if the orchestrator should yield (instead of auto-switch) on room change.
         public bool YieldOnRoomChange = false;
@@ -146,12 +144,12 @@ namespace SemanticKernelExtension.Orchestrator
                 if (_chats.ContainsKey(name))
                 {
                     _activeChatName = name;
-                    _logger?.LogRoomChangeSelected(OrchestratorName, nameof(SwitchTo), name);
+                    _logger?.LogRoomChangeSelected(Name, nameof(SwitchTo), name);
                     return true;
                 }
             }
 
-            _logger?.LogRoomChangeCanceled(OrchestratorName, nameof(SwitchTo), name);
+            _logger?.LogRoomChangeCanceled(Name, nameof(SwitchTo), name);
             return false;
         }
 
@@ -181,15 +179,7 @@ namespace SemanticKernelExtension.Orchestrator
             return removed;
         }
 
-        /// <summary>
-        /// Sets the group name for this orchestrator.
-        /// </summary>
-        /// <param name="groupName">Group name.</param>
-        public void SetGroupName(string groupName)
-        {
-            OrchestratorName = groupName;
-        }
-
+ 
         /// <summary>
         /// Adds a user chat message to the active chat.
         /// </summary>
@@ -230,14 +220,14 @@ namespace SemanticKernelExtension.Orchestrator
                 {
                     _logger?.LogError("No active AgentGroupChat selected.");
                     var errorContent = new StreamingChatMessageContent(AuthorRole.System, "No active AgentGroupChat selected.");
-                    yield return new StreamingOrchestratorContent(StreamingOrchestratorContent.ActionTypes.Error, OrchestratorName, _activeChatName, string.Empty,false, errorContent);
+                    yield return new StreamingOrchestratorContent(StreamingOrchestratorContent.ActionTypes.Error, Name, _activeChatName, string.Empty,false, errorContent);
                     yield break;
                 }
 
                 // If there is a previous room pending, summarize its chat.
                 if (_lastagentGroupChat != null && _lastRoomAgent != null)
                 {
-                    await foreach (var content in _lastRoomAgent.RespondToRoomChange(OrchestratorName, _activeChatName, agentGroupChat, _lastagentGroupChat, cancellationToken))
+                    await foreach (var content in _lastRoomAgent.RespondToRoomChange(Name, _activeChatName, agentGroupChat, _lastagentGroupChat, cancellationToken))
                     {
                         yield return content;
                     }
@@ -267,14 +257,14 @@ namespace SemanticKernelExtension.Orchestrator
                     {
                         if (!string.IsNullOrEmpty(currentAgent))
                         {
-                            yield return new StreamingOrchestratorContent(StreamingOrchestratorContent.ActionTypes.AgentFinsihed, OrchestratorName, _activeChatName, currentAgent);
+                            yield return new StreamingOrchestratorContent(StreamingOrchestratorContent.ActionTypes.AgentFinsihed, Name, _activeChatName, currentAgent);
                         }
 
                         // Check for a room change signal.
                         if (agentChunk.Role == AuthorRole.Tool && agentChunk.ModelId == RoomModelId)
                         {
                             newRoomName = agentChunk.Content ?? string.Empty;
-                            Logger.LogRoomChangeStarted(OrchestratorName, nameof(InvokeStreamingAsync), _activeChatName, newRoomName);
+                            Logger.LogRoomChangeStarted(Name, nameof(InvokeStreamingAsync), _activeChatName, newRoomName);
                             _lastRoomName = _activeChatName;
                             Logger.LogInformation("Room Agent was selected: '{0}'", newRoomName);
 
@@ -294,7 +284,7 @@ namespace SemanticKernelExtension.Orchestrator
 
                             }
 
-                            yield return new StreamingOrchestratorContent(StreamingOrchestratorContent.ActionTypes.RoomChange, OrchestratorName, _activeChatName, currentAgent, YieldOnRoomChange, agentChunk);
+                            yield return new StreamingOrchestratorContent(StreamingOrchestratorContent.ActionTypes.RoomChange, Name, _activeChatName, currentAgent, YieldOnRoomChange, agentChunk);
 
 
                             roomChanged = true;
@@ -302,16 +292,16 @@ namespace SemanticKernelExtension.Orchestrator
                         }
 
                         currentAgent = agentChunk.AuthorName;
-                        yield return new StreamingOrchestratorContent(StreamingOrchestratorContent.ActionTypes.AgentStarted, OrchestratorName, _activeChatName, currentAgent,false,  agentChunk);
+                        yield return new StreamingOrchestratorContent(StreamingOrchestratorContent.ActionTypes.AgentStarted, Name, _activeChatName, currentAgent,false,  agentChunk);
                         continue;
                     }
 
-                    yield return new StreamingOrchestratorContent(StreamingOrchestratorContent.ActionTypes.AgentUpdated, OrchestratorName, _activeChatName, currentAgent, false, agentChunk);
+                    yield return new StreamingOrchestratorContent(StreamingOrchestratorContent.ActionTypes.AgentUpdated, Name, _activeChatName, currentAgent, false, agentChunk);
                 }
 
                 if (!string.IsNullOrEmpty(currentAgent))
                 {
-                    yield return new StreamingOrchestratorContent(StreamingOrchestratorContent.ActionTypes.AgentFinsihed, OrchestratorName, _activeChatName, currentAgent);
+                    yield return new StreamingOrchestratorContent(StreamingOrchestratorContent.ActionTypes.AgentFinsihed, Name, _activeChatName, currentAgent);
                 }
 
                 // If a room change was detected, either auto switch or wait based on the YieldOnRoomChange flag.

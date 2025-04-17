@@ -104,16 +104,32 @@ namespace AppExtensions.Experience.Handlers
                         CharPosition = e.CharPosition
                     }).ToList() ?? new List<WebSocketValidationError>();
 
-                response.Rooms.Add(new WebSocketGetRooms
+                if (mode == ConnectionMode.App)
                 {
-                    Name = name,
-                    Emoji = group.Emoji,
-                    MerMaidGraph = MermaidGenerator.GenerateMermaidDiagram(group),
-                    Yaml = group.Yaml,
-                    Errors = wsErrors,
-                    AutoStart = group.AutoStart,
-                    Rooms = [.. rooms]
-                });
+                    response.Rooms.Add(new WebSocketGetRooms
+                    {
+                        Name = name,
+                        Emoji = group.Emoji,
+                        MerMaidGraph = "",
+                        Yaml = "",
+                        Errors = [],
+                        AutoStart = group.AutoStart,
+                        Rooms = [.. rooms]
+                    });
+                }
+                else
+                {
+                    response.Rooms.Add(new WebSocketGetRooms
+                    {
+                        Name = name,
+                        Emoji = group.Emoji,
+                        MerMaidGraph = MermaidGenerator.GenerateMermaidDiagram(group),
+                        Yaml = group.Yaml,
+                        Errors = wsErrors,
+                        AutoStart = group.AutoStart,
+                        Rooms = [.. rooms]
+                    });
+                }
             }
 
             var responseJson = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(response));

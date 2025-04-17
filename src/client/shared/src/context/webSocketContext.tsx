@@ -28,7 +28,7 @@ import { useEditorMode } from '../hooks/useEditorMode';
 
 interface IWebSocketContext {
   getMessages(action: string): WebSocketReplyChatRoomMessage[];
-  sendMessage: (message: WebSocketBaseMessage) => void;
+  sendMessage: (message: WebSocketBaseMessage, orchestrator: string, room: string) => void;
   addOrUpdateMessage: (message: WebSocketReplyChatRoomMessage) => void;
   connectionStatus: 'Connected' | 'Disconnected' | 'Reconnecting';
   rooms: WebSocketRoom[];
@@ -185,7 +185,7 @@ export const WebSocketProvider = ({
       } else if (incomingMessage.Action === 'audio') {
         const audioMessage = incomingMessage as WebSocketAudioMessage;
         handleAudioMessage(audioMessage);
-      } else if (incomingMessage.SubAction === 'change-room') {
+      } else if ((incomingMessage.SubAction === 'change-room') || (incomingMessage.SubAction === 'change-room-yield')) {
         const roomMessageChange = incomingMessage as WebSocketNewRoomMessage;
         handleNewRoomMessage(roomMessageChange);
         addOrUpdateMessage(incomingMessage);

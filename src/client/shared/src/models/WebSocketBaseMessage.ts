@@ -4,11 +4,7 @@ export interface WebSocketBaseMessage {
     Action: string;
     SubAction: string;
     Content: string;
-    
-    
-    RoomName: string;
-    SubRoomName: string;
-    
+
     Mode: string;
   }
   

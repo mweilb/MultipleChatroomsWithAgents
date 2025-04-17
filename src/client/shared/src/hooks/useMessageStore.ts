@@ -45,14 +45,14 @@ export function useMessageStore(
 
   // Wrap a message from sendMessage (non-rooms only) and add it.
   const addMessageFromSend = useCallback(
-    (message: WebSocketBaseMessage): void => {
+    (message: WebSocketBaseMessage, orchestrator: string, room: string): void => {
       if (message.Action !== 'rooms') {
         const newMessage: WebSocketReplyChatRoomMessage = {
           ...message, 
           AgentName: 'User',
           Emoji: '🤓',
-          SubRoomName: '',
-          RoomName: '',
+          RoomName:room,
+          Orchestrator:orchestrator,
         };
         addOrUpdateMessage(newMessage);
       }
@@ -62,9 +62,9 @@ export function useMessageStore(
 
   // Expose a sendMessage function that both updates the store and sends the message.
   const sendMessage = useCallback(
-    (message: WebSocketBaseMessage) => {
+    (message: WebSocketBaseMessage, orchestrator: string, room: string) => {
       // Update local store.
-      addMessageFromSend(message);
+      addMessageFromSend(message,orchestrator, room);
       // Send the message using the provided sender function.
       sender(message);
     },
