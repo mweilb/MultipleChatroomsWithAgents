@@ -1,0 +1,43 @@
+{
+  "UserId": "user-123",
+  "TransactionId": "txn-456",
+  "Action": "rooms",
+  "SubAction": "list",
+  "Content": "",
+  "Mode": "App",
+  "Version": "1.0",
+  "Rooms": [
+    {
+      "UserId": "user-123",
+      "TransactionId": "txn-789",
+      "Action": "room",
+      "SubAction": "info",
+      "Content": "",
+      "Mode": "App",
+      "Version": "1.0",
+      "Name": "General",
+      "Emoji": "💬",
+      "AutoStart": "true",
+      "MerMaidGraph": "graph TD; A-->B;",
+      "Yaml": "room: General\nemoji: 💬",
+      "Errors": [
+        {
+          "Message": "No error",
+          "Location": "header"
+        }
+      ],
+      "Rooms": [
+        {
+          "Name": "General",
+          "Emoji": "💬",
+          "Agents": [
+            {
+              "Name": "Agent1",
+              "Emoji": "🤖"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

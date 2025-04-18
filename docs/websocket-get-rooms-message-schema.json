@@ -1,0 +1,101 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "WebSocketGetRoomsMessage",
+  "type": "object",
+  "properties": {
+    "UserId": { "type": "string" },
+    "TransactionId": { "type": "string" },
+    "Action": { "type": "string" },
+    "SubAction": { "type": "string" },
+    "Content": { "type": "string" },
+    "Mode": { "type": "string" },
+    "Version": { "type": "string" },
+    "Rooms": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/WebSocketGetRooms" }
+    }
+  },
+  "required": [
+    "UserId",
+    "TransactionId",
+    "Action",
+    "SubAction",
+    "Content",
+    "Mode",
+    "Version",
+    "Rooms"
+  ],
+  "definitions": {
+    "WebSocketGetRooms": {
+      "type": "object",
+      "properties": {
+        "UserId": { "type": "string" },
+        "TransactionId": { "type": "string" },
+        "Action": { "type": "string" },
+        "SubAction": { "type": "string" },
+        "Content": { "type": "string" },
+        "Mode": { "type": "string" },
+        "Version": { "type": "string" },
+        "Name": { "type": "string" },
+        "Emoji": { "type": "string" },
+        "AutoStart": { "type": "string" },
+        "MerMaidGraph": { "type": "string" },
+        "Yaml": { "type": "string" },
+        "Errors": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/WebSocketValidationError" }
+        },
+        "Rooms": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/WebSocketRoomProfile" }
+        }
+      },
+      "required": [
+        "UserId",
+        "TransactionId",
+        "Action",
+        "SubAction",
+        "Content",
+        "Mode",
+        "Version",
+        "Name",
+        "Emoji",
+        "AutoStart",
+        "MerMaidGraph",
+        "Yaml",
+        "Errors",
+        "Rooms"
+      ]
+    },
+    "WebSocketRoomProfile": {
+      "type": "object",
+      "properties": {
+        "Name": { "type": "string" },
+        "Emoji": { "type": "string" },
+        "Agents": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/WebSocketAgentProfile" }
+        }
+      },
+      "required": [ "Name", "Emoji", "Agents" ]
+    },
+    "WebSocketAgentProfile": {
+      "type": "object",
+      "properties": {
+        "Name": { "type": "string" },
+        "Emoji": { "type": "string" }
+      },
+      "required": [ "Name", "Emoji" ]
+    },
+    "WebSocketValidationError": {
+      "type": "object",
+      "properties": {
+        "Message": { "type": "string" },
+        "Location": { "type": "string" },
+        "LineNumber": { "type": "integer" },
+        "CharPosition": { "type": "integer" }
+      },
+      "required": [ "Message", "Location" ]
+    }
+  }
+}

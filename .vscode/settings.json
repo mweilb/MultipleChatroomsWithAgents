@@ -1,3 +1,4 @@
 {
-    "git.ignoreLimitWarning": true
+    "git.ignoreLimitWarning": true,
+    "dotnet-test-explorer.testArguments": "${workspaceFolder}/src/test/WebSocketMessages.Tests/WebSocketMessages.Tests.csproj"
 }

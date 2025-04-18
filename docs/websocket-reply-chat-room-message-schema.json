@@ -1,0 +1,31 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "WebSocketReplyChatRoomMessage",
+  "type": "object",
+  "properties": {
+    "UserId": { "type": "string" },
+    "TransactionId": { "type": "string" },
+    "Action": { "type": "string" },
+    "SubAction": { "type": "string" },
+    "Content": { "type": "string" },
+    "Mode": { "type": "string" },
+    "Version": { "type": "string" },
+    "AgentName": { "type": "string" },
+    "Orchestrator": { "type": "string" },
+    "RoomName": { "type": "string" },
+    "Emoji": { "type": "string" }
+  },
+  "required": [
+    "UserId",
+    "TransactionId",
+    "Action",
+    "SubAction",
+    "Content",
+    "Mode",
+    "Version",
+    "AgentName",
+    "Orchestrator",
+    "RoomName",
+    "Emoji"
+  ]
+}

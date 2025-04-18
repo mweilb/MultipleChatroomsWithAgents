@@ -1,0 +1,15 @@
+{
+  "UserId": "user-123",
+  "TransactionId": "txn-456",
+  "Action": "room",
+  "SubAction": "new",
+  "Content": "",
+  "Mode": "App",
+  "Version": "1.0",
+  "AgentName": "Agent1",
+  "Emoji": "🤖",
+  "Orchestrator": "Orch1",
+  "RoomName": "General",
+  "From": "user-123",
+  "To": "user-456"
+}

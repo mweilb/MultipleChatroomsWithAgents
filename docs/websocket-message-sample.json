@@ -1,0 +1,9 @@
+{
+  "UserId": "user-123",
+  "TransactionId": "txn-456",
+  "Action": "chat",
+  "SubAction": "reply",
+  "Content": "Hello, world!",
+  "Mode": "App",
+  "Version": "1.0"
+}
