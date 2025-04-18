@@ -1,4 +1,4 @@
-﻿﻿﻿﻿
+﻿﻿﻿﻿﻿
 using YamlDotNet.Serialization;
 
 namespace  YamlConfigurations
@@ -12,6 +12,15 @@ namespace  YamlConfigurations
         public static bool IsValidAgentName(string name)
         {
             // Azure OpenAI: ^[^\s<|\\/>]+$
+            return System.Text.RegularExpressions.Regex.IsMatch(
+                name,
+                @"^[^\s<|\\/>]+$"
+            );
+        }
+
+        public static bool IsValidRoomName(string name)
+        {
+            // Same rule as agent names: no spaces or < | \ / >
             return System.Text.RegularExpressions.Regex.IsMatch(
                 name,
                 @"^[^\s<|\\/>]+$"

@@ -1,22 +1,25 @@
-﻿Auto Room Change:
+﻿﻿﻿Auto Room Change:
   emoji: "💡"
   auto-start: true
-  start-room: Get To Know Us
+  start-room: Get_To_Know_Us
   agents:
     # Global Agents - Defined Once, Used Everywhere
     Inform_Agent:
+      display-name: "Inform Agent"
       emoji: "💡"
       model: gpt-4
       echo: >
         
         An one line story about the Inform Agent!  
     More_About_You_Agent:
+      display-name: "More About You Agent"
       emoji: "🧠"
       model: gpt-4
       echo: >
       
         An one line review about the More About You Agent! 
     Gather_Agent:
+      display-name: "Gather Agent"
       emoji: "🔐"
       model: gpt-4
       echo: >
@@ -24,6 +27,7 @@
         An one line to promote of the Gather Agent!  
     
     Job_Agent:
+      display-name: "Job Agent"
       emoji: "🔐"
       model: gpt-4
       echo: >
@@ -31,6 +35,7 @@
         An one line to promote of the Job Agent!   
     
     Job_Specialized_Agent:
+      display-name: "Job Specialized Agent"
       emoji: "🔐"
       model: gpt-4
       echo: >
@@ -39,6 +44,7 @@
     
 
     Apply_Agent:
+      display-name: "Apply Agent"
       emoji: "🔐"
       model: gpt-4
       echo: >
@@ -46,7 +52,8 @@
         An one line to promote of the Apply Agent!   
  
   chatrooms:
-    Get To Know Us:
+    Get_To_Know_Us:
+      display-name: "Get To Know Us"
       emoji: "🧠"
       agents:
         - name: Inform_Agent
@@ -81,7 +88,7 @@
               current:
                 - name: User Input 
               next:
-                - name: Get To Know You
+                - name: Get_To_Know_You
                   context-transfer:
                     instructions: >
                         {{messages}}
@@ -94,7 +101,8 @@
             {{messages}}
         messages-preset-filters: [Last message]
 
-    Get To Know You:
+    Get_To_Know_You:
+      display-name: "Get To Know You"
       emoji: "🧠"
       agents:
         - name: Gather_Agent
@@ -107,7 +115,7 @@
 
         rules:
           - current:
-              - name: Get To Know You
+              - name: Get_To_Know_You
             next:
               - name: Gather_Agent
           
@@ -121,14 +129,15 @@
           - current:
               - name: Need More Human
             next:
-              - name: Find The Job
+              - name: Find_The_Job
                 context-transfer:
                     instructions: >
                         {{messages}}
                         Summarize the conversation
            
 
-    Find The Job:
+    Find_The_Job:
+      display-name: "Find The Job"
       emoji: "🧠"
       agents:
         - name: Job_Agent
@@ -145,7 +154,7 @@
           - current:
               - name: Job_Specialized_Agent
             next:
-              - name: Apply For Job
+              - name: Apply_For_Job
                 context-transfer:
                     instructions: >
                         {{messages}}
@@ -154,7 +163,8 @@
                     cancellation-agent-name: Job Agent
             
     
-    Apply For Job:
+    Apply_For_Job:
+      display-name: "Apply For Job"
       emoji: "🧠"
       agents:
         - name: Apply_Agent
@@ -166,7 +176,7 @@
                 value: true
         rules:
             - current:
-                - name: Find The Job
+                - name: Find_The_Job
               next:
                 - name: Apply_Agent
             
