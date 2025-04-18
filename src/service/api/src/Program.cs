@@ -20,14 +20,16 @@ var webSocketHandler = new WebSocketHandler();
 
 var configBuilder = new ConfigurationBuilder()
     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+    .AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: true)
     .AddJsonFile("localsettings.json", optional: true, reloadOnChange: true)
     .AddEnvironmentVariables(); // Environment variables take precedence
 
 IConfiguration configuration = configBuilder.Build();
 
+ 
 // Initialize KernelHandler
-var setupForLlmRequested = configuration["LlmSetup"] ?? "Ollama";
-var setupForVectorDBRequested = configuration["VectorSetup"] ?? "Qdrant";
+var setupForLlmRequested = configuration.GetValue<string>("LlmSetup", "Ollama");
+var setupForVectorDBRequested = configuration.GetValue<string>("VectorSetup", "Qdrant");
 
 Kernel kernel = SetupKernel(configuration, setupForLlmRequested);
 
