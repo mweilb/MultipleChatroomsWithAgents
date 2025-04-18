@@ -137,7 +137,7 @@ export const WebSocketProvider = ({
         socketConnection.send(JSON.stringify({ Action: "ping" }));
         pongTimer.current = window.setTimeout(() => {
           console.warn("Pong not received, closing socket.");
-          socketConnection.close();
+       //   socketConnection.close();
         }, pongTimeout);
       }
     };
