@@ -2,7 +2,6 @@ import React,  {
   createContext,
   ReactNode,
   useCallback,
-  useContext,
   useEffect,
   useRef,
   useState,
@@ -26,7 +25,7 @@ import { WebSocketLibrarianConverse } from '../models/WebSocketLibrarianConverse
 import { WebSocketLibrarianList } from '../models/WebSocketLibrarianList';
 import { useEditorMode } from '../hooks/useEditorMode';
 
-interface IWebSocketContext {
+export interface IWebSocketContext {
   getMessages(action: string): WebSocketReplyChatRoomMessage[];
   getRequestState(action: string): string;
   sendMessage: (message: WebSocketBaseMessage, orchestrator: string, room: string) => void;
@@ -52,7 +51,7 @@ interface IWebSocketContext {
 }
 
 // Using a default value of null for clarity.
-const WebSocketContext = createContext<IWebSocketContext | null>(null);
+export const WebSocketContext = createContext<IWebSocketContext | null>(null);
 
 interface WebSocketProviderProps {
   url: string;
@@ -158,6 +157,8 @@ export const WebSocketProvider = ({
        
       if (incomingMessage.Action === 'editor') {
       }
+      else if (incomingMessage.Action === "ModeResponse") {
+      }
       else if (incomingMessage.Action === 'rooms') {
         const roomsResponse = incomingMessage as WebSocketGetRoomsMessage;
         updateRooms(roomsResponse.Rooms ?? []);
@@ -202,7 +203,9 @@ export const WebSocketProvider = ({
     };
 
     socketConnection.onerror = (err) => {
-      console.error('WebSocket error:', err);
+      if (reconnectAttempts.current >=maxRetries) {
+        console.error('WebSocket error:', err);
+      }
       socketConnection.close();
     };
 
@@ -263,12 +266,4 @@ export const WebSocketProvider = ({
       {children}
     </WebSocketContext.Provider>
   );
-};
-
-export const useWebSocketContext = (): IWebSocketContext => {
-  const context = useContext(WebSocketContext);
-  if (!context) {
-    throw new Error('useWebSocketContext must be used within a WebSocketProvider');
-  }
-  return context;
 };

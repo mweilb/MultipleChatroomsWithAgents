@@ -4,10 +4,10 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeHighlight from 'rehype-highlight';
 import { CodeBlock } from '../ChatRoom/CodeBlock';
-import { WebSocektLibrainDocRef } from 'shared';
+import { WebSocketLibrainDocRef } from 'shared';
 
 // Component to display an individual reference with toggle for the text.
-export const ReferenceItem: React.FC<{ reference: WebSocektLibrainDocRef }> = ({ reference }) => {
+export const ReferenceItem: React.FC<{ reference: WebSocketLibrainDocRef }> = ({ reference }) => {
   const [isTextVisible, setTextVisible] = useState(false);
   const [isAnswerVisible, setAnswerVisible] = useState(false);
 

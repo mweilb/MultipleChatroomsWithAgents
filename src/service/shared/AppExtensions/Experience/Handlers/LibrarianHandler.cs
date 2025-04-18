@@ -1,4 +1,4 @@
-﻿using api.src.SemanticKernel.VectorStore;
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿using api.src.SemanticKernel.VectorStore;
 
 using Microsoft.SemanticKernel;
 
@@ -7,34 +7,29 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
 
-using YamlConfigurations.Librarians;
 using WebSocketMessages.Messages;
 using WebSocketMessages;
 using WebSocketMessages.Messages.Librarians;
 using AppExtensions.SemanticKernel.VectorStore;
+using static AppExtensions.Experience.ExperienceManager;
 
 
-namespace AppExtensions.AgentRegistry
+namespace AppExtensions.Experience.Handlers
 {
-    public class LibrarianRegistry
+    public class LibrarianHandler(Dictionary<string, TrackingInfo> trackingInfo, Kernel kernel)
     {
+        // The kernel instance used for processing librarian requests.
+        private readonly Kernel _kernel = kernel;
+        // The tracking information for the current experience.
+    
+        private readonly Dictionary<string, TrackingInfo> _trackingInfo  = trackingInfo;
+
         // Dictionary to hold librarians data.
-        private readonly Dictionary<string, YamLibrarians> dictLibrarians = new();
         static public int EmbeddingDimension = 0;
         /// <summary>
         /// Appends additional librarians groups to the registry.
         /// </summary>
-        public void AppendLibrarians(Dictionary<string, YamLibrarians> moreLibrarians)
-        {
-            foreach (var kvp in moreLibrarians)
-            {
-                if (!dictLibrarians.ContainsKey(kvp.Key))
-                {
-                    dictLibrarians.Add(kvp.Key, kvp.Value);
-                }
-            }
-        }
-
+      
         /// <summary>
         /// Handles the "librarians" command by checking the SubAction and dispatching
         /// to the appropriate method.
@@ -47,15 +42,15 @@ namespace AppExtensions.AgentRegistry
             }
             else if (message.SubAction == "converse")
             {
-               // await HandleConverseWithLibrary(message, socket, kernel);
+                 await HandleConverseWithLibrary(message, socket, _kernel);
             }
             else if (message.SubAction == "list")
             {
-              //  await HandleListWithLibrary(message, socket, kernel);
+               await HandleListWithLibrary(message, socket, _kernel);
             }
             else if (message.SubAction == "docs")
             {
-              // await HandleDocRequestWithLibrary(message, socket, kernel);
+             await HandleDocRequestWithLibrary(message, socket, _kernel);
             }
         }
 
@@ -75,9 +70,14 @@ namespace AppExtensions.AgentRegistry
             };
 
             // Iterate through each librarians group in the registry.
-            foreach (var (_, librariansGroup) in dictLibrarians)
+            foreach (var (_, info) in _trackingInfo)
             {
-                if (librariansGroup.ActiveLibrarians.Count + librariansGroup.NotActiveLibrarians.Count <= 0)
+                var librariansGroup = info.Librarians;
+                if (librariansGroup == null)
+                {
+                    continue;
+                }
+                if (librariansGroup.ActiveLibrarians.Count +librariansGroup.NotActiveLibrarians.Count <= 0)
                 {
                     continue;
                 }
@@ -154,10 +154,13 @@ namespace AppExtensions.AgentRegistry
             }
 
             // Use LINQ to find the active librarian matching room and agent names.
-            var foundAgent = dictLibrarians.Values
-                .Where(lib => lib.RoomName.Equals(payload.RoomName, StringComparison.OrdinalIgnoreCase))
-                .SelectMany(lib => lib.ActiveLibrarians)
-                .FirstOrDefault(agent => agent.Name.Equals(payload.AgentName, StringComparison.OrdinalIgnoreCase));
+            var foundAgent = _trackingInfo.Values
+                .Where(info => info.Librarians != null
+                    && info.Librarians.ActiveLibrarians != null
+                    && info.Librarians.RoomName != null
+                    && info.Librarians.RoomName.Equals(payload.RoomName, StringComparison.OrdinalIgnoreCase))
+                .SelectMany(info => info.Librarians?.ActiveLibrarians ?? [])
+                .FirstOrDefault(agent => agent.Name != null && agent.Name.Equals(payload.AgentName, StringComparison.OrdinalIgnoreCase));
 
             if (foundAgent == null)
             {
@@ -238,10 +241,10 @@ namespace AppExtensions.AgentRegistry
             }
 
             // Use LINQ to find the active librarian matching room and agent names.
-            var foundAgent = dictLibrarians.Values
-                .Where(lib => lib.RoomName.Equals(payload.RoomName, StringComparison.OrdinalIgnoreCase))
-                .SelectMany(lib => lib.ActiveLibrarians)
-                .FirstOrDefault(agent => agent.Name.Equals(payload.AgentName, StringComparison.OrdinalIgnoreCase));
+            var foundAgent = _trackingInfo.Values
+                .Where(info => info.Librarians != null && info.Librarians.RoomName != null && info.Librarians.RoomName.Equals(payload.RoomName, StringComparison.OrdinalIgnoreCase))
+                .SelectMany(info => info.Librarians?.ActiveLibrarians ?? [])
+                .FirstOrDefault(agent => agent.Name != null && agent.Name.Equals(payload.AgentName, StringComparison.OrdinalIgnoreCase));
 
             if (foundAgent == null)
             {
@@ -281,7 +284,7 @@ namespace AppExtensions.AgentRegistry
             {
                 await foreach (var document in VectorStoreHelper<TextParagraphEmbeddingOf3584>.GetRelatedDocuments(kernel, agentCollection,  payload.Text, 5))
                 {
-                    WebSocektLibrainDocRef reference = new()
+                    WebSocketLibrainDocRef reference = new()
                     {
                         Text = document.Record.Text,
                         Score = document.Score.ToString(),
@@ -301,7 +304,7 @@ namespace AppExtensions.AgentRegistry
             {
                 await foreach (var document in VectorStoreHelper<TextParagraphEmbeddingOf3584>.GetRelatedDocuments(kernel, agentCollection, payload.Text, 5))
                 {
-                    WebSocektLibrainDocRef reference = new()
+                    WebSocketLibrainDocRef reference = new()
                     {
                         Text = document.Record.Text,
                         Score = document.Score.ToString(),
@@ -355,10 +358,10 @@ namespace AppExtensions.AgentRegistry
             }
 
             // Use LINQ to find the active librarian matching room and agent names.
-            var foundAgent = dictLibrarians.Values
-                .Where(lib => lib.RoomName.Equals(payload.RoomName, StringComparison.OrdinalIgnoreCase))
-                .SelectMany(lib => lib.ActiveLibrarians)
-                .FirstOrDefault(agent => agent.Name.Equals(payload.AgentName, StringComparison.OrdinalIgnoreCase));
+            var foundAgent = _trackingInfo.Values
+                .Where(info => info.Librarians != null && info.Librarians.RoomName != null && info.Librarians.RoomName.Equals(payload.RoomName, StringComparison.OrdinalIgnoreCase))
+                .SelectMany(info => info.Librarians?.ActiveLibrarians ?? [])
+                .FirstOrDefault(agent => agent.Name != null && agent.Name.Equals(payload.AgentName, StringComparison.OrdinalIgnoreCase));
 
             if (foundAgent == null)
             {
@@ -399,7 +402,7 @@ namespace AppExtensions.AgentRegistry
                 {
                     await foreach (var document in VectorStoreHelper<TextParagraphEmbeddingOf3584>.GetDocuments(kernel, agentCollection, payload.Top, payload.Skip))
                     {
-                        WebSocektLibrainDocRef reference = new()
+                        WebSocketLibrainDocRef reference = new()
                         {
                             Text = document.Record.Text,
                             Score = document.Score.ToString(),
@@ -419,7 +422,7 @@ namespace AppExtensions.AgentRegistry
                 {
                     await foreach (var document in VectorStoreHelper<TextParagraphEmbeddingOf3584>.GetDocuments(kernel, agentCollection, payload.Top, payload.Skip))
                     {
-                        WebSocektLibrainDocRef reference = new()
+                        WebSocketLibrainDocRef reference = new()
                         {
                             Text = document.Record.Text,
                             Score = document.Score.ToString(),

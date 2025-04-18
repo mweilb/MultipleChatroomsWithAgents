@@ -1,4 +1,5 @@
 export * from './src/context/webSocketContext';
+export * from './src/context/useWebSocketContext';
 export * from './src/hooks/useErrorStore';
 export * from './src/hooks/useLibrariansStore';
 export * from './src/hooks/useMessageStore';
@@ -15,10 +16,3 @@ export * from './src/models/WebSocketNewRoomMessage';
 export * from './src/models/WebSocketReplyChatRoomMessages';
 export * from './src/models/WebSocketRequestTranslateMessage';
 export * from './src/models/WebSocketVoiceMessage';
-
-
-
- 
-
-
- 

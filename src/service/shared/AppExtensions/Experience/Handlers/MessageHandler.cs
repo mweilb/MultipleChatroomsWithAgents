@@ -1,8 +1,5 @@
-﻿using AppExtensions.AISpeech;
-using DocumentFormat.OpenXml.ExtendedProperties;
-using DocumentFormat.OpenXml.Wordprocessing;
+﻿ 
 using Microsoft.Extensions.Logging;
-using Microsoft.SemanticKernel;
 using SemanticKernelExtension.Orchestrator;
 using System.Net.WebSockets;
 using System.Text;

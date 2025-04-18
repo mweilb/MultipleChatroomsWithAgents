@@ -24,11 +24,13 @@ namespace AppExtensions.Experience
         public Dictionary<string, TrackingInfo> Experiences = [];
         
         private readonly RoomsHandler RoomsHandler;
+         private readonly LibrarianHandler LibrarianHandler;
 
         public ExperienceManager(Kernel kernel)
         {
             Kernel = kernel;
             RoomsHandler = new RoomsHandler(this);
+            LibrarianHandler = new LibrarianHandler(this.Experiences,kernel);
         }
 
         public async Task<bool> ReadDirectoryAsync(string directory)
@@ -69,6 +71,7 @@ namespace AppExtensions.Experience
         public void RegisterHandlers(WebSocketHandler webSocketHandler)
         {
             webSocketHandler.RegisterCommand("rooms", RoomsHandler.HandleRoomsCommandAsync);
+            webSocketHandler.RegisterCommand("librarians", LibrarianHandler.HandleLibrariansCommandAsync);
 
             foreach(var (key,group) in Experiences)
             {
