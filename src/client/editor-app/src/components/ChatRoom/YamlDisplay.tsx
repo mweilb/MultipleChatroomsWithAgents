@@ -48,14 +48,33 @@ interface GraphOfChartRoomProps {
 const YamlDisplay: React.FC<GraphOfChartRoomProps> = ({ roomName, onErrorCountChange }) => {
   const { rooms } = useWebSocketContext();
 
+  // Track loading state for YAML/errors
+  const [isLoading, setIsLoading] = React.useState(true);
+  const prevRoomName = React.useRef<string | undefined>(undefined);
+
   // Find the room with the exact roomName
   const room: WebSocketRoom | undefined = rooms.find(
     (r) => r.Name === roomName
   );
-  
+
+  // If roomName changes, set loading to true
+  React.useEffect(() => {
+    if (prevRoomName.current !== roomName) {
+      setIsLoading(true);
+      prevRoomName.current = roomName;
+    }
+  }, [roomName]);
+
+  // When new YAML/errors arrive, set loading to false
+  React.useEffect(() => {
+    if (room && (room.Yaml || room.Errors)) {
+      setIsLoading(false);
+    }
+  }, [room, room?.Yaml, room?.Errors]);
+
   // Split YAML into lines for inline error display
-  const errors: ValidationError[] = room?.Errors ?? [];
-  const yamlContent: string = room?.Yaml ?? ""; // Default to empty string if room is undefined
+  const errors: ValidationError[] = isLoading ? [] : room?.Errors ?? [];
+  const yamlContent: string = isLoading ? "" : room?.Yaml ?? ""; // Default to empty string if room is undefined
 
   // Build a single list of all errors with display line number
   const allErrors = React.useMemo(() => {
@@ -66,7 +85,7 @@ const YamlDisplay: React.FC<GraphOfChartRoomProps> = ({ roomName, onErrorCountCh
         _line: typeof e.LineNumber === "number" && e.LineNumber >= 1 ? e.LineNumber : 0
       }))
       .sort((a, b) => a._line - b._line);
-  }, [errors]);
+  }, [errors, isLoading]);
 
   const [selectedErrorIdx, setSelectedErrorIdx] = React.useState(0);
 
@@ -120,7 +139,9 @@ const YamlDisplay: React.FC<GraphOfChartRoomProps> = ({ roomName, onErrorCountCh
             <span className="toolbar-tip">Review highlighted lines below.</span>
           </div>
         )}
-        {yamlContent.trim().length === 0 ? (
+        {isLoading ? (
+          <div className="no-yaml">Validating YAML...</div>
+        ) : yamlContent.trim().length === 0 ? (
           <div className="no-yaml">No YAML found.</div>
         ) : (
           <pre className="yaml-inline-error-block">
