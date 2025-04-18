@@ -29,7 +29,7 @@ namespace WebSocketMessages.Messages
         public string Action { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the sub-action associated with the primary action (e.g., "chunk", "done", "error").
+        /// Gets or sets the sub-action associated with the primary action (e.g., "reply", "done", "error").
         /// </summary>
         public string SubAction { get; set; } = string.Empty;
 

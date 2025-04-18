@@ -111,7 +111,7 @@ export const AppStateProvider = ({ children }: AppStateProviderProps) => {
     return messages.filter(
       (msg) =>
         msg.RoomName === activeChatSubRoomName &&
-        (msg.SubAction === 'chunk' || msg.SubAction === 'ask')  
+        (msg.SubAction === 'reply' || msg.SubAction === 'ask')  
     );
   };
 

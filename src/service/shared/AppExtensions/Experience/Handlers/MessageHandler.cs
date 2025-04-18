@@ -306,7 +306,7 @@ namespace AppExtensions.Experience.Handlers
                 UserId = userId,
                 TransactionId = Guid.NewGuid().ToString(),
                 Action = command,
-                SubAction = "chunk",
+                SubAction = "reply",
                 Content = string.Empty,
                 AgentName = "Unknown"
             };
@@ -347,7 +347,7 @@ namespace AppExtensions.Experience.Handlers
                 UserId = userId,
                 TransactionId = Guid.NewGuid().ToString(),
                 Action = command,
-                SubAction = "chunk",
+                SubAction = "reply",
                 AgentName = "Unknown",
               
             };

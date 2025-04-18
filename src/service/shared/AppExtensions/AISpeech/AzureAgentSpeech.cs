@@ -85,7 +85,7 @@ namespace AppExtensions.AISpeech
                     UserId = "User123", // Replace with your actual user identifier if available
                     TransactionId = Guid.NewGuid().ToString(),
                     Action = "audio",
-                    SubAction = "chunk",
+                    SubAction = "reply",
                     AudioData = chunk,
                     AudioFormat = "pcm",   // Change if using a different audio format
                     SampleRate = 16000     // Adjust based on your audio configuration

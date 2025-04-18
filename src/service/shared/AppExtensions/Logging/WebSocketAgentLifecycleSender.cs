@@ -138,7 +138,7 @@ namespace WebSocketMessages.AgentLifecycle
                 UserId = userId,
                 TransactionId = Guid.NewGuid().ToString(),
                 Action = OrchestratorName,
-                SubAction = "chunk",
+                SubAction = "reply",
                 Content = eventData.Message,
                 Mode = "Editor"
             };

@@ -45,7 +45,7 @@ const ChatRoomSave = (): JSX.Element => {
 
   useEffect(() => {
     setAudioMessageListener((msg: WebSocketAudioMessage) => {
-      if (msg.SubAction === "chunk") {
+      if (msg.SubAction === "reply") {
         audioPlayerRef.current.playChunk(msg);
       } else if (msg.SubAction === "done") {
         console.log("Audio stream ended.");
