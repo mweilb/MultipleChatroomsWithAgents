@@ -132,6 +132,42 @@ export const WebSocketProvider = ({
       triggerLibraryRequest(socketConnection);
     };
  
+    // Handler map for action/subaction routing
+    const messageHandlers: {
+      [action: string]: {
+        [subAction: string]: (msg: any) => void;
+      } | ((msg: any) => void);
+    } = {
+      editor: () => {},
+      ModeResponse: () => {},
+      rooms: (msg: WebSocketGetRoomsMessage) => {
+        updateRooms(msg.Rooms ?? []);
+      },
+      librarians: (msg: any) => {
+        processLibrariansMessage(msg);
+      },
+      librarian: {
+        'converse-message': (msg: WebSocketLibrarianConverse) => {
+          handleLibrarianConverseMessage(msg);
+        },
+        list: (msg: WebSocketLibrarianList) => {
+          handleLibrarianListMessage(msg);
+        },
+        doc: (msg: WebSocketLibrarianList) => {
+          handleLibrarianDocMessage(msg);
+        },
+      },
+      moderator: (msg: WebSocketModeration) => {
+        handleModerationMessage(msg);
+      },
+      error: (msg: any) => {
+        handleErrorMessage(msg);
+      },
+      audio: (msg: WebSocketAudioMessage) => {
+        handleAudioMessage(msg);
+      },
+    };
+
     socketConnection.onmessage = (event) => {
       let incomingMessage: any | null = null;
       try {
@@ -154,40 +190,22 @@ export const WebSocketProvider = ({
         console.error('Malformed message:', incomingMessage);
         return;
       }
-       
-      if (incomingMessage.Action === 'editor') {
-      }
-      else if (incomingMessage.Action === "ModeResponse") {
-      }
-      else if (incomingMessage.Action === 'rooms') {
-        const roomsResponse = incomingMessage as WebSocketGetRoomsMessage;
-        updateRooms(roomsResponse.Rooms ?? []);
-      } else if (incomingMessage.Action === 'librarians') {
-        processLibrariansMessage(incomingMessage);
+
+      // Handler dispatch logic
+      const actionHandler = messageHandlers[incomingMessage.Action];
+      if (typeof actionHandler === 'function') {
+        actionHandler(incomingMessage);
       } else if (
-        incomingMessage.Action === 'librarian' &&
-        incomingMessage.SubAction === 'converse-message'
+        actionHandler &&
+        typeof actionHandler === 'object' &&
+        incomingMessage.SubAction &&
+        actionHandler[incomingMessage.SubAction]
       ) {
-        handleLibrarianConverseMessage(incomingMessage as WebSocketLibrarianConverse);
+        actionHandler[incomingMessage.SubAction](incomingMessage);
       } else if (
-        incomingMessage.Action === 'librarian' &&
-        incomingMessage.SubAction === 'list'
+        incomingMessage.SubAction === 'change-room' ||
+        incomingMessage.SubAction === 'change-room-yield'
       ) {
-        handleLibrarianListMessage(incomingMessage as WebSocketLibrarianList);
-      } else if (
-        incomingMessage.Action === 'librarian' &&
-        incomingMessage.SubAction === 'doc'
-      ) {
-        handleLibrarianDocMessage(incomingMessage as WebSocketLibrarianList);
-      } else if (incomingMessage.Action === 'moderator') {
-        const moderatorMessage = incomingMessage as WebSocketModeration;
-        handleModerationMessage(moderatorMessage);
-      } else if (incomingMessage.Action === 'error') {
-        handleErrorMessage(incomingMessage);
-      } else if (incomingMessage.Action === 'audio') {
-        const audioMessage = incomingMessage as WebSocketAudioMessage;
-        handleAudioMessage(audioMessage);
-      } else if ((incomingMessage.SubAction === 'change-room') || (incomingMessage.SubAction === 'change-room-yield')) {
         const roomMessageChange = incomingMessage as WebSocketNewRoomMessage;
         handleNewRoomMessage(roomMessageChange);
         addOrUpdateMessage(incomingMessage);
