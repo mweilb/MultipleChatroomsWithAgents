@@ -20,11 +20,14 @@ export default defineConfig({
     port: 3001,
     fs: {
       // Allow access to the parent directory (client) which contains both shared and tools
-      allow: [path.resolve(__dirname, '../')],
+      allow: [path.resolve(__dirname, '../'), path.resolve(__dirname, '../shared')],
     },
   },
   optimizeDeps: {
     // Do not pre-bundle shared to allow live updates
     exclude: ['shared'],
+  },
+  build: {
+    sourcemap: true,
   },
 });

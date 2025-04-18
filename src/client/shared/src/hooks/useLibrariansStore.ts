@@ -44,7 +44,7 @@ export function useLibrariansStore(sender: (message: WebSocketBaseMessage) => vo
 
   // New handler for conversation messages using a ref.
   const handleLibrarianConverseMessage = useCallback((msg: WebSocketLibrarianConverse) => {
-    const { Orchestrator: RoomName, AgentName, TransactionId } = msg;
+    const { RoomName, AgentName, TransactionId } = msg;
     const store = librarianConverseStoreRef.current;
 
     // Get current store for the room; if it doesn't exist, initialize it.
@@ -73,7 +73,7 @@ export function useLibrariansStore(sender: (message: WebSocketBaseMessage) => vo
 
     // New handler for conversation messages using a ref.
   const handleLibrarianListMessage = useCallback((msg: WebSocketLibrarianList) => {
-      const { Orchestrator: RoomName, AgentName, TransactionId } = msg;
+      const {  RoomName, AgentName, TransactionId } = msg;
       const store = librarianConverseStoreRef.current;
   
       // Get current store for the room; if it doesn't exist, initialize it.
@@ -102,7 +102,7 @@ export function useLibrariansStore(sender: (message: WebSocketBaseMessage) => vo
 
 
     const handleLibrarianDocMessage = useCallback((msg: WebSocketLibrarianList) => {
-      const { Orchestrator: RoomName, AgentName } = msg;
+      const { RoomName: RoomName, AgentName } = msg;
       const store = librarianConverseStoreRef.current;
   
       // Get current store for the room; if it doesn't exist, initialize it.
@@ -141,8 +141,6 @@ export function useLibrariansStore(sender: (message: WebSocketBaseMessage) => vo
       Action: 'librarians',
       SubAction: 'get',
       Content: '',
-      Orchestrator: '',
-      RoomName: '',
       Mode: 'app',
     };
     socket.send(JSON.stringify(message));
@@ -158,8 +156,6 @@ export function useLibrariansStore(sender: (message: WebSocketBaseMessage) => vo
         Action: 'librarians',
         SubAction: 'converse',
         Content: JSON.stringify({ roomName, AgentName, text }),
-        Orchestrator: '',
-        RoomName: '',
         Mode: 'app' 
       };
       sender(message);
@@ -177,8 +173,6 @@ export function useLibrariansStore(sender: (message: WebSocketBaseMessage) => vo
         Action: 'librarians',
         SubAction: 'list',
         Content: JSON.stringify({ roomName, AgentName, text }),
-        RoomName: '',
-        Orchestrator: '',
         Mode: 'app'
       };
       sender(message);
@@ -197,8 +191,6 @@ export function useLibrariansStore(sender: (message: WebSocketBaseMessage) => vo
         Action: 'librarians',
         SubAction: 'docs',
         Content: JSON.stringify({ roomName, AgentName, top, skip }),
-        RoomName: '',
-        Orchestrator: '',
         Mode: 'app',
       };
       sender(message);

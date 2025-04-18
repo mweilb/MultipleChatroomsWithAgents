@@ -201,18 +201,17 @@ namespace AppExtensions.Experience.Handlers
                             }
                           
                         }
-                        
-                       
-
-                        
+                                        
                     }
 
                     // Otherwise, confirm success:
                     var successResponse = new WebSocketBaseMessage
                     {
-                        Action = "rooms",
-                        SubAction = "reset",
-                        Content = $"Successfully reset room: {roomToReset}"
+                        UserId = "system",
+                        Action = "acknowledge",
+                        SubAction = "reset-success",
+                        Content = $"Successfully reset room: {roomToReset}",
+                        TransactionId = message.TransactionId
                     };
                     var successJson = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(successResponse));
                     await webSocket.SendAsync(

@@ -5,7 +5,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeHighlight from 'rehype-highlight';
 import { CodeBlock } from '../ChatRoom/CodeBlock';
-import { useWebSocketContext, WebSocektLibrainDocRef } from 'shared';
+import { useWebSocketContext, WebSocketLibrainDocRef } from 'shared';
 import { ReferenceItem } from './ReferenceItem';
 
 interface DocsWithLibrarianControlProps {
@@ -105,7 +105,7 @@ const DocsWithLibrarianControl: React.FC<DocsWithLibrarianControlProps> = ({ roo
                 {showReferencesMap[msg.TransactionId] && (
                   <div className="message-references">
                     <h4>References:</h4>
-                    {msg.References.map((ref: WebSocektLibrainDocRef, index: number) => (
+                    {msg.References.map((ref: WebSocketLibrainDocRef, index: number) => (
                       <ReferenceItem key={index} reference={ref} />
                     ))}
                   </div>

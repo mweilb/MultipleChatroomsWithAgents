@@ -1,7 +1,6 @@
 ﻿
 
 using api.src;
-using AppExtensions.AgentRegistry;
 using AppExtensions.Experience;
 using AppExtensions.SemanticKernel;
 using AppExtensions.Logging;
@@ -47,7 +46,7 @@ resultOfAction = await manager.CreateOrchestratorsAsync();
 
 manager.RegisterHandlers(webSocketHandler);
 
-LibrarianRegistry.EmbeddingDimension = KernelHelper.EmbeddingDimension;
+AppExtensions.Experience.Handlers.LibrarianHandler.EmbeddingDimension = KernelHelper.EmbeddingDimension;
 
 //if using the editor, we need this for more information.
 app.UseWebSockets();

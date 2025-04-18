@@ -27,4 +27,7 @@ export default defineConfig({
     // Do not pre-bundle shared to allow live updates
     exclude: ['shared'],
   },
+  build: {
+    sourcemap: true,
+  },
 });
