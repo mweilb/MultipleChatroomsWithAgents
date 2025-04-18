@@ -16,15 +16,15 @@
     <PackageReference Include="DocumentFormat.OpenXml" Version="3.3.0" />
     <PackageReference Include="Microsoft.CognitiveServices.Speech" Version="1.43.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.0-preview.3.25171.5" />
-    <PackageReference Include="Microsoft.SemanticKernel" Version="1.46.0" />
-    <PackageReference Include="Microsoft.SemanticKernel.Agents.Core" Version="1.46.0" />
-    <PackageReference Include="Microsoft.SemanticKernel.Connectors.AzureAISearch" Version="1.46.0-preview" />
-    <PackageReference Include="Microsoft.SemanticKernel.Connectors.AzureOpenAI" Version="1.46.0" />
-    <PackageReference Include="Microsoft.SemanticKernel.Connectors.Ollama" Version="1.46.0-alpha" />
-    <PackageReference Include="Microsoft.SemanticKernel.Connectors.Pinecone" Version="1.46.0-preview" />
-    <PackageReference Include="Microsoft.SemanticKernel.Connectors.Qdrant" Version="1.46.0-preview" />
-    <PackageReference Include="Microsoft.SemanticKernel.PromptTemplates.Handlebars" Version="1.46.0" />
-    <PackageReference Include="PdfPig" Version="0.1.11-alpha-20250407-24902" />
+    <PackageReference Include="Microsoft.SemanticKernel" Version="1.47.0" />
+    <PackageReference Include="Microsoft.SemanticKernel.Agents.Core" Version="1.47.0" />
+    <PackageReference Include="Microsoft.SemanticKernel.Connectors.AzureAISearch" Version="1.47.0-preview" />
+    <PackageReference Include="Microsoft.SemanticKernel.Connectors.AzureOpenAI" Version="1.47.0" />
+    <PackageReference Include="Microsoft.SemanticKernel.Connectors.Ollama" Version="1.47.0-alpha" />
+    <PackageReference Include="Microsoft.SemanticKernel.Connectors.Pinecone" Version="1.47.0-preview" />
+    <PackageReference Include="Microsoft.SemanticKernel.Connectors.Qdrant" Version="1.47.0-preview" />
+    <PackageReference Include="Microsoft.SemanticKernel.PromptTemplates.Handlebars" Version="1.47.0" />
+    <PackageReference Include="PdfPig" Version="0.1.11-alpha-20250413-58085" />
     <PackageReference Include="YamlDotNet" Version="16.3.0" />
   </ItemGroup>
 

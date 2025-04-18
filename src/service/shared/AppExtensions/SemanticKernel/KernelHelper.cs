@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
+using Microsoft.SemanticKernel.Connectors.AzureOpenAI;
 using OllamaSharp;
 using SemanticKernelExtension.ChatCompletionService;
 
@@ -37,27 +38,29 @@ namespace AppExtensions.SemanticKernel
             //this is the embedding size for and we can use this to make other lives easier
             EmbeddingDimension = 1536;
             // Retrieve Azure OpenAI configuration settings from the configuration object.
-            var apiKey = configuration["AZURE_OPENAI_API_KEY"];
-            var endpoint = configuration["AZURE_OPENAI_ENDPOINT"];
-            var deploymentName = configuration["AZURE_OPENAI_DEPLOYMENT"];
+            var apiKey = configuration["AzureOpenAI:ApiKey"];
+            var endpoint = configuration["AzureOpenAI:Endpoint"];
+            var deploymentName = configuration["AzureOpenAI:Deployment"];
 
             // Retrieve optional Azure Cognitive Search configuration settings.
-            var azureSearchEndpoint = configuration["AZURE_SEARCH_ENDPOINT"];
-            var azureSearchKey = configuration["AZURE_SEARCH_KEY"];
+            var azureSearchEndpoint = configuration["AzureOpenAI:SearchEndpoint"];
+            var azureSearchKey = configuration["AzureOpenAI:SearchKey"];
 
             // Validate that the required Azure OpenAI settings are provided.
             if (string.IsNullOrEmpty(apiKey) || string.IsNullOrEmpty(endpoint) || string.IsNullOrEmpty(deploymentName))
             {
                 // Throw an exception if any required environment variables are missing.
-                throw new InvalidOperationException("Azure OpenAI environment variables are not set.");
+                throw new InvalidOperationException("Azure OpenAI configuration values are not set.");
             }
 
-            // Add Azure OpenAI Chat Completion service to the kernel using the provided deployment name, API key, and endpoint.
-            kernelBuilder.AddAzureOpenAIChatCompletion(
+            // Create Azure OpenAI Chat Completion service and wrap with LearningInterceptor
+            var azureAiChatService = new AzureOpenAIChatCompletionService(
                 deploymentName: deploymentName,
-                apiKey: apiKey,
-                endpoint: endpoint
+                endpoint: endpoint,
+                apiKey: apiKey
             );
+            var wrappedService = new LearningInterceptor(azureAiChatService);
+            kernelBuilder.Services.AddSingleton<IChatCompletionService>(wrappedService);
 
             // If Azure Cognitive Search configuration is available, then add the corresponding services.
             if (!(string.IsNullOrEmpty(azureSearchEndpoint) || string.IsNullOrEmpty(azureSearchKey)))

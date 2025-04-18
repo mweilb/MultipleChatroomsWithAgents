@@ -1,4 +1,4 @@
-﻿﻿﻿ 
+﻿﻿﻿﻿ 
 using YamlConfigurations;
 
 namespace YamlConfigurations.Validations
@@ -18,7 +18,8 @@ namespace YamlConfigurations.Validations
             new AgentReferenceValidation(),
             new SelectionValidation(),
             new TerminationValidation(),
-            new ModerationPromptNotEmptyValidation()
+            new ModerationPromptNotEmptyValidation(),
+            new AgentNameValidation()
             // Add additional validations here as needed.
         };
         }
