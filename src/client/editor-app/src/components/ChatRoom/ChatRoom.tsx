@@ -25,7 +25,7 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ chatType, title, userId }) => {
   const [input, setInput] = useState('');
   const [showRationales, setShowRationales] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState(chatType);
-  const [waitingForRoomChangeYieldAnswer, setWaitingForRoomChangeYieldAnswer] = useState(false);
+ 
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
@@ -38,12 +38,7 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ chatType, title, userId }) => {
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    if (
-      messages.length > 0 &&
-      messages[messages.length - 1].SubAction === "change-room-yield"
-    ) {
-      setWaitingForRoomChangeYieldAnswer(true);
-    }
+    
   }, [messages]);
 
   useEffect(() => {
@@ -117,7 +112,7 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ chatType, title, userId }) => {
         );
         if (!existing) {
           addOrUpdateMessage(roomMessage);
-          setWaitingForRoomChangeYieldAnswer(true);
+ 
         }
       }
     },
@@ -136,7 +131,7 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ chatType, title, userId }) => {
 
   const handleRoomChangeYieldAnswer = useCallback(
     (message: any, answer: string) => {
-      setWaitingForRoomChangeYieldAnswer(false);
+ 
       if (message && message.To && message.From) {
         if (answer === "Yes") {
           requestRoomChange(userId, message.Action, message.To);
@@ -157,6 +152,7 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ chatType, title, userId }) => {
             value={selectedRoom}
             onChange={handleRoomChangeSelect}
             className="toggle-button select-room"
+            aria-label="Select chat room"
           >
             {(rooms?.find(r => r.Name === chatType)?.Rooms || []).map((subroom, idx) => (
               <option key={subroom.Name || idx} value={subroom.Name}>
