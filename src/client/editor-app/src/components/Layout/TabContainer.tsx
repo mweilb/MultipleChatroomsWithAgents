@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useErrorStoreContext } from '../../context/ErrorStoreContext';
 import ChatRoom from "../ChatRoom/ChatRoom";
 import GraphOfChartRoom from "../ChatRoom/GraphOfChartRoom";
 import YamlDisplay from "../ChatRoom/YamlDisplay";
@@ -15,10 +16,11 @@ interface TabContainerProps {
 const TabContainer: React.FC<TabContainerProps> = ({ roomName }) => {
   // Expanded union type to include 'error'
   const [activeTab, setActiveTab] = useState<'chat' | 'graph' | 'text' | 'moderation' | 'error'>('chat');
-  const [yamlErrorCount, setYamlErrorCount] = useState(0);
+  const [localYamlErrorCount, setLocalYamlErrorCount] = useState(0);
 
   // Get moderation and error histories from the context.
-  const { moderationHistory, errorHistory } = useWebSocketContext();
+  const { moderationHistory, errorHistory, rooms } = useWebSocketContext();
+  const { yamlErrorCount, setYamlErrorCount } = useErrorStoreContext();
 
   // Compute counts based on roomName.
   // If roomName is not "all", combine messages for that room with those under "all".
@@ -31,6 +33,16 @@ const TabContainer: React.FC<TabContainerProps> = ({ roomName }) => {
     roomName && roomName !== "all"
       ? ((errorHistory[roomName] || []).length + (errorHistory["all"] || []).length)
       : (errorHistory["all"] || []).length;
+
+  const yamlCount = yamlErrorCount[roomName ?? ""] || 0;
+
+  // Always update context YAML error count for the current room, even if YAML tab is not active
+  useEffect(() => {
+    if (!roomName) return;
+    const room = rooms.find(r => r.Name === roomName);
+    const count = room && Array.isArray(room.Errors) ? room.Errors.length : 0;
+    setYamlErrorCount(roomName, count);
+  }, [roomName, rooms, setYamlErrorCount]);
 
   return (
     <div className="tab-container">
@@ -51,7 +63,7 @@ const TabContainer: React.FC<TabContainerProps> = ({ roomName }) => {
           onClick={() => setActiveTab('text')}
           className={`tab-button ${activeTab === 'text' ? 'active' : ''}`}
         >
-          Yaml <span className={`badge${yamlErrorCount === 0 ? " badge-green" : ""}`}>{yamlErrorCount}</span>
+          Yaml <span className={`badge${yamlCount === 0 ? " badge-green" : ""}`}>{yamlCount}</span>
         </button>
         <button 
           onClick={() => setActiveTab('moderation')}
@@ -63,7 +75,11 @@ const TabContainer: React.FC<TabContainerProps> = ({ roomName }) => {
           onClick={() => setActiveTab('error')}
           className={`tab-button ${activeTab === 'error' ? 'active' : ''}`}
         >
-          Errors {errorCount > 0 && <span className="badge">{errorCount}</span>}
+          Errors {errorCount > 0 && (
+            <span className="badge">
+              {errorCount}
+            </span>
+          )}
         </button>
       </div>
       <div className="tab-content-main">
@@ -78,7 +94,7 @@ const TabContainer: React.FC<TabContainerProps> = ({ roomName }) => {
         {activeTab === 'text' && (
           <YamlDisplay
             roomName={`${roomName}`}
-            onErrorCountChange={setYamlErrorCount}
+            onErrorCountChange={setLocalYamlErrorCount}
           />
         )}
         {activeTab === 'moderation' && <Moderation roomName={`${roomName}`} />}
