@@ -118,12 +118,37 @@ export const WebSocketProvider = ({
   const { appType: currentAppType, triggerEditorMode } = useEditorMode(appType);
   const { toggleVoice, handleAudioMessage, setAudioMessageListener } = useVoice(sender);
 
+  // Heartbeat/ping-pong logic
+  const heartbeatInterval = 15000; // 15 seconds
+  const pongTimeout = 5000; // 5 seconds
+  const heartbeatTimer = useRef<number | null>(null);
+  const pongTimer = useRef<number | null>(null);
+
+  const clearHeartbeat = () => {
+    if (heartbeatTimer.current) clearInterval(heartbeatTimer.current);
+    if (pongTimer.current) clearTimeout(pongTimer.current);
+  };
+
   const initializeWebSocket = () => {
     const socketConnection = new WebSocket(url);
+
+    const sendPing = () => {
+      if (socketConnection.readyState === WebSocket.OPEN) {
+        socketConnection.send(JSON.stringify({ Action: "ping" }));
+        pongTimer.current = window.setTimeout(() => {
+          console.warn("Pong not received, closing socket.");
+          socketConnection.close();
+        }, pongTimeout);
+      }
+    };
+
     socketConnection.onopen = () => {
       console.log('WebSocket connected');
       setConnectionStatus('Connected');
       reconnectAttempts.current = 0;
+
+      // Start heartbeat
+      heartbeatTimer.current = window.setInterval(sendPing, heartbeatInterval);
 
       if (currentAppType === 'editor') {
         triggerEditorMode(socketConnection);
@@ -176,6 +201,11 @@ export const WebSocketProvider = ({
         console.error('Invalid JSON:', event.data);
         return;
       }
+      if (incomingMessage.Action === "pong") {
+        // Pong received, clear pong timeout
+        if (pongTimer.current) clearTimeout(pongTimer.current);
+        return;
+      }
       if (incomingMessage.Action === 'unknown') {
         console.error('Unknown message sent:', incomingMessage);
         return;  
@@ -217,24 +247,31 @@ export const WebSocketProvider = ({
     socketConnection.onclose = () => {
       console.log('WebSocket disconnected');
       setConnectionStatus('Reconnecting');
+      clearHeartbeat();
       handleReconnect();
     };
 
     socketConnection.onerror = (err) => {
-      if (reconnectAttempts.current >=maxRetries) {
+      if (reconnectAttempts.current >= maxRetries) {
         console.error('WebSocket error:', err);
       }
+      clearHeartbeat();
       socketConnection.close();
     };
 
     setWebsocket(socketConnection);
   };
 
+  // Exponential backoff for reconnection
   const handleReconnect = () => {
     if (reconnectAttempts.current < maxRetries) {
       reconnectAttempts.current += 1;
-      console.log(`Reconnecting attempt ${reconnectAttempts.current}/${maxRetries}`);
-      reconnectTimer.current = window.setTimeout(initializeWebSocket, retryInterval);
+      const backoff = Math.min(
+        retryInterval * Math.pow(2, reconnectAttempts.current - 1),
+        60000
+      ); // Cap at 60s
+      console.log(`Reconnecting attempt ${reconnectAttempts.current}/${maxRetries}, waiting ${backoff}ms`);
+      reconnectTimer.current = window.setTimeout(initializeWebSocket, backoff);
     } else {
       console.error('Max reconnection attempts reached.');
       setConnectionStatus('Disconnected');
@@ -246,6 +283,7 @@ export const WebSocketProvider = ({
     return () => {
       if (websocket) websocket.close();
       if (reconnectTimer.current) clearTimeout(reconnectTimer.current);
+      clearHeartbeat();
     };
   }, [url]);
 

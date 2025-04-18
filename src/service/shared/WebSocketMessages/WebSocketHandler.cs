@@ -30,6 +30,8 @@ namespace WebSocketMessages
         {
             // Register the ModeRequest handler.
             RegisterCommand("mode", ModeRequestHandler);
+            // Register ping handler
+            RegisterCommand("ping", PingHandler);
         }
 
         /// <summary>
@@ -134,6 +136,26 @@ namespace WebSocketMessages
         }
 
         /// <summary>
+        /// Handles a ping request by responding with a pong.
+        /// </summary>
+        private async Task PingHandler(WebSocketBaseMessage message, WebSocket webSocket, ConnectionMode currentMode)
+        {
+            var pongResponse = new WebSocketBaseMessage
+            {
+                UserId = message.UserId,
+                TransactionId = message.TransactionId,
+                Action = "pong",
+                SubAction = "",
+                Content = "pong",
+                Mode = message.Mode,
+                Version = message.Version
+            };
+
+            var pongJson = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(pongResponse));
+            await webSocket.SendAsync(new ArraySegment<byte>(pongJson), WebSocketMessageType.Text, true, CancellationToken.None);
+        }
+
+        /// <summary>
         /// Handles a ModeRequest by updating the connection mode based on the SubAction.
         /// </summary>
         private async Task ModeRequestHandler(WebSocketBaseMessage message, WebSocket webSocket, ConnectionMode currentMode)
@@ -159,7 +181,9 @@ namespace WebSocketMessages
                 TransactionId = message.TransactionId,
                 Action = "ModeResponse",
                 SubAction = message.SubAction,
-                Content = $"Connection mode updated to {CurrentConnectionMode}"
+                Content = $"Connection mode updated to {CurrentConnectionMode}",
+                Mode = message.Mode,
+                Version = message.Version
             };
 
             var responseJson = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(response));

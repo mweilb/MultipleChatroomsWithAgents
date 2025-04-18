@@ -4,7 +4,6 @@ export interface WebSocketBaseMessage {
     Action: string;
     SubAction: string;
     Content: string;
-
     Mode: string;
-  }
-  
+    Version?: string;
+}

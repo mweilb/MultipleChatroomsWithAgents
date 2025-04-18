@@ -11,8 +11,9 @@ namespace WebSocketMessages.Messages
     {
         /// <summary>
         /// Where is the app mean to go
-        /// </summary
+        /// </summary>
         public string Mode { get; set; } = "App";  //Could be Editor 
+
         /// <summary>
         /// Gets or sets the identifier of the user who sent the message.
         /// </summary>
@@ -38,7 +39,9 @@ namespace WebSocketMessages.Messages
         /// </summary>
         public string Content { get; set; } = string.Empty;
 
-
-
+        /// <summary>
+        /// Gets or sets the version of the message protocol.
+        /// </summary>
+        public string Version { get; set; } = "1.0";
     }
 }
