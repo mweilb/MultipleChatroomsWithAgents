@@ -28,6 +28,7 @@ import { useEditorMode } from '../hooks/useEditorMode';
 
 interface IWebSocketContext {
   getMessages(action: string): WebSocketReplyChatRoomMessage[];
+  getRequestState(action: string): string;
   sendMessage: (message: WebSocketBaseMessage, orchestrator: string, room: string) => void;
   addOrUpdateMessage: (message: WebSocketReplyChatRoomMessage) => void;
   connectionStatus: 'Connected' | 'Disconnected' | 'Reconnecting';
@@ -103,7 +104,7 @@ export const WebSocketProvider = ({
     getLibrarianDocs
   } = librariansStore;
 
-  const { getMessages, addOrUpdateMessage, resetMessagesForRoom, sendMessage } = useMessageStore(sender);
+  const { getMessages, addOrUpdateMessage, resetMessagesForRoom, sendMessage, getRequestState } = useMessageStore(sender);
 
   const {
     rooms,
@@ -237,6 +238,7 @@ export const WebSocketProvider = ({
     <WebSocketContext.Provider
       value={{
         getMessages,
+        getRequestState,
         sendMessage,
         addOrUpdateMessage,
         connectionStatus,

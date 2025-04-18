@@ -164,6 +164,10 @@
   color: #777;
 }
 
+.no-rooms {
+  color: #3f3d3d;
+}
+
 /* Specific styling for Filters group */
 .nav-group.filters {
   background-color: #f9f9f9;

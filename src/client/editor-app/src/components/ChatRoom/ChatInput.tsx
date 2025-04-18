@@ -7,6 +7,7 @@ interface ChatInputProps {
   onInputChange: (value: string) => void;    /** Callback to update the input state when the user types */
   onSend: () => void;                       /** Callback to send the message */
   onKeyDown: React.KeyboardEventHandler<HTMLTextAreaElement>; /** Callback to handle keyboard events, like Enter key to send message */
+  actionKey?: string;                        /** Action key for request state tracking */
 }
 
 const MAX_ROWS = 8; // Maximum number of rows the textarea can grow to
@@ -16,12 +17,13 @@ const ChatInput: React.FC<ChatInputProps> = ({
   onInputChange,
   onSend,
   onKeyDown,
+  actionKey,
 }) => {
   // State to manage the number of rows for the textarea (grows dynamically with input)
   const [rows, setRows] = useState(1);
 
   // Get the WebSocket connection status from the context
-  const { connectionStatus } = useWebSocketContext();
+  const { connectionStatus, getRequestState } = useWebSocketContext();
 
   // Dynamically adjust the textarea row count based on the number of lines in the input
   useEffect(() => {
@@ -36,24 +38,28 @@ const ChatInput: React.FC<ChatInputProps> = ({
     setRows(1); // Reset rows back to 1 after sending
   }, [onSend, connectionStatus]);
 
+  const isRequestComplete =
+    !actionKey || getRequestState(actionKey) === 'complete';
+
   return (
     <div className="chat-input">
       <textarea
         rows={rows}
         value={input}
         onChange={(e) => onInputChange(e.target.value)}
-        onKeyDown={onKeyDown}
+        onKeyDown={(e) => {if (isRequestComplete ) {onKeyDown(e) }}}
         placeholder={
           connectionStatus === 'Connected'
             ? 'Type your message here… 😊'
             : 'Waiting for connection…'
         }
-        disabled={connectionStatus !== 'Connected'}
         className="chat-input-textarea"
       />
       <button
         onClick={handleSend}
-        disabled={connectionStatus !== 'Connected'}
+        disabled={
+          connectionStatus !== 'Connected' || !isRequestComplete  
+        }
         className="chat-input-send-btn"
         aria-label="Send"
       >

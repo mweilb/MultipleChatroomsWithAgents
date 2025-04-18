@@ -82,26 +82,29 @@ namespace SemanticKernelExtension.ChatCompletionService
                 thinkingChunk = "";
                 responseChunk = "";
                 if (chunk.Content is not null)
-                {        
+                {
                     if (chunk.Content.StartsWith("<think>"))
                     {
                         captureThinking = true;
-                    }
-                    
-                    int index = chunk.Content.IndexOf("</think>");
-                    if (index >= 0 && captureThinking)
-                    {
-                        captureThinking = false;
-                        thinkingChunk = chunk.Content.Substring(0, index);
-                        responseChunk = chunk.Content.Substring(index, chunk.Content.Length - "</think>".Length);
-                    }
-                    else if (captureThinking)
-                    {
-                        thinkingChunk = chunk.Content;
+                        thinkingChunk = chunk.Content.Substring("<think>".Length);
                     }
                     else
                     {
-                        responseChunk = chunk.Content;
+                        int index = chunk.Content.IndexOf("</think>");
+                        if (index >= 0 && captureThinking)
+                        {
+                            captureThinking = false;
+                            thinkingChunk = (index != 0) ? chunk.Content.Substring(0, index) : "";
+                            responseChunk = chunk.Content.Substring(index, chunk.Content.Length - "</think>".Length);
+                        }
+                        else if (captureThinking)
+                        {
+                            thinkingChunk = chunk.Content;
+                        }
+                        else
+                        {
+                            responseChunk = chunk.Content;
+                        }
                     }
 
                 }

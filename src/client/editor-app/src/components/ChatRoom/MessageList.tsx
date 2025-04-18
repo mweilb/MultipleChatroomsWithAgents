@@ -54,7 +54,7 @@ const MessageList: React.FC<MessageListProps> = ({ messages, showRationales, onR
                 )}
                 {(isRoomChange || isRoomChangeYield) && (
                   <>
-                    {onRoomChange && onRoomChange(message)}
+                    {/* onRoomChange should not be called during render */}
                     <div className="agent-info room-change">
                       <div className="agent-name">{message.AgentName}</div>
                       <div className="agent-icon">{message.Emoji}</div>

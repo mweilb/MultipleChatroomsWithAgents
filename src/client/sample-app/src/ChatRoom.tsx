@@ -26,7 +26,7 @@ import { AudioPlayer } from "./AudioPlayer";
 const ChatRoomSave = (): JSX.Element => {
   // Context from your existing app state.
   const { activeChatRoomName, activeChannel, activeChatSubRoomName, availableRoomNames, requestRoomChange,requestRoomPause, getMessagesForChannel, setDidRoomChange, nextRoom } = useAppStateContext();
-  const { sendMessage, setAudioMessageListener } = useWebSocketContext();
+  const { sendMessage, setAudioMessageListener,getRequestState } = useWebSocketContext();
   
   // Get messages filtered by active room and subroom.
   const messages: WebSocketReplyChatRoomMessage[] = getMessagesForChannel();
@@ -114,6 +114,9 @@ const ChatRoomSave = (): JSX.Element => {
       label: stage,
     }));
   }, [availableRoomNames]);
+
+  const isRequestComplete =
+    !activeChatRoomName || getRequestState(activeChatRoomName) === 'complete';
 
   return (
     <div id="chat-container" className="chat-container">
@@ -220,7 +223,7 @@ const ChatRoomSave = (): JSX.Element => {
           />
          <VoiceControl onTranscriptChange={handleTranscriptChange} />
         <div className="input-icons">
-          <Button className="send-btn" label="Send" onClick={() => handleClickSendMessage()} />
+          <Button className="send-btn" label="Send" disabled={!isRequestComplete} onClick={() => handleClickSendMessage()} />
         </div>
       </div>
     </div>

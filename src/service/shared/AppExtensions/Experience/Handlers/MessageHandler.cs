@@ -121,10 +121,11 @@ namespace AppExtensions.Experience.Handlers
 
             // Set global orchestrator name for lifecycle reporting.
             WebSocketAgentLifecycleSender.OrchestratorName = orchestrator.Name;
-
+            bool yieldOnRoom = false;
             // Process streaming responses from the orchestrator.
             await foreach (var streamingContent in orchestrator.InvokeStreamingAsync(cancellationToken))
             {
+                
                 if (streamingContent == null)
                 {
                     logger?.LogWarning("Received null streaming content for {CommandName}", _name);
@@ -143,8 +144,16 @@ namespace AppExtensions.Experience.Handlers
                 else if (streamingContent.Action == StreamingOrchestratorContent.ActionTypes.RoomChange)
                 {
                     await HandleRoomChangeEventAsync(sender, streamingContent, message, mode, cancellationToken);
+                    yieldOnRoom = streamingContent.YieldOnRoomChange;
                 }
                 // If the event is AgentFinished or RoomMessageFinished, do nothing.
+            }
+
+        
+
+            if (yieldOnRoom == false)
+            {
+                SendCompleteRequest(sender, message.UserId, orchestrator.Name, cancellationToken);
             }
 
             // Clear global orchestrator name.
@@ -236,6 +245,7 @@ namespace AppExtensions.Experience.Handlers
                     if (!string.IsNullOrWhiteSpace(hintInfo))
                     {
                         rationaleMsg.Content += hintInfo;
+                        rationaleMsg.Mode = "Editor";
                         await sender.SendAsync(rationaleMsg, mode, cancellationToken);
                     }
                 }
@@ -303,6 +313,30 @@ namespace AppExtensions.Experience.Handlers
                 Content = string.Empty,
                 AgentName = "Unknown"
             };
+
+        /// Creates a new WebSocket reply message for the chat room.
+        /// </summary>
+        /// <param name="userId">The user identifier.</param>
+        /// <param name="command">The command or action name.</param>
+        private static async void SendCompleteRequest(WebSocketSender sender, string userId, string command, CancellationToken cancellationToken) { 
+            
+            var completeMessage = new WebSocketReplyChatRoomMessage
+            {
+                UserId = userId,
+                TransactionId = Guid.NewGuid().ToString(),
+                Action = command,
+                SubAction = "completed",
+                Content ="completed",
+                AgentName = "Unknown",
+                Mode = "App"
+            };
+
+              await sender.SendAsync(completeMessage, ConnectionMode.App,cancellationToken);
+
+                
+        }
+
+
 
         /// <summary>
         /// Creates a new WebSocket reply message for the chat room.
