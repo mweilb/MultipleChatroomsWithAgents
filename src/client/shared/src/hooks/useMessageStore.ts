@@ -82,6 +82,7 @@ export function useMessageStore(
         const newMessage: WebSocketReplyChatRoomMessage = {
           ...message,
           AgentName: 'User',
+          DisplayName: "User",
           Emoji: '🤓',
           RoomName: room,
           Orchestrator: orchestrator,

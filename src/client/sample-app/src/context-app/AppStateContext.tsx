@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import { createContext, useContext, useState, ReactNode, useEffect, useReducer } from 'react';
 import { useWebSocketContext } from 'shared';
 import { WebSocketNewRoomMessage,WebSocketReplyChatRoomMessage } from 'shared';
  
@@ -8,17 +8,22 @@ interface AppStateContextProps {
   setActiveChatRoomName: (chatRoomName: string) => void;
   activeChatSubRoomName: string;
   setActiveChatSubRoomName: (subRoomName: string) => void;
-  availableRoomNames: string[];
-  setAvailableRoomNames: (roomNames: string[]) => void;
+  availableRooms: { name: string; displayName: string }[];
+  setAvailableRooms: (rooms: { name: string; displayName: string }[]) => void;
   activeChannel: number;
-  setActiveChannel: (channel: number) => void;
   getMessagesForChannel: () => WebSocketReplyChatRoomMessage[];
-  requestRoomChange: boolean;
-  requestRoomPause: boolean;
+  requestRoomChange: RoomRequestFlag;
   requestRestart: boolean;
-  setDidRoomChange: (change: roomChangePrompt) => void;
-  nextRoom: string;
+  setDidRoomChange: (change: RoomChangePrompt) => void;
 }
+
+type RoomRequestFlag = {
+  flag: "pause" | "ask" | "";
+  displayName: string;
+  name: string;
+};
+
+type RoomRequestFlagStack = RoomRequestFlag[];
 
 const AppStateContext = createContext<AppStateContextProps | undefined>(undefined);
 
@@ -26,95 +31,123 @@ interface AppStateProviderProps {
   children: ReactNode;
 }
 
-type roomChangePrompt = 'noSignal' | 'noChange' | 'changeRoom' | 'waiting';
+type RoomChangePrompt = 'noSignal' | 'noChange' | 'changeRoom' | 'waiting';
 
 export const AppStateProvider = ({ children }: AppStateProviderProps) => {
   const [activeChatRoomName, setActiveChatRoomName] = useState<string>('');
   const [activeChatSubRoomName, setActiveChatSubRoomName] = useState<string>('');
-  const [availableRoomNames, setAvailableRoomNames] = useState<string[]>([]);
-  const [activeChannel, setActiveChannel] = useState<number>(0);
-  const [requestRoomChangeFlag, setRequestRoomChangeFlag] = useState<boolean>(false);
-  const [requestRoomPauseFlag, setRequestRoomPauseFlag] = useState<boolean>(false);
+  const [availableRooms, setAvailableRooms] = useState<{ name: string; displayName: string }[]>([]);
+  // activeChannel is now derived, not stored in state
+type RoomRequestFlagAction =
+  | { type: "push"; flag: "pause" | "ask"; displayName: string; name: string }
+  | { type: "pop" }
+  | { type: "reset" };
+
+function roomRequestFlagReducer(
+  state: RoomRequestFlagStack,
+  action: RoomRequestFlagAction
+): RoomRequestFlagStack {
+  switch (action.type) {
+    case "push":
+      return [
+        ...state,
+        { flag: action.flag, displayName: action.displayName, name: action.name }
+      ];
+    case "pop":
+      return state.length > 0 ? state.slice(1) : state;
+    case "reset":
+      return [];
+    default:
+      return state;
+  }
+}
+
+const [requestRoomChangeFlagStack, dispatchRequestRoomChangeFlag] = useReducer(
+  roomRequestFlagReducer,
+  []
+);
+const requestRoomChangeFlag = requestRoomChangeFlagStack[0] || { flag: "", displayName: "", name: "" };
   const [requestRestartFlag, setRequestRestartFlag] = useState<boolean>(false);
-  const [didRoomChange, setDidRoomChange] = useState<roomChangePrompt>('noSignal');
-  const [nextRoom, setNextRoom] = useState<string>('');
+  const [didRoomChange, setDidRoomChange] = useState<RoomChangePrompt>('noSignal');
  
   // Get the subroom change listener and getMessages function from the WebSocket context.
   const { requestNewRoomListener, getMessages, requestRoomChange} = useWebSocketContext();
 
   // When availableRoomNames are set (or updated) and no subroom is selected yet,
   // default to the first subroom (index 0).
+  // When availableRoomNames are set (or updated) and no subroom is selected yet,
+  // default to the first subroom (index 0).
   useEffect(() => {
-    if (availableRoomNames.length > 0 && activeChatRoomName === '') {
-      setActiveChatSubRoomName(availableRoomNames[0]);
-      setActiveChannel(0);
+    if (availableRooms.length > 0 && activeChatRoomName === '') {
+      setActiveChatSubRoomName(availableRooms[0].name);
     }
-  }, [activeChatRoomName, availableRoomNames]);
+  }, [activeChatRoomName, availableRooms]);
   
+  // Listen for subroom change messages.
   // Listen for subroom change messages.
   useEffect(() => {
     requestNewRoomListener((msg: WebSocketNewRoomMessage) => {
+      const match = availableRooms.find(r => r.name === msg.To);
       if (msg.SubAction === "change-room") {
-        setNextRoom(msg.To);
-        setRequestRoomPauseFlag(true);
-      }
-      else {
-        console.log("Room change request recieved")      
-        setNextRoom(msg.To);
-        setRequestRoomChangeFlag(true);
+        dispatchRequestRoomChangeFlag({
+          type: "push",
+          flag: "pause",
+          displayName: match ? match.displayName : msg.To,
+          name: msg.To
+        });
+      } else {
+        console.log("Room change request received");
+        dispatchRequestRoomChangeFlag({
+          type: "push",
+          flag: "ask",
+          displayName: match ? match.displayName : msg.To,
+          name: msg.To
+        });
       }
     });
-  }, [requestNewRoomListener]);
+  }, [requestNewRoomListener, availableRooms]);
 
+  // Handle room change prompt state
   useEffect(() => {
-    
-    if (didRoomChange === "changeRoom") {1
-      console.log("Changing room to:", nextRoom);
-      
-      setActiveChatSubRoomName(nextRoom);
+    if (didRoomChange === "changeRoom") {
+      const pendingRoom = requestRoomChangeFlag.name;
+      console.log("Changing room to:", pendingRoom);
+      setActiveChatSubRoomName(pendingRoom);
 
-      if (requestRoomChangeFlag) {
-        requestRoomChange("userid",activeChatRoomName, nextRoom);
+      // TODO: Replace 'userid' with actual user ID from context/props
+      if (requestRoomChangeFlag.flag === "ask") {
+        requestRoomChange("user", activeChatRoomName, pendingRoom);
       }
+      // No need to setActiveChannel, now derived
 
-      const index = availableRoomNames.indexOf(nextRoom);
-      if (index !== -1) {
-        setActiveChannel(index);
-      } else {
-        console.warn("Sub room not found:", nextRoom);
-      }
-      
       // Clear pending request after processing the change
-      setRequestRoomChangeFlag(false);
-      setRequestRoomPauseFlag(false);
+      dispatchRequestRoomChangeFlag({ type: "pop" });
       setRequestRestartFlag(false);
       setDidRoomChange("noSignal");
-    
     } else if (didRoomChange === "noChange") {
       console.log("Room change declined; staying in:", activeChatSubRoomName);
       // Clear pending request after processing the change
-      setRequestRoomChangeFlag(false);
-      setRequestRoomPauseFlag(false);
+      dispatchRequestRoomChangeFlag({ type: "pop" });
       setRequestRestartFlag(false);
       setDidRoomChange("noSignal");
     }
+  }, [didRoomChange, availableRooms, activeChatSubRoomName, requestRoomChangeFlag.flag, requestRoomChange, activeChatRoomName, requestRoomChangeFlag.name]);
 
-    
-
-  }, [didRoomChange, nextRoom, availableRoomNames, activeChatSubRoomName]);  
+  // Function to retrieve messages for the active channel.
+  // Derive activeChannel from availableRooms and activeChatSubRoomName
+  const activeChannel = availableRooms.findIndex(r => r.name === activeChatSubRoomName);
 
   // Function to retrieve messages for the active channel.
   const getMessagesForChannel = (): WebSocketReplyChatRoomMessage[] => {
-    // Get all messages for the active chat room.
     const messages = getMessages(activeChatRoomName);
-    // Return only those messages where both the RoomName and SubRoomName match.
     return messages.filter(
       (msg) =>
         msg.RoomName === activeChatSubRoomName &&
-        (msg.SubAction === 'reply' || msg.SubAction === 'ask')  
+        (msg.SubAction === 'reply' || msg.SubAction === 'ask')
     );
   };
 
+  // Only expose necessary values in context
   return (
     <AppStateContext.Provider
       value={{
@@ -122,16 +155,13 @@ export const AppStateProvider = ({ children }: AppStateProviderProps) => {
         setActiveChatRoomName,
         activeChatSubRoomName,
         setActiveChatSubRoomName,
-        availableRoomNames,
-        setAvailableRoomNames,
+        availableRooms,
+        setAvailableRooms,
         activeChannel,
-        setActiveChannel,
         getMessagesForChannel,
         requestRoomChange: requestRoomChangeFlag,
-        requestRoomPause: requestRoomPauseFlag,
         requestRestart: requestRestartFlag,
         setDidRoomChange,
-        nextRoom,
       }}
     >
       {children}
@@ -139,6 +169,10 @@ export const AppStateProvider = ({ children }: AppStateProviderProps) => {
   );
 };
 
+/**
+ * Custom hook for accessing AppStateContext.
+ * Throws if used outside AppStateProvider.
+ */
 export const useAppStateContext = (): AppStateContextProps => {
   const context = useContext(AppStateContext);
   if (!context) {

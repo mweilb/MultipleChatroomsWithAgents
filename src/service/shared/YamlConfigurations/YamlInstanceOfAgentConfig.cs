@@ -30,6 +30,7 @@ namespace  YamlConfigurations
 
         public void ApplyParentOverride( YamlAgentConfig parent)
         {
+            if (string.IsNullOrEmpty(Emoji)) { DisplayName = parent.DisplayName; }
             if (string.IsNullOrEmpty(Emoji)) { Emoji = parent.Emoji; }
             if (string.IsNullOrEmpty(Model)) { Model = parent.Model; }
             if (string.IsNullOrEmpty(Instructions)) { Instructions = parent.Instructions; }

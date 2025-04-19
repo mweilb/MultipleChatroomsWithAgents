@@ -13,11 +13,17 @@ namespace AppExtensions.Experience
     {
         public Kernel Kernel { get; }
      
+        public class VisualInfo
+        {
+            public string Emoji=string.Empty;
+            public string DisplayName=string.Empty;
+        }
+
         public class TrackingInfo {
             public YamlMultipleChatRooms? Experience = null;
             public YamLibrarians? Librarians = null;
             public AgentGroupChatOrchestrator? agentGroupChatOrchestrator = null;
-            public Dictionary<string, Dictionary<string, string>>? RoomAgentEmojis = null;
+            public Dictionary<string, Dictionary<string, VisualInfo>>? VisualInfoPerName = null;
             public MessageHandler? handler = null;
         }
 
@@ -58,11 +64,13 @@ namespace AppExtensions.Experience
             foreach (var kvp in Experiences)
             {
                 var trackingInfo = kvp.Value;
-                if (trackingInfo.agentGroupChatOrchestrator == null || trackingInfo.RoomAgentEmojis == null)
+                if (trackingInfo.agentGroupChatOrchestrator == null || trackingInfo.VisualInfoPerName == null)
                 {
-                    var (orchestrator, roomAgentEmojis) = await AgentGroupChatOrchestratorFactory.Create(trackingInfo.Experience, Kernel);
+                    var (orchestrator, visualInfo) = await AgentGroupChatOrchestratorFactory.Create(trackingInfo.Experience, Kernel);
                     trackingInfo.agentGroupChatOrchestrator = orchestrator;
-                    trackingInfo.RoomAgentEmojis = roomAgentEmojis;
+                    trackingInfo.VisualInfoPerName = visualInfo;
+
+
                 }
             }
             return true;

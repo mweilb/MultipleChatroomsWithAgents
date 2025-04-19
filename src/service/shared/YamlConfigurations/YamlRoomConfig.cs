@@ -11,6 +11,10 @@ namespace YamlConfigurations
         [YamlMember(Alias = "emoji")]
         public string Emoji { get; set; } = string.Empty;
 
+        [YamlMember(Alias = "display-name")]
+        public string? DisplayName { get; set; } = string.Empty;
+
+
         [YamlMember(Alias = "name")]
         public string Name { get; set; } = string.Empty;
 
@@ -32,5 +36,7 @@ namespace YamlConfigurations
 
         [YamlMember(Alias = "yield-user-canceled")]
         public string? YieldCanceledName { get; internal set; }
+
+
     }
 }

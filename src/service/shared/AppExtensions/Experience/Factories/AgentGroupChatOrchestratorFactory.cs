@@ -5,35 +5,34 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Agents;
-using Microsoft.SemanticKernel.Agents.Chat;
 using SemanticKernelExtension.AgentGroupChats.Strategies.RuleBased;
-using SemanticKernelExtension.AgentGroupChats.Strategies.Terminations;
 using SemanticKernelExtension.Agents;
 using SemanticKernelExtension.Orchestrator;
 using System.Reflection;
 using YamlConfigurations;
- 
+using static AppExtensions.Experience.ExperienceManager;
+
 
 #pragma warning disable SKEXP0110
 namespace AppExtensions.Experience.Factories
 {
     public static class AgentGroupChatOrchestratorFactory
     {
-        public static async Task<(AgentGroupChatOrchestrator? Orchestrator, Dictionary<string, Dictionary<string, string>> RoomAgentEmojis)> Create(
+        public static async Task<(AgentGroupChatOrchestrator? Orchestrator, Dictionary<string, Dictionary<string, VisualInfo>> RoomAgentEmojis)> Create(
             YamlMultipleChatRooms? experience, Kernel kernel)
         {
             // Safety check
             if (experience == null)
             {
                 Console.WriteLine("Experience is null; cannot proceed.");
-                return (null, new Dictionary<string, Dictionary<string, string>>());
+                return (null, new Dictionary<string, Dictionary<string, VisualInfo>>());
             }
 
             // Check for rooms
             if (experience.Rooms == null || experience.Rooms.Count == 0)
             {
                 Console.WriteLine("No rooms found in the YAML configuration.");
-                return (null, new Dictionary<string, Dictionary<string, string>>());
+                return (null, new Dictionary<string, Dictionary<string, VisualInfo>>());
             }
 
             AgentGroupChatOrchestrator orchestrator = new()
@@ -43,7 +42,7 @@ namespace AppExtensions.Experience.Factories
             };
 
 
-            var roomAgentEmojis = new Dictionary<string, Dictionary<string, string>>();
+            var roomVisualInfo = new Dictionary<string, Dictionary<string, VisualInfo>>();
 
             // Iterate over each room
             foreach (var (roomName, roomConfig) in experience.Rooms)
@@ -51,18 +50,18 @@ namespace AppExtensions.Experience.Factories
                 Console.WriteLine($"\nRoom: {roomName}");
 
                 // List out the agents in the room
-                var (completionAgents, agentIcons) = AgentsFactory.Create(experience, kernel, roomName, roomConfig);
+                var (completionAgents, agentsVisualInfos) = AgentsFactory.Create(experience, kernel, roomName, roomConfig);
 
                 // Build agent name -> emoji dictionary for this room
-                var agentNameToEmoji = new Dictionary<string, string>();
-                foreach (var agent in agentIcons.Keys)
+                var agentVisualInfo = new Dictionary<string, VisualInfo>();
+                foreach (var (agent, visualInfo) in agentsVisualInfos)
                 {
                     // Use agent.Name if available, fallback to ToString()
                     var nameProp = agent.GetType().GetProperty("Name", BindingFlags.Public | BindingFlags.Instance);
                     string agentName = nameProp?.GetValue(agent)?.ToString() ?? agent.ToString() ?? "";
-                    agentNameToEmoji[agentName] = agentIcons[agent] ?? "";
+                    agentVisualInfo[agentName] = visualInfo;          
                 }
-                roomAgentEmojis[roomName] = agentNameToEmoji;
+                roomVisualInfo[roomName] = agentVisualInfo;
 
                 List<RuleBasedDefinition> listSKRules = RuleBasedDefinitionsFactory.Create(kernel, roomConfig, completionAgents);
 
@@ -83,9 +82,6 @@ namespace AppExtensions.Experience.Factories
                     }
                 }
 
-
-
-
                 orchestrator.Add(roomName, groupChat);
             }
 
@@ -99,7 +95,7 @@ namespace AppExtensions.Experience.Factories
             }
 
             // Return orchestrator and room-agent-emoji dictionary
-            return await Task.FromResult((orchestrator, roomAgentEmojis));
+            return await Task.FromResult((orchestrator, roomVisualInfo));
         }
 
     

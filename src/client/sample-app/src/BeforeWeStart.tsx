@@ -1,6 +1,5 @@
 import  { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import logo from "./assets/peckham-logo-vertical.png";
 import "./BeforeWeStart.css";
 import { useWebSocketContext } from 'shared';
 import { useAppStateContext } from './context-app/AppStateContext';
@@ -9,14 +8,23 @@ import { useAppStateContext } from './context-app/AppStateContext';
 const BeforeWeStart = () => {
   const navigate = useNavigate();
   const { rooms, toggleVoice , resetChat} = useWebSocketContext();
-  const { setActiveChatRoomName, setAvailableRoomNames, setActiveChatSubRoomName,setActiveChannel } = useAppStateContext();
+const { setActiveChatRoomName, setAvailableRooms, setActiveChatSubRoomName } = useAppStateContext();
   const [selectedRoom, setSelectedRoom] = useState<string>('');
 
   // Filter rooms to only include those that have exactly 4 items in the nested Rooms array.
   const filteredRooms = rooms.filter(room => room.Rooms && room.Rooms.length <= 5);
 
+  // Sort rooms alphabetically by Name
+  const sortedRooms = [...filteredRooms].sort((a, b) =>
+    a.Name.localeCompare(b.Name)
+  );
+
   const getAvailableRoomNames = (targetRoom: String) => {
     return filteredRooms.find(room => room.Name === targetRoom)?.Rooms.map(subRoom => subRoom.Name) || [];
+  }
+
+  const getAvailableRoomDisplayNames = (targetRoom: String) => {
+    return filteredRooms.find(room => room.Name === targetRoom)?.Rooms.map(subRoom => subRoom.DisplayName) || [];
   }
 
   const goToLanding = () => {
@@ -24,9 +32,13 @@ const BeforeWeStart = () => {
       // Send reset event before any state changes or navigation.
       resetChat(selectedRoom);
       setActiveChatRoomName(selectedRoom);
-      setAvailableRoomNames(getAvailableRoomNames(selectedRoom));
-      setActiveChannel(0);
-      setActiveChatSubRoomName(getAvailableRoomNames(selectedRoom)[0]);
+      const roomNames = getAvailableRoomNames(selectedRoom);
+      const roomDisplayNames = getAvailableRoomDisplayNames(selectedRoom);
+      setAvailableRooms(roomNames.map((name, idx) => ({
+        name,
+        displayName: roomDisplayNames[idx] || name
+      })));
+      setActiveChatSubRoomName(roomNames[0]);
       toggleVoice(true);
       navigate('/chatroom', { state: { room: selectedRoom } });
     } else {
@@ -42,17 +54,17 @@ const BeforeWeStart = () => {
       </div>
 
       <div className="dropdown-container">
-        <div className="dropdown-label">
+        <label className="dropdown-label" htmlFor="chatroom-select">
           Select a Chatroom:
-        </div>
+        </label>
         <select
           id="chatroom-select"
           value={selectedRoom}
           onChange={(e) => setSelectedRoom(e.target.value)}
-          className="dropdown-select"
+          className="dropdown-select left-justified"
         >
           <option value="">Select</option>
-          {filteredRooms.map((room) => (
+          {sortedRooms.map((room) => (
             <option key={room.Name} value={room.Name}>
               {room.Name}
             </option>

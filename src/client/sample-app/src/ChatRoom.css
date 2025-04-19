@@ -194,8 +194,8 @@ div, span, input, h1, p {
 }
 
 .message-content {
-  background-color: green;
-  color: #fff;
+  background-color: white;
+  color: #000;
   border-radius: 16px;
   padding: 5px 15px;
   display: inline-block;
@@ -205,7 +205,8 @@ div, span, input, h1, p {
 }
 
 .message-content.user {
-  background-color: #00008B;
+  background-color: #1b85b8;
+  color: #fff;
   margin-right: 0px;
   margin-left: 20%;
 }

@@ -11,6 +11,8 @@ export interface WebSocketAgentProfile {
 
 /** Profile of a room in a chat with its associated agents */
 export interface WebSocketRoomProfile {
+  /** Display name for the room */
+  DisplayName: string;
   /** The room's name */
   Name: string;
   /** Room's Emoji */

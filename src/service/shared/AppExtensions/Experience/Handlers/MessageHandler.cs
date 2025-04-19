@@ -185,6 +185,13 @@ namespace AppExtensions.Experience.Handlers
         {
             // Extract hint (editor suggestion) from the streaming content.
             string hintInfo = GetHint(streamingContent);
+
+            var trackInfo = _trackingInfo.VisualInfoPerName?[streamingContent.ChatName];
+            VisualInfo? visualInfo = null;
+            if (trackInfo != null)
+            {
+                trackInfo.TryGetValue(streamingContent.AgentName, out visualInfo);
+            }
             if (mode != ConnectionMode.App)
             {
                 // Create a rationale message for the editor.
@@ -194,8 +201,8 @@ namespace AppExtensions.Experience.Handlers
                 rationaleMsg.RoomName = streamingContent.ChatName;
                 rationaleMsg.Content = hintInfo;
                 rationaleMsg.Mode = "Editor";
-                rationaleMsg.Emoji = _trackingInfo.RoomAgentEmojis?[streamingContent.ChatName]?
-                    .TryGetValue(streamingContent.AgentName ?? "", out var emoji1) == true ? emoji1 : "";
+                rationaleMsg.Emoji = visualInfo?.Emoji ?? "";
+                rationaleMsg.DisplayName = visualInfo?.DisplayName ?? streamingContent.AgentName ?? "";
 
                 if (!string.IsNullOrWhiteSpace(hintInfo))
                 {
@@ -211,8 +218,8 @@ namespace AppExtensions.Experience.Handlers
             roomMsg.RoomName = streamingContent.ChatName;
 
             roomMsg.Content = contentInfo;
-            roomMsg.Emoji = _trackingInfo.RoomAgentEmojis?[streamingContent.ChatName]?
-                .TryGetValue(streamingContent.AgentName ?? "", out var emoji2) == true ? emoji2 : "";
+            roomMsg.Emoji = visualInfo?.Emoji ?? "";
+            roomMsg.DisplayName = visualInfo?.DisplayName ?? streamingContent.AgentName ?? "";
 
             if (!string.IsNullOrWhiteSpace(contentInfo))
             {
@@ -268,11 +275,12 @@ namespace AppExtensions.Experience.Handlers
         {
             var roomMsg = CreateChangeRoomMessage(originalMessage.UserId, originalMessage.Action);
             roomMsg.AgentName = "Room Change";
-            roomMsg.SubAction = streamingContent.YieldOnRoomChange?"change-room-yield": "change-room";
+            roomMsg.SubAction = streamingContent.YieldOnRoomChange ? "change-room-yield" : "change-room";
             roomMsg.To = streamingContent.Content?.ToString() ?? "";
             roomMsg.From = streamingContent.ChatName;
-            roomMsg.Content = (!streamingContent.YieldOnRoomChange ?  "Auto Change " : "Request " ) + $"to '{roomMsg.To}' from '{roomMsg.From}'";
-  
+            roomMsg.Content = (!streamingContent.YieldOnRoomChange ? "Auto Change " : "Request ") + $"to '{roomMsg.To}' from '{roomMsg.From}'";
+            roomMsg.DisplayName = roomMsg.AgentName;
+
             await sender.SendAsync(roomMsg, mode, cancellationToken);
         }
 
@@ -323,9 +331,10 @@ namespace AppExtensions.Experience.Handlers
                 TransactionId = Guid.NewGuid().ToString(),
                 Action = command,
                 SubAction = "completed",
-                Content ="completed",
+                Content = "completed",
                 AgentName = "Unknown",
-                Mode = "App"
+                Mode = "App",
+                DisplayName = command
             };
 
               await sender.SendAsync(completeMessage, ConnectionMode.App,cancellationToken);

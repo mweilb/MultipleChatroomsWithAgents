@@ -6,6 +6,7 @@ using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Agents;
 using SemanticKernelExtension.Agents;
 using YamlConfigurations;
+using static AppExtensions.Experience.ExperienceManager;
 
 
 #pragma warning disable SKEXP0110
@@ -14,11 +15,11 @@ namespace AppExtensions.Experience.Factories
 {
     public class AgentsFactory
     {
-        public static (List<ChatHistoryAgent> Agents, Dictionary<ChatHistoryAgent, string> AgentIcons) Create(
+        public static (List<ChatHistoryAgent>, Dictionary<string, VisualInfo>) Create(
             YamlMultipleChatRooms experience, Kernel kernel, string roomName, YamlRoomConfig roomConfig)
         {
             List<ChatHistoryAgent> completionAgents = [];
-            Dictionary<ChatHistoryAgent, string> agentIcons = new();
+            Dictionary<string, VisualInfo> visualInfo = [];
 
             if (roomConfig.Agents != null && roomConfig.Agents.Any())
             {
@@ -47,9 +48,11 @@ namespace AppExtensions.Experience.Factories
                         completionAgents.Add(createdAgent);
                     }
 
-                    if (createdAgent != null)
+                    if ((createdAgent != null) && (createdAgent.Name != null))
                     {
-                        agentIcons[createdAgent] = agent.Emoji ?? "";
+                        visualInfo[createdAgent.Name] = new VisualInfo();
+                        visualInfo[createdAgent.Name].Emoji = agent.Emoji ?? "";
+                        visualInfo[createdAgent.Name].DisplayName = !string.IsNullOrEmpty(agent.DisplayName) ? agent.DisplayName : agent.Name;
                     }
 
                     Console.WriteLine($"    • Agent Name: {agent.Name}, Model: {agent.Model}, Emoji: {agent.Emoji}");
@@ -60,12 +63,23 @@ namespace AppExtensions.Experience.Factories
                 // Add all other rooms as echo agents with rules
                 foreach (var (otherRoomName, otherRoom) in experience.Rooms ?? [])
                 {
-                    if (otherRoomName == roomName) continue;
+                    if (otherRoomName == roomName)
+                    {
+                        visualInfo[roomName] = new VisualInfo();
+                        visualInfo[roomName].Emoji = otherRoom.Emoji ?? "";
+                        visualInfo[roomName].DisplayName = !string.IsNullOrEmpty(otherRoom.DisplayName) ? otherRoom.DisplayName : otherRoom.Name;
+                        continue;
+                    }
 
                     var roomAgent = new RoomRuleBasedAgent(otherRoomName, roomName, "room", otherRoomName, false, kernel, null);
 
                     completionAgents.Add(roomAgent);
-                    agentIcons[roomAgent] = otherRoom.Emoji ?? "";
+                    if (roomAgent.Name != null)
+                    {
+                        visualInfo[roomAgent.Name] = new VisualInfo();
+                        visualInfo[roomAgent.Name].Emoji = otherRoom.Emoji ?? "";
+                        visualInfo[roomAgent.Name].DisplayName = !string.IsNullOrEmpty(otherRoom.DisplayName) ? otherRoom.DisplayName : otherRoom.Name;
+                    }
 
                     var strategies = roomConfig.Strategies?.Rules ?? [];
                     foreach (var rule in strategies)
@@ -90,7 +104,7 @@ namespace AppExtensions.Experience.Factories
                 Console.WriteLine("  (No agents found in this room.)");
             }
 
-            return (completionAgents, agentIcons);
+            return (completionAgents, visualInfo);
         }
 
         public static bool IsTrue(string? value)

@@ -85,6 +85,7 @@ namespace AppExtensions.Experience.Handlers
                     kvp => new WebSocketRoomProfile
                     {
                         Name = kvp.Value.Name,
+                        DisplayName = kvp.Value.DisplayName,
                         Emoji = kvp.Value.Emoji,
                         Agents = kvp.Value.Agents?.Select(agent => new WebSocketAgentProfile
                         {
@@ -109,6 +110,7 @@ namespace AppExtensions.Experience.Handlers
                     response.Rooms.Add(new WebSocketGetRooms
                     {
                         Name = name,
+                        DisplayName = !string.IsNullOrEmpty(group.DisplayName) ? group.DisplayName : name,
                         Emoji = group.Emoji,
                         MerMaidGraph = "",
                         Yaml = "",

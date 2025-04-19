@@ -96,6 +96,7 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ chatType, title, userId }) => {
           RoomName: newRoom,
           Mode: "App",
           AgentName: 'User',
+          DisplayName: 'User',
           Emoji: '🤓',
           To: newRoom,
           From: chatType,
@@ -156,7 +157,7 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ chatType, title, userId }) => {
           >
             {(rooms?.find(r => r.Name === chatType)?.Rooms || []).map((subroom, idx) => (
               <option key={subroom.Name || idx} value={subroom.Name}>
-                {subroom.Emoji ? subroom.Emoji : ''} {subroom.Name}
+                {subroom.Emoji ? subroom.Emoji : ''} {subroom.DisplayName}
               </option>
             ))}
           </select>

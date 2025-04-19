@@ -47,7 +47,7 @@ const MessageList: React.FC<MessageListProps> = ({ messages, showRationales, onR
                 {!isQuestion && !isAppEditor && !isRoomChange && !isRoomChangeYield && message.AgentName?.trim() && (
 <div className="agent-info">
                     <div className="agent-name-box">
-                      <span className="agent-name">{message.AgentName}</span>
+                      <span className="agent-name">{message.DisplayName}</span>
                       <span className="agent-icon" style={{ marginLeft: '8px' }}>{message.Emoji}</span>
                     </div>
                   </div>
@@ -56,7 +56,7 @@ const MessageList: React.FC<MessageListProps> = ({ messages, showRationales, onR
                   <>
                     {/* onRoomChange should not be called during render */}
                     <div className="agent-info room-change">
-                      <div className="agent-name">{message.AgentName}</div>
+                      <div className="agent-name">{message.DisplayName}</div>
                       <div className="agent-icon">{message.Emoji}</div>
                     </div>
                   </>

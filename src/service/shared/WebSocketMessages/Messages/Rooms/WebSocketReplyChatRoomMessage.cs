@@ -19,6 +19,6 @@ namespace WebSocketMessages.Messages.Rooms
         /// Gets or sets the emoji representing the actor.
         /// </summary>
         public string Emoji { get; set; } = string.Empty;
- 
+        public string DisplayName { get; set; } = string.Empty;
     }
 }

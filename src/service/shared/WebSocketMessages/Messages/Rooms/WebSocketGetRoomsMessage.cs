@@ -7,9 +7,14 @@ namespace WebSocketMessages.Messages.Rooms
     public class WebSocketRoomProfile
     {
         /// <summary>
-        /// Gets or sets the name of the agent.
+        /// Gets or sets the name of the room.
         /// </summary>
         public string Name { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the display name of the room (if available).
+        /// </summary>
+        public string? DisplayName { get; set; }
 
         /// <summary>
         /// Gets or sets the emoji representing the actor.
@@ -31,6 +36,11 @@ namespace WebSocketMessages.Messages.Rooms
         /// Gets or sets the name of the agent.
         /// </summary>
         public string Name { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the display name of the agent (if available).
+        /// </summary>
+        public string? DisplayName { get; set; }
 
         /// <summary>
         /// Gets or sets the emoji representing the actor.
@@ -83,8 +93,7 @@ namespace WebSocketMessages.Messages.Rooms
         public List<WebSocketValidationError> Errors { get; set; } = [];
 
         public List<WebSocketRoomProfile> Rooms { get; set; } = [];
-
-       
+        public object DisplayName { get; set; } = string.Empty;
     }
 
 

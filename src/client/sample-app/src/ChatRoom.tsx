@@ -25,7 +25,7 @@ import { AudioPlayer } from "./AudioPlayer";
 
 const ChatRoomSave = (): JSX.Element => {
   // Context from your existing app state.
-  const { activeChatRoomName, activeChannel, activeChatSubRoomName, availableRoomNames, requestRoomChange,requestRoomPause, getMessagesForChannel, setDidRoomChange, nextRoom } = useAppStateContext();
+  const { activeChatRoomName, activeChannel, activeChatSubRoomName, availableRooms, requestRoomChange, getMessagesForChannel, setDidRoomChange } = useAppStateContext();
   const { sendMessage, setAudioMessageListener,getRequestState } = useWebSocketContext();
   
   // Get messages filtered by active room and subroom.
@@ -108,12 +108,12 @@ const ChatRoomSave = (): JSX.Element => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const steps = [...new Set(availableRoomNames)];
+  const steps = [...new Set(availableRooms.map(r => r.displayName))];
   const stepsItems = useMemo(() => {
     return steps.map(stage => ({
       label: stage,
     }));
-  }, [availableRoomNames]);
+  }, [availableRooms]);
 
   const isRequestComplete =
     !activeChatRoomName || getRequestState(activeChatRoomName) === 'complete';
@@ -162,8 +162,8 @@ const ChatRoomSave = (): JSX.Element => {
             <div key={msg.TransactionId} className={`message-wrapper ${messageClass}`}>
               <div className={`message-container ${messageClass}`}>
                 <div className={`message-info ${messageClass}`}>
-                  <div className="agent-name">{msg.AgentName}</div>
-                  {/* <div className="agent-emoji">{msg.Emoji}</div> */}
+                  <div className="agent-name">{msg.DisplayName}</div>
+                  <div className="agent-emoji">{msg.Emoji}</div>
                 </div>
                 <div
                   className={`message-content ${messageClass}`}
@@ -184,9 +184,12 @@ const ChatRoomSave = (): JSX.Element => {
         <div ref={messagesEndRef} />
       </div>
 
-      {requestRoomChange && (
+      {requestRoomChange.flag === "ask" && (
         <div className="change-room-container">
-          <p>Would you like to move to the next room:<br />{nextRoom}?</p>
+          <p>
+           
+          Would you like to move to the next room:<br />{requestRoomChange.displayName}?
+          </p>
           <div className="change-button-container">
             <Button className="change-button yes" onClick={() => roomChange(true)}>Yes</Button>
             <Button className="change-button no" onClick={() => roomChange(false)}>No</Button>
@@ -194,9 +197,12 @@ const ChatRoomSave = (): JSX.Element => {
         </div>
       )}
 
-      {requestRoomPause && (
+      {requestRoomChange.flag === "pause" && (
         <div className="change-room-container">
-          <p> When are ready to go the next room:<br />{nextRoom}?</p>
+          <p>
+        
+          When are ready to go the next room:<br />{requestRoomChange.displayName}?
+          </p>
           <div className="change-button-container">
             <Button className="change-button yes" onClick={() => roomChange(true)}>Continue</Button>
           </div>

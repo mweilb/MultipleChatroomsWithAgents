@@ -10,6 +10,9 @@ namespace YamlConfigurations
         [YamlMember(Alias = "name")]
         public string Name { get; set; } = string.Empty;
 
+        [YamlMember(Alias = "display-name")]
+        public string? DisplayName { get; set; }
+
         // YAML "emoji" key.
         [YamlMember(Alias = "emoji")]
         public string Emoji { get; set; } = string.Empty;
@@ -35,7 +38,6 @@ namespace YamlConfigurations
        
         public List<YamlConfigurations.Validations.ValidationError> Errors { get; internal set; } = new();
 
-      
         public void ApplyParentOverride()
         {
             if (Rooms != null)
