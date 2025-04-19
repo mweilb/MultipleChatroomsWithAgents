@@ -375,3 +375,40 @@ div, span, input, h1, p {
 .change-button.no{
   background-color: #FF6961 !important;
 }
+
+.agent-color-user {
+  background-color: #1b85b8 !important;
+  color: #fff !important;
+}
+.agent-color-0 {
+  background-color: #FFD700 !important;
+  color: #000 !important;
+}
+.agent-color-1 {
+  background-color: #90EE90 !important;
+  color: #000 !important;
+}
+.agent-color-2 {
+  background-color: #FFB6C1 !important;
+  color: #000 !important;
+}
+.agent-color-3 {
+  background-color: #87CEEB !important;
+  color: #000 !important;
+}
+.agent-color-4 {
+  background-color: #FFA07A !important;
+  color: #000 !important;
+}
+.agent-color-5 {
+  background-color: #DDA0DD !important;
+  color: #000 !important;
+}
+.agent-color-6 {
+  background-color: #FF8C00 !important;
+  color: #000 !important;
+}
+.agent-color-7 {
+  background-color: #40E0D0 !important;
+  color: #000 !important;
+}

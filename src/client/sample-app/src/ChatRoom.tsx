@@ -23,6 +23,18 @@ import VoiceControl from "./context-app/voiceControl";
 import { AudioPlayer } from "./AudioPlayer";
  
 
+// Map agent name to color index
+const agentColorIndexMap: Record<string, number> = {};
+
+const getAgentColorClass = (agentName: string): string => {
+  if (agentName.toLowerCase() === "user") return "agent-color-user";
+  if (!(agentName in agentColorIndexMap)) {
+    const nextIndex = Object.keys(agentColorIndexMap).length % 8;
+    agentColorIndexMap[agentName] = nextIndex;
+  }
+  return `agent-color-${agentColorIndexMap[agentName]}`;
+};
+
 const ChatRoomSave = (): JSX.Element => {
   // Context from your existing app state.
   const { activeChatRoomName, activeChannel, activeChatSubRoomName, availableRooms, requestRoomChange, getMessagesForChannel, setDidRoomChange } = useAppStateContext();
@@ -157,6 +169,7 @@ const ChatRoomSave = (): JSX.Element => {
             .replace(/[^a-z0-9]+/g, "-")
             .replace(/^-+|-+$/g, "");
           const isUserMessage: boolean = messageClass === "user";
+          const colorClass = getAgentColorClass(msg.AgentName);
 
           return (
             <div key={msg.TransactionId} className={`message-wrapper ${messageClass}`}>
@@ -166,13 +179,7 @@ const ChatRoomSave = (): JSX.Element => {
                   <div className="agent-emoji">{msg.Emoji}</div>
                 </div>
                 <div
-                  className={`message-content ${messageClass}`}
-                  style={{
-                    backgroundColor: isUserMessage
-                    ? "#1b85b8"
-                    : "white",
-                    color: isUserMessage ? "" : "#000",
-                  }}
+                  className={`message-content ${messageClass} ${colorClass}`}
                 >
                   <ReactMarkdown className="markdown-content">{msg.Content}</ReactMarkdown>
                 </div>

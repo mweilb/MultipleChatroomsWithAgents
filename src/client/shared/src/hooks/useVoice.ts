@@ -31,11 +31,9 @@ export function useVoice(sender: (message: WebSocketBaseMessage) => void) {
         Action: 'voice',
         SubAction: subAction,
         Content: '',
-        RoomName: '',
-        SubRoomName: '',
         Mode: 'app',
       };
-      sender(message);
+   //   sender(message);
     },
     [sender]
   );
