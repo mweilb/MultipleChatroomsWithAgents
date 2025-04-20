@@ -4,7 +4,7 @@ using YamlDotNet.Serialization;
 namespace YamlConfigurations
 {
     // Room definition used in "chatrooms".
-    public class YamlRoomConfig  
+    public class YamlRoomConfig : YamlLineInfo
     {
         public string GroupName { get; set; } = string.Empty;
 

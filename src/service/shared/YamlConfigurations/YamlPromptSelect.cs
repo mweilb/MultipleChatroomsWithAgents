@@ -2,7 +2,7 @@
 
 namespace YamlConfigurations
 {
-    public class YamlPromptSelect
+    public class YamlPromptSelect : YamlLineInfo
     {
         [YamlMember(Alias = "instructions")]
         public string? Instructions { get; set; }

@@ -75,7 +75,7 @@ namespace AppExtensions.Experience.Handlers
 
             foreach (var (name, experience) in _manager.Experiences)
             {
-                var group = experience.Experience;
+                var  group = experience.Experience;
                 if (group == null)
                 {
                     continue;
@@ -100,7 +100,7 @@ namespace AppExtensions.Experience.Handlers
                     .Select(e => new WebSocketValidationError
                     {
                         Message = e.Message,
-                        Location = e.Location,
+                         
                         LineNumber = e.LineNumber,
                         CharPosition = e.CharPosition
                     }).ToList() ?? new List<WebSocketValidationError>();

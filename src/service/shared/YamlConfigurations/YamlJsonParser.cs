@@ -2,7 +2,7 @@
 
 namespace YamlConfigurations
 {
-    public class YamlJsonParser
+    public class YamlJsonParser : YamlLineInfo
     {
         // Either 'format' or 'variable' will be provided.
         [YamlMember(Alias = "format")]

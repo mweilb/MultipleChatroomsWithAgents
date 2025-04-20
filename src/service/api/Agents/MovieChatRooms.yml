@@ -1,0 +1,245 @@
+Movie Chat Rooms:
+  emoji: "🎬"
+  auto-start: true
+  start-room: Intro_Lobby
+  agents:
+    Film_Historian:
+      display-name: "Film Historian" 
+      emoji: "📚"
+      model: gpt-4
+      instructions: >
+        Welcome to the world of classic cinema! Ask me about legendary films, directors, or the history of movies.
+    SciFi_Buff:
+      display-name: "Sci-Fi Buff"
+      emoji: "👽"
+      model: gpt-4
+      instructions: >
+        Ready to discuss time travel, aliens, and futuristic tech in movies? Let's geek out on all things sci-fi!
+    Oscar_Critic:
+      display-name: "Oscar Critic"
+      emoji: "🏆"
+      model: gpt-4
+      instructions: >
+        I analyze Oscar winners and snubs. Ask me about the Academy Awards, predictions, or controversies.
+    Animation_Expert:
+      display-name: "Animation Expert"
+      emoji: "🎨"
+      model: gpt-4
+      instructions: >
+        From Disney classics to anime, I know animation inside out. Let's talk about your favorite animated movies!
+    Movie_Quizmaster:
+      display-name: "Movie Quizmaster"
+      emoji: "❓"
+      model: gpt-4
+      instructions: >
+        Test your movie knowledge with my quizzes and trivia challenges!
+    Indie_Guru:
+      display-name: "Indie Guru"
+      emoji: "🎬"
+      model: gpt-4
+      instructions: >
+        Discover hidden gems and indie masterpieces. Ask me for recommendations or discuss festival favorites.
+
+  chatrooms:
+    Classic_Cinema:
+      display-name: "Classic Cinema"
+      emoji: "📽️"
+      agents:
+        - name: Film_Historian
+        - name: Oscar_Critic
+      strategies:
+        termination:
+          prompt-termination:
+            instructions: >
+              Conversation:
+              {{messages}}
+              Move to the next room after both Film_Historian and Oscar_Critic have responded at least once.
+            history-variable-name: messages
+          constant-termination:
+            value: false
+        selection:
+          sequential-selection:
+            initial-agent: Film_Historian
+        rules:
+          - name: Auto_Start
+            current:
+              - name: start
+            next:
+              - name: Film_Historian
+          - name: User_Then_Agent
+            current:
+              - name: User Input
+            next:
+              - name: Film_Historian
+              - name: Oscar_Critic
+          - name: Agent_Then_User
+            current:
+              - name: Film_Historian
+              - name: Oscar_Critic
+            next:
+              - name: User Input
+          - name: To_SciFi
+            current:
+              - name: Film_Historian
+              - name: Oscar_Critic
+              - name: User Input
+            next:
+              - name: SciFi_Universe
+                context-transfer:
+                  instructions: >
+                    {{messages}}
+                    Summarize the discussion and transition to sci-fi movies.
+      moderation:
+        prompt: >
+          Is this message respectful and relevant to classic cinema?
+          {{messages}}
+        messages-preset-filters: [Last message]
+
+    SciFi_Universe:
+      display-name: "Sci-Fi Universe"
+      emoji: "👾"
+      agents:
+        - name: SciFi_Buff
+        - name: Movie_Quizmaster
+        - name: Indie_Guru
+      strategies:
+        termination:
+          prompt-termination:
+            instructions: >
+              Conversation:
+              {{messages}}
+              Move to the next room after the user and at least one agent have both responded.
+            history-variable-name: messages
+          constant-termination:
+            value: false
+        selection:
+          sequential-selection:
+            initial-agent: SciFi_Buff
+        rules:
+          - name: User_Then_Agent
+            current:
+              - name: User Input
+            next:
+              - name: SciFi_Buff
+              - name: Movie_Quizmaster
+              - name: Indie_Guru
+          - name: Agent_Then_User
+            current:
+              - name: SciFi_Buff
+              - name: Movie_Quizmaster
+              - name: Indie_Guru
+            next:
+              - name: User Input
+          - name: To_Animation
+            current:
+              - name: SciFi_Buff
+              - name: Movie_Quizmaster
+              - name: Indie_Guru
+              - name: User Input
+            next:
+              - name: Animation_Station
+                context-transfer:
+                  instructions: >
+                    {{messages}}
+                    Focus on animated sci-fi movies for the next room.
+                  need-user-approval: yes
+                  cancellation-agent-name: SciFi_Buff
+
+    Animation_Station:
+      display-name: "Animation Station"
+      emoji: "🎬"
+      agents:
+        - name: Animation_Expert
+        - name: Indie_Guru
+        - name: Movie_Quizmaster
+      strategies:
+        termination:
+          prompt-termination:
+            instructions: >
+              Conversation:
+              {{messages}}
+              Move to the next room after the user and at least one agent have both responded.
+            history-variable-name: messages
+          constant-termination:
+            value: false
+        selection:
+          sequential-selection:
+            initial-agent: Animation_Expert
+        rules:
+          - name: User_Then_Agent
+            current:
+              - name: User Input
+            next:
+              - name: Animation_Expert
+              - name: Indie_Guru
+              - name: Movie_Quizmaster
+          - name: Agent_Then_User
+            current:
+              - name: Animation_Expert
+              - name: Indie_Guru
+              - name: Movie_Quizmaster
+            next:
+              - name: User Input
+          - name: To_Awards
+            current:
+              - name: Animation_Expert
+              - name: Indie_Guru
+              - name: Movie_Quizmaster
+              - name: User Input
+            next:
+              - name: Awards_Lounge
+                context-transfer:
+                  instructions: >
+                    {{messages}}
+                    Summarize the best animated films discussed and move to awards.
+                  need-user-approval: yes
+                  cancellation-agent-name: Animation_Expert
+
+    Awards_Lounge:
+      display-name: "Awards Lounge"
+      emoji: "🏆"
+      agents:
+        - name: Oscar_Critic
+        - name: Indie_Guru
+        - name: Film_Historian
+      strategies:
+        termination:
+          prompt-termination:
+            instructions: >
+              Conversation:
+              {{messages}}
+              End the room after the user and at least one agent have both responded.
+            history-variable-name: messages
+          continuation-agent-name: User Input
+          constant-termination:
+            value: true
+        selection:
+          sequential-selection:
+            initial-agent: Oscar_Critic
+        rules:
+          - name: User_Then_Agent
+            current:
+              - name: User Input
+            next:
+              - name: Oscar_Critic
+              - name: Indie_Guru
+              - name: Film_Historian
+          - name: Agent_Then_User
+            current:
+              - name: Oscar_Critic
+              - name: Indie_Guru
+              - name: Film_Historian
+            next:
+              - name: User Input
+          - name: To_Classic
+            current:
+              - name: Oscar_Critic
+              - name: Indie_Guru
+              - name: Film_Historian
+              - name: User Input
+            next:
+              - name: Classic_Cinema
+                context-transfer:
+                  instructions: >
+                    {{messages}}
+                    Wrap up the journey and invite the user to start again or explore more.

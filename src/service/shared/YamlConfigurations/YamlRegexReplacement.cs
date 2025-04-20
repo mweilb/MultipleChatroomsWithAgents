@@ -2,7 +2,7 @@
 
 namespace YamlConfigurations
 {
-    public class YamlRegexReplacement
+    public class YamlRegexReplacement : YamlLineInfo
     {
         [YamlMember(Alias = "pattern")]
         public string? Pattern { get; set; } = null;

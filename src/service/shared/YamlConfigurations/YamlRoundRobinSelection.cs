@@ -3,7 +3,7 @@
     using System.Collections.Generic;
     using YamlDotNet.Serialization;
 
-    public class YamlRoundRobinSelection
+    public class YamlRoundRobinSelection : YamlLineInfo
     {
         [YamlMember(Alias = "initial-agent")]
         public string? InitialAgent { get; set; }

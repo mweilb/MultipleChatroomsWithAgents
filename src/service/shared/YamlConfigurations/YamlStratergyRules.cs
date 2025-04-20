@@ -4,7 +4,7 @@
 namespace  YamlConfigurations
 {
     // A rule with its children promoted up (no nested agentFlowList).
-    public class YamlStratergyRules
+    public class YamlStratergyRules : YamlLineInfo
     {
         // The rule's name.
         [YamlMember(Alias = "name")]

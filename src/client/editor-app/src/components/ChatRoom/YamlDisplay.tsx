@@ -170,35 +170,45 @@ const YamlDisplay: React.FC<GraphOfChartRoomProps> = ({ roomName, onErrorCountCh
                 const currIndentLen = indentMatch ? indentMatch[1].length : 0;
                 const lineNumber = idx + 1;
                 const lineErrors = allErrors.filter(e => e._line === lineNumber);
-                const isSelected = lineErrors.some(e => selectedErrorIdx === allErrors.findIndex(e2 => e2 === e));
-                const rendered = (
-                  <div
-                    key={`yaml-line-${idx}`}
-                    className={`yaml-line-container${lineErrors.length > 0 ? " has-error" : ""}${isSelected ? " selected-error" : ""}`}
-                    ref={el => {
-                      if (lineErrors.length > 0) {
-                        // Assign ref to the first error on this line
-                        const displayIdx = allErrors.findIndex(e2 => e2 === lineErrors[0]);
-                        if (displayIdx !== -1) {
-                          errorRefs.current[displayIdx] = el;
-                        }
-                      }
-                    }}
-                    style={isSelected ? { outline: "2px solid #b59a00", background: "#fffbe6", color: "#000" } : undefined}
-                  >
-                    <span className="yaml-line-number">{lineNumber}</span>
-                    <span className="yaml-line">
-                      {renderYamlLine(line)}
-                    </span>
-                    {/* Render errors for this line */}
-                    {lineErrors.map((error, i) => (
-                      <div key={i} className="yaml-error-message">
-                        <span className="error-msg">{error.Message}</span>
-                        {typeof error.CharPosition === "number" && (
-                          <span className="error-pos"> (Char {error.CharPosition})</span>
-                        )}
-                      </div>
-                    ))}
+const rendered = (
+  <div
+    key={`yaml-line-${idx}`}
+    className={`yaml-line-container${lineErrors.length > 0 ? " has-error" : ""}`}
+    ref={el => {
+      if (lineErrors.length > 0) {
+        // Assign ref to the first error on this line
+        const displayIdx = allErrors.findIndex(e2 => e2 === lineErrors[0]);
+        if (displayIdx !== -1) {
+          errorRefs.current[displayIdx] = el;
+        }
+      }
+    }}
+  >
+    <span className="yaml-line-number">{lineNumber}</span>
+    <span className="yaml-line">
+      {renderYamlLine(line)}
+    </span>
+    {/* Render errors for this line */}
+    {lineErrors.length > 0 && (
+      <div className="yaml-error-list">
+        {lineErrors.map((error, i) => {
+          const errorIdx = allErrors.findIndex(e2 => e2 === error);
+          const isErrorSelected = errorIdx === selectedErrorIdx;
+          return (
+            <div
+              key={i}
+              className={`yaml-error-message${isErrorSelected ? " selected-error-message" : ""}`}
+              style={isErrorSelected ? { outline: "2px solid #b59a00", background: "#fffbe6", color: "#000" } : undefined}
+            >
+              <span className="error-msg">{error.Message}</span>
+              {typeof error.CharPosition === "number" && (
+                <span className="error-pos"> (Char {error.CharPosition})</span>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    )}
                   </div>
                 );
                 prevIndentLen = currIndentLen;

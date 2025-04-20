@@ -5,7 +5,7 @@ namespace YamlConfigurations
 {
 
 
-    public class YamlPromptTermination
+    public class YamlPromptTermination : YamlLineInfo
     {
         [YamlMember(Alias = "agents")]
         public List<string>? Agents { get; set; }

@@ -4,7 +4,7 @@ using YamlDotNet.Serialization;
 namespace YamlConfigurations
 {
     // The decision object used in various places.
-    public class YamlTransferConfig  
+    public class YamlTransferConfig : YamlLineInfo
     {
         [YamlMember(Alias = "instructions")]
         public string Prompt { get; set; } = string.Empty;

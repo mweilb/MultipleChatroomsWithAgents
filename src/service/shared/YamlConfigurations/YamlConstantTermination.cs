@@ -2,7 +2,7 @@
 
 namespace YamlConfigurations
 {
-    public class YamlConstantTermination
+    public class YamlConstantTermination : YamlLineInfo
     {
         [YamlMember(Alias = "agents")]
         public List<string>? Agents { get; set; }

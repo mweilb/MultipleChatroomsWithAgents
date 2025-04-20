@@ -5,7 +5,7 @@ namespace YamlConfigurations
 {
 
     // Room definition used in "chatrooms".
-    public class YamlStrategyConfig
+    public class YamlStrategyConfig : YamlLineInfo
     {
         [YamlMember(Alias = "rules")]
         public List<YamlStratergyRules> Rules { get; set; } = [];

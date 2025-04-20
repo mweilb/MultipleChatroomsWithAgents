@@ -2,9 +2,10 @@
 {
     public class AgentInstructionsValidation : IValidationPass
     {
-        public IEnumerable<ValidationError> Validate(YamlMultipleChatRooms config, string? yamlText = null)
+        public void Validate(YamlMultipleChatRooms config, IList<ValidationError> errors)
         {
-            var errors = new List<ValidationError>();
+            if (errors is not IList<ValidationError> errorList)
+                throw new System.ArgumentException("errors must be a mutable collection");
 
             // Validate global agents.
             if (config.Agents != null)
@@ -13,7 +14,7 @@
                 {
                     var agentName = agentPair.Key;
                     var agentConfig = agentPair.Value;
-                    CheckEchoAnInstructions(errors, agentName, agentConfig, yamlText);
+                    CheckEchoAnInstructions(errorList, agentName, agentConfig);
                 }
             }
 
@@ -26,65 +27,41 @@
                     var room = roomPair.Value;
                     foreach (var agentInstance in room.Agents)
                     {
-                        CheckEchoAnInstructions(errors, agentInstance.Name, agentInstance, yamlText);
+                        CheckEchoAnInstructions(errorList, agentInstance.Name, agentInstance);
                     }
                 }
             }
-            return errors;
+            // No return, mutate errorList in place
         }
 
-        private static void CheckEchoAnInstructions(List<ValidationError> errors, string agentName, YamlAgentConfig agentConfig, string? yamlText)
+        private static void CheckEchoAnInstructions(IList<ValidationError> errors, string agentName, YamlAgentConfig agentConfig)
         {
             bool bInstruciton = string.IsNullOrWhiteSpace(agentConfig.Instructions);
             bool bEcho = string.IsNullOrWhiteSpace(agentConfig.Echo);
 
-            int? instrLine = null, instrChar = null, echoLine = null, echoChar = null;
-            if (yamlText != null)
-            {
-                var lines = yamlText.Split('\n');
-                for (int i = 0; i < lines.Length; i++)
-                {
-                    var instrIdx = lines[i].IndexOf($"instructions:", StringComparison.OrdinalIgnoreCase);
-                    if (instrIdx >= 0 && lines[i].IndexOf(agentName, StringComparison.OrdinalIgnoreCase) >= 0)
-                    {
-                        instrLine = i + 1;
-                        instrChar = instrIdx + 1;
-                    }
-                    var echoIdx = lines[i].IndexOf($"echo:", StringComparison.OrdinalIgnoreCase);
-                    if (echoIdx >= 0 && lines[i].IndexOf(agentName, StringComparison.OrdinalIgnoreCase) >= 0)
-                    {
-                        echoLine = i + 1;
-                        echoChar = echoIdx + 1;
-                    }
-                }
-            }
+            int? line = agentConfig is YamlLineInfo info ? (int?)info.StartLine : null;
+            int? ch = agentConfig is YamlLineInfo info2 ? (int?)info2.StartColumn : null;
 
             if ((agentConfig.Instructions != null) && (agentConfig.Echo != null))
             {
                 errors.Add(new ValidationError(
                        "Agent instructions and echo must not be both defined.",
-                       $"Agents[{agentName}].Instructions",
-                       instrLine,
-                       instrChar
+                       agentConfig 
                     ));
             }
             else if ((agentConfig.Instructions != null) && bInstruciton)
             {
                 errors.Add(new ValidationError(
                    "Agent instructions must not be empty.",
-                   $"Agents[{agentName}].Instructions",
-                   instrLine,
-                   instrChar
-               ));
+                    agentConfig 
+                ));
             }
             else if ((agentConfig.Echo != null) && bEcho)
             {
                 errors.Add(new ValidationError(
                    "Agent Echo must not be empty.",
-                   $"Agents[{agentName}].Echo",
-                   echoLine,
-                   echoChar
-               ));
+                   agentConfig 
+                ));
             }
         }
     }

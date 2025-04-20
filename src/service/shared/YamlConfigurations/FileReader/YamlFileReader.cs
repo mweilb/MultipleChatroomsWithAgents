@@ -1,6 +1,7 @@
-﻿
+﻿﻿﻿﻿
 using YamlConfigurations.Validations;
 using YamlDotNet.Serialization;
+using YamlDotNet.Serialization.NodeDeserializers;
  
 
 namespace YamlConfigurations.FileReader
@@ -8,13 +9,12 @@ namespace YamlConfigurations.FileReader
     public class YamlFileReader
     {
         // Helper method to setup and validate a YamlMultipleChatRooms instance.
-        private static void SetupAndValidate(YamlMultipleChatRooms experience, string yamlText)
+        private static void SetupAndValidate(YamlMultipleChatRooms experience)
         { 
-            experience.Yaml = yamlText;
             experience.ApplyParentOverride();
 
             var validator = new YamlChatRoomsValidator();
-            var errors = validator.Validate(experience, yamlText);
+            var errors = validator.Validate(experience);
             if (errors.Any())
             {
                 // Assign the error objects directly to the Errors property of YamlMultipleChatRooms
@@ -55,8 +55,12 @@ namespace YamlConfigurations.FileReader
         private static Dictionary<string, YamlMultipleChatRooms> ReadIndivualRoomFormat(string yamlText)
         {
             var deserializer = new DeserializerBuilder()
-              .IgnoreUnmatchedProperties()
-              .Build();
+                .WithTypeConverter(new YamlStringWithLocationConverter())
+                .WithNodeDeserializer(
+                    inner => new YamlLineInfoDeserialize(inner),
+                    s => s.InsteadOf<ObjectNodeDeserializer>())
+                .IgnoreUnmatchedProperties()
+                .Build();
 
             var yamlRoomConfig = deserializer.Deserialize<YamlRoomConfig>(yamlText);
             var dictExperiences = new Dictionary<string, YamlMultipleChatRooms>();
@@ -67,13 +71,15 @@ namespace YamlConfigurations.FileReader
                 {
                     Name = yamlRoomConfig.Name,
                     Emoji = yamlRoomConfig.Emoji,
+                    Yaml = yamlText,
+
                     Rooms = new Dictionary<string, YamlRoomConfig>
                     {
                         { yamlRoomConfig.Name, yamlRoomConfig }
                     }
                 };
 
-                SetupAndValidate(experience, yamlText);
+                SetupAndValidate(experience);
                 dictExperiences.Add(yamlRoomConfig.Name, experience);
             }
 
@@ -83,6 +89,10 @@ namespace YamlConfigurations.FileReader
         private static Dictionary<string, YamlMultipleChatRooms> ReadExperienceFormat(string yamlText)
         {
             var deserializer = new DeserializerBuilder()
+                .WithTypeConverter(new YamlStringWithLocationConverter())
+                .WithNodeDeserializer(
+                    inner => new YamlLineInfoDeserialize(inner),
+                    s => s.InsteadOf<ObjectNodeDeserializer>())
                 .IgnoreUnmatchedProperties()
                 .Build();
 
@@ -90,7 +100,8 @@ namespace YamlConfigurations.FileReader
             foreach (var (name, experience) in experienceDict)
             {
                 experience.Name = name;
-                SetupAndValidate(experience, yamlText);
+                experience.Yaml = yamlText;
+                SetupAndValidate(experience);
             }
 
             return experienceDict;

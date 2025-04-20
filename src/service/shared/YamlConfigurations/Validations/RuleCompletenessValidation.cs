@@ -4,9 +4,10 @@ namespace YamlConfigurations.Validations
 {
     public class RuleCompletenessValidation : IValidationPass
     {
-        public IEnumerable<ValidationError> Validate(YamlMultipleChatRooms config, string? yamlText = null)
+        public void Validate(YamlMultipleChatRooms config, IList<ValidationError> errors)
         {
-            var errors = new List<ValidationError>();
+            if (errors is not IList<ValidationError> errorList)
+                throw new System.ArgumentException("errors must be a mutable collection");
 
             if (config.Rooms != null)
             {
@@ -22,10 +23,10 @@ namespace YamlConfigurations.Validations
                             // Always require a termination decision.
                             if (rule.Termination == null)
                             {
-                                errors.Add(new ValidationError(
-                                    "Rule must have a termination decision defined.",
-                                    $"Rooms[{roomName}].Strategies.Rule[{rule.Name}].Termination"
-                                ));
+errorList.Add(new ValidationError(
+    "Rule must have a termination decision defined.",
+    rule
+));
                             }
 
                             // If the selection decision is null, ensure both "current" and "next" are provided.
@@ -36,17 +37,17 @@ namespace YamlConfigurations.Validations
 
                                 if (!hasCurrent || !hasNext)
                                 {
-                                    errors.Add(new ValidationError(
-                                        "Rule must have a selection decision defined unless both current and next agents are specified.",
-                                        $"Rooms[{roomName}].Strategies.Rule[{rule.Name}].SelectAgentOrRoom"
-                                    ));
+errorList.Add(new ValidationError(
+    "Rule must have a selection decision defined unless both current and next agents are specified.",
+    rule
+));
                                 }
                             }
                         }
                     }
                 }
             }
-            return errors;
+            // No return, mutate errorList in place
         }
     }
 }

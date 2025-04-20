@@ -98,9 +98,9 @@ namespace SemanticKernelExtension.Orchestrator
         /// </summary>
         /// <param name="name">Name of the room to set active.</param>
         /// <returns>True if the room exists and is set active; otherwise, false.</returns>
-        public bool SetStartRoom(string name)
+        public bool SetStartRoom(string? name)
         {
-            if (name != _activeChatName && _chats.ContainsKey(name))
+            if ((name != null) && (name != _activeChatName) && _chats.ContainsKey(name))
             {
                 _activeChatName = name;
                 _startRoom = name;   

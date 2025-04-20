@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿using System;
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Linq;
@@ -8,13 +8,14 @@ namespace YamlConfigurations.Validations
 {
     public class SelectionValidation : IValidationPass
     {
-        public IEnumerable<ValidationError> Validate(YamlMultipleChatRooms config, string? yamlText = null)
+        public void Validate(YamlMultipleChatRooms config, IList<ValidationError> errors)
         {
-            var errors = new List<ValidationError>();
+            if (errors is not IList<ValidationError> errorList)
+                throw new ArgumentException("errors must be a mutable collection");
 
             if (config.Rooms == null)
             {
-                return errors;
+                return;
             }
 
             foreach (var roomPair in config.Rooms)
@@ -32,19 +33,17 @@ namespace YamlConfigurations.Validations
                     // If a global termination is defined, validate it and compare with child rules.
                     if (room.Strategies.GlobalSelection is YamlSelectionConfig globalTerm)
                     {
-                        string globalLocation = $"Rooms[{roomName}].Strategies.GlobalTermination.Termination";
-
-                        ValidateSelections(globalTerm, globalLocation, validAgentNames, errors, yamlText);
+  
+                        ValidateSelections(globalTerm, validAgentNames, errorList);
 
 
                         foreach (var rule in room.Strategies.Rules)
                         {
-                            string ruleLocation = $"Rooms[{roomName}].Strategies.Rule[{rule.Name}].Termination.Termination";
-                            if (rule.Selection is YamlSelectionConfig ruleTerm)
+                             if (rule.Selection is YamlSelectionConfig ruleTerm)
                             {
                                 if (ruleTerm != globalTerm)
                                 {
-                                    ValidateSelections(ruleTerm, ruleLocation, validAgentNames, errors, yamlText);
+                                    ValidateSelections(ruleTerm, validAgentNames, errorList);
                                 }
                             }
                         }
@@ -54,10 +53,9 @@ namespace YamlConfigurations.Validations
                     {
                         foreach (var rule in room.Strategies.Rules)
                         {
-                            string ruleLocation = $"Rooms[{roomName}].Strategies.Rule[{rule.Name}].Termination.Termination";
                             if (rule.Selection is YamlSelectionConfig ruleTerm)
                             {
-                                ValidateSelections(ruleTerm, ruleLocation, validAgentNames, errors, yamlText);
+                                ValidateSelections(ruleTerm, validAgentNames, errorList);
                             }
                         }
                     }
@@ -66,12 +64,12 @@ namespace YamlConfigurations.Validations
                 }
             }
 
-            return errors;
+            // No return, mutate errorList in place
         }
 
 
 
-        private void ValidateSelections(YamlSelectionConfig selection, string location, HashSet<string> validAgentNames, List<ValidationError> errors, string? yamlText = null)
+        private void ValidateSelections(YamlSelectionConfig selection,  HashSet<string> validAgentNames, IList<ValidationError> errors)
         {
             var nonNullMembers = new List<string>();
 
@@ -84,51 +82,30 @@ namespace YamlConfigurations.Validations
             if (selection.SequentialSelection != null)
                 nonNullMembers.Add("sequential-selection");
 
-            int? line = null, ch = null;
-            if (nonNullMembers.Count > 1 && yamlText != null)
-            {
-                var lines = yamlText.Split('\n');
-                foreach (var selType in nonNullMembers)
-                {
-                    for (int i = 0; i < lines.Length; i++)
-                    {
-                        var idx = lines[i].IndexOf(selType, StringComparison.OrdinalIgnoreCase);
-                        if (idx >= 0)
-                        {
-                            line = i + 1;
-                            ch = idx + 1;
-                            break;
-                        }
-                    }
-                    if (line != null) break;
-                }
-            }
             if (nonNullMembers.Count > 1)
             {
-                errors.Add(new ValidationError(
-                    $"Only one selection type may be specified, but found multiple: {string.Join(", ", nonNullMembers)}.",
-                    location,
-                    line,
-                    ch
-                ));
+errors.Add(new ValidationError(
+    $"Only one selection type may be specified, but found multiple: {string.Join(", ", nonNullMembers)}.",
+    selection
+));
             }
 
-            ValidateAgents(selection, location, validAgentNames, errors, yamlText);
+            ValidateAgents(selection, validAgentNames, errors);
 
         }
 
-        private static void ValidateAgents(YamlSelectionConfig selection, string location, HashSet<string> validAgentNames, List<ValidationError> errors, string? yamlText = null)
+        private static void ValidateAgents(YamlSelectionConfig selection, HashSet<string> validAgentNames, IList<ValidationError> errors)
         {
             // Validate SequentialSelection's InitialAgent
             if (selection.SequentialSelection?.InitialAgent is string seqAgent && !string.IsNullOrWhiteSpace(seqAgent))
             {
-                ValidateAgentName(seqAgent, validAgentNames, $"{location}.sequential-selection.initial-agent", errors, yamlText);
+                ValidateAgentName(seqAgent, validAgentNames, errors, selection.SequentialSelection);
             }
 
             // Validate RoundRobinSelection's InitialAgent
             if (selection.RoundRobinSelection?.InitialAgent is string rrAgent && !string.IsNullOrWhiteSpace(rrAgent))
             {
-                ValidateAgentName(rrAgent, validAgentNames, $"{location}.round-robin-selection.initial-agent", errors, yamlText);
+                ValidateAgentName(rrAgent, validAgentNames, errors, selection.RoundRobinSelection);
             }
 
             // Validate RoundRobinSelection's Agents list
@@ -139,37 +116,20 @@ namespace YamlConfigurations.Validations
                     var agentName = rrAgents[i];
                     if (!string.IsNullOrWhiteSpace(agentName))
                     {
-                        ValidateAgentName(agentName, validAgentNames, $"{location}.round-robin-selection.agents[{i}]", errors, yamlText);
+                        ValidateAgentName(agentName, validAgentNames, errors, selection.RoundRobinSelection);
                     }
                 }
             }
         }
 
-        private static void ValidateAgentName(string agentName, HashSet<string> validAgentNames, string location, List<ValidationError> errors, string? yamlText = null)
+        private static void ValidateAgentName(string agentName, HashSet<string> validAgentNames,IList<ValidationError> errors, YamlLineInfo lineInfo)
         {
             if (!validAgentNames.Contains(agentName))
             {
-                int? line = null, ch = null;
-                if (yamlText != null)
-                {
-                    var lines = yamlText.Split('\n');
-                    for (int i = 0; i < lines.Length; i++)
-                    {
-                        var idx = lines[i].IndexOf(agentName, StringComparison.OrdinalIgnoreCase);
-                        if (idx >= 0)
-                        {
-                            line = i + 1;
-                            ch = idx + 1;
-                            break;
-                        }
-                    }
-                }
-                errors.Add(new ValidationError(
-                    $"Unknown agent name '{agentName}'. Must be one of: {string.Join(", ", validAgentNames)}",
-                    location,
-                    line,
-                    ch
-                ));
+errors.Add(new ValidationError(
+    $"Unknown agent name '{agentName}'. Must be one of: {string.Join(", ", validAgentNames)}",
+    lineInfo
+));
             }
         }
 

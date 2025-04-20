@@ -5,7 +5,7 @@ using YamlDotNet.Serialization;
 
 namespace YamlConfigurations
 {
-    public class YamlMultipleChatRooms 
+    public class YamlMultipleChatRooms : YamlLineInfo
     {
         [YamlMember(Alias = "name")]
         public string Name { get; set; } = string.Empty;
@@ -19,8 +19,8 @@ namespace YamlConfigurations
 
         // YAML "start room" maps to our CurrentRoom property.
         [YamlMember(Alias = "start-room")]
-        public string StartRoom { get; set; } = string.Empty;
-
+        public YamlStringWithLocation? StartRoom { get; set; } = null!;
+      
         // YAML "start room" maps to our CurrentRoom property.
         [YamlMember(Alias = "auto-start")]
         public string AutoStart { get; set; } = string.Empty;

@@ -2,7 +2,7 @@
 
 namespace YamlConfigurations
 {
-    public class YamlSummarizationReducer
+    public class YamlSummarizationReducer : YamlLineInfo
     {
         [YamlMember(Alias = "target-count")]
         public string? TargetCount { get; set; }

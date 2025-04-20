@@ -2,9 +2,8 @@
 {
     public class PromptNotEmptyValidation : IValidationPass
     {
-        public IEnumerable<ValidationError> Validate(YamlMultipleChatRooms config, string? yamlText = null)
+        public void Validate(YamlMultipleChatRooms config, IList<ValidationError> errors)
         {
-            var errors = new List<ValidationError>();
 
             // Iterate over all chat rooms.
             if (config.Rooms != null)
@@ -24,10 +23,10 @@
                                 rule.Selection.PromptSelect != null &&
                                 string.IsNullOrWhiteSpace(rule.Selection.PromptSelect.Instructions))
                             {
-                                errors.Add(new ValidationError(
-                                    "Prompt must not be empty.",
-                                    $"Rooms[{roomName}].Strategies.Rule[{rule.Name}].SelectAgentOrRoom.Prompt"
-                                ));
+errors.Add(new ValidationError(
+    "Prompt must not be empty.",
+    rule.Selection
+));
                             }
 
                             // For Termination, if presets are available then an empty prompt is acceptable.
@@ -38,17 +37,16 @@
                                     rule.Termination.PromptTermination != null &&
                                     string.IsNullOrWhiteSpace(rule.Termination.PromptTermination.Instructions))
                                 {
-                                    errors.Add(new ValidationError(
-                                        "Prompt must not be empty.",
-                                        $"Rooms[{roomName}].Strategies.Rule[{rule.Name}].Termination.Prompt"
-                                    ));
+errors.Add(new ValidationError(
+    "Prompt must not be empty.",
+    rule.Termination
+));
                                 }
                             }
                         }
                     }
                 }
             }
-            return errors;
         }
     }
 }

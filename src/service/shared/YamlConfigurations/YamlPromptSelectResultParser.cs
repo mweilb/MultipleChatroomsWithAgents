@@ -2,7 +2,7 @@
 
 namespace YamlConfigurations
 {
-    public class YamlPromptSelectResultParser
+    public class YamlPromptSelectResultParser : YamlLineInfo
     {
         [YamlMember(Alias = "regex")]
         public List<YamlRegexReplacement>? Regex { get; set; }

@@ -2,7 +2,7 @@
 
 namespace YamlConfigurations
 {
-    public class YamlExpression
+    public class YamlExpression : YamlLineInfo
     {
         [YamlMember(Alias = "pattern")]
         public string? Pattern { get; set; }

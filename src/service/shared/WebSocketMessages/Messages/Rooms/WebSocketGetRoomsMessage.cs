@@ -55,8 +55,8 @@ namespace WebSocketMessages.Messages.Rooms
     {
         public string Message { get; set; } = string.Empty;
         public string Location { get; set; } = string.Empty;
-        public int? LineNumber { get; set; }
-        public int? CharPosition { get; set; }
+        public long LineNumber { get; set; }
+        public long CharPosition { get; set; }
     }
 
     /// <summary>

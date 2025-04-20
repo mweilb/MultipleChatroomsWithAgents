@@ -4,7 +4,7 @@ using YamlDotNet.Serialization;
 namespace YamlConfigurations
 {
 
-    public class YamlCollectionConfig
+    public class YamlCollectionConfig : YamlLineInfo
     {
         [YamlMember(Alias = "name")]
         public string Name { get; set; } = string.Empty;

@@ -6,22 +6,10 @@ namespace YamlConfigurations.Validations
 {
     public class AgentNameValidation : IValidationPass
     {
-        public IEnumerable<ValidationError> Validate(YamlMultipleChatRooms config, string? yamlText = null)
+        public void Validate(YamlMultipleChatRooms config, IList<ValidationError> errors)
         {
-            var errors = new List<ValidationError>();
-
-            (int? line, int? ch) FindLineAndCharInYaml(string? yaml, string search)
-            {
-                if (yaml == null) return (null, null);
-                var lines = yaml.Split('\n');
-                for (int i = 0; i < lines.Length; i++)
-                {
-                    var idx = lines[i].IndexOf(search, System.StringComparison.OrdinalIgnoreCase);
-                    if (idx >= 0)
-                        return (i + 1, idx + 1);
-                }
-                return (null, null);
-            }
+            if (errors is not IList<ValidationError> errorList)
+                throw new System.ArgumentException("errors must be a mutable collection");
 
             if (config.Rooms != null)
             {
@@ -35,20 +23,16 @@ namespace YamlConfigurations.Validations
                         {
                             if (!YamlInstanceOfAgentConfig.IsValidAgentName(agent.Name))
                             {
-                                var (line, ch) = FindLineAndCharInYaml(yamlText, agent.Name);
-                                errors.Add(new ValidationError(
-                                    $"Agent name '{agent.Name}' in room '{roomName}' is invalid. Names must not contain spaces or any of: < | \\ / >",
-                                    $"Rooms[{roomName}].Agents[{agent.Name}]",
-                                    line,
-                                    ch
-                                ));
+errorList.Add(new ValidationError(
+    $"Agent name '{agent.Name}' in room '{roomName}' is invalid. Names must not contain spaces or any of: < | \\ / >",
+    agent
+));
                             }
                         }
                     }
                 }
             }
-
-            return errors;
+            // No return, mutate errorList in place
         }
     }
 }

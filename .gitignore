@@ -210,3 +210,4 @@ FodyWeavers.xsd
 # Local development secrets
 src/service/api/appsettings.Development.json
 src/service/vectordb/load-vector-db-with-sk/appsettings.Development.json
+src/service/vectordb/appsettings.Development.json

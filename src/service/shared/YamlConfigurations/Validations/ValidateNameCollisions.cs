@@ -8,9 +8,8 @@ namespace YamlConfigurations.Validations
 {
     public class NameCollisionValidation : IValidationPass
     {
-        public IEnumerable<ValidationError> Validate(YamlMultipleChatRooms config, string? yamlText = null)
+        public void Validate(YamlMultipleChatRooms config, IList<ValidationError> errors)
         {
-            var errors = new List<ValidationError>();
 
             // Dictionary to track names and their assigned category (e.g., "room", "agent", or "termination").
             var usedNames = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -30,10 +29,10 @@ namespace YamlConfigurations.Validations
                         {
                             if (!existingCategory.Equals("room", StringComparison.OrdinalIgnoreCase))
                             {
-                                errors.Add(new ValidationError(
-                                    $"Name collision: '{room.Name}' is used for both a room and a {existingCategory}.",
-                                    $"Rooms[{roomKey}].Name"
-                                ));
+errors.Add(new ValidationError(
+    $"Name collision: '{room.Name}' is used for both a room and a {existingCategory}.",
+    room
+));
                             }
                         }
                         else
@@ -53,10 +52,10 @@ namespace YamlConfigurations.Validations
                                 {
                                     if (!existingCategory.Equals("agent", StringComparison.OrdinalIgnoreCase))
                                     {
-                                        errors.Add(new ValidationError(
-                                            $"Name collision: '{agent.Name}' is used for both an agent and a {existingCategory}.",
-                                            $"Rooms[{roomKey}].Agents[{agent.Name}]"
-                                        ));
+errors.Add(new ValidationError(
+    $"Name collision: '{agent.Name}' is used for both an agent and a {existingCategory}.",
+    agent
+));
                                     }
                                 }
                                 else
@@ -79,10 +78,10 @@ namespace YamlConfigurations.Validations
                                 {
                                     if (!existingCategory.Equals("termination", StringComparison.OrdinalIgnoreCase))
                                     {
-                                        errors.Add(new ValidationError(
-                                            $"Name collision: '{terminationName}' is used for both a termination and a {existingCategory}.",
-                                            $"Rooms[{roomKey}].Strategies.Rule[{rule.Name}].Termination.Name"
-                                        ));
+errors.Add(new ValidationError(
+    $"Name collision: '{terminationName}' is used for both a termination and a {existingCategory}.",
+    rule.Termination
+));
                                     }
                                 }
                                 else
@@ -95,7 +94,6 @@ namespace YamlConfigurations.Validations
                 }
             }
 
-            return errors;
         }
     }
 }

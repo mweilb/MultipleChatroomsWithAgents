@@ -2,7 +2,7 @@
 
 namespace YamlConfigurations
 {
-    public class YamlTruncationReducer
+    public class YamlTruncationReducer : YamlLineInfo
     {
         [YamlMember(Alias = "target-count")]
         public string? TargetCount { get; set; }

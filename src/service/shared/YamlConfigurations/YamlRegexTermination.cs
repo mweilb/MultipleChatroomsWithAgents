@@ -2,7 +2,7 @@
 
 namespace YamlConfigurations
 {
-    public class YarmRegexTermination
+    public class YarmRegexTermination : YamlLineInfo
     {
         
         [YamlMember(Alias = "expressions")]

@@ -3,7 +3,7 @@
 namespace YamlConfigurations
 {
     // Global Agent definition.
-    public class YamlAgentConfig
+    public class YamlAgentConfig : YamlLineInfo
     {
         [YamlMember(Alias = "emoji")]
         public string? Emoji { get; set; } = string.Empty;

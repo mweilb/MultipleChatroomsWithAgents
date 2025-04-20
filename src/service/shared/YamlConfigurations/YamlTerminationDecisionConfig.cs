@@ -9,7 +9,7 @@ namespace YamlConfigurations
 {
 
     // The decision object used in various places.
-    public class YamlTerminationDecisionConfig  
+    public class YamlTerminationDecisionConfig : YamlLineInfo
     {  
         //New code and the rest of the above will be cleaned up
         [YamlMember(Alias = "continuation-agent-name")]

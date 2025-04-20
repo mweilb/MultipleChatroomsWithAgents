@@ -1,4 +1,4 @@
-﻿﻿using System;
+﻿﻿﻿﻿﻿﻿﻿﻿﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using YamlConfigurations;
@@ -7,75 +7,60 @@ namespace YamlConfigurations.Validations
 {
     public class AgentReferenceValidation : IValidationPass
     {
-        public IEnumerable<ValidationError> Validate(YamlMultipleChatRooms config, string? yamlText = null)
+
+        bool IsTrue(string? value)
         {
-            var errors = new List<ValidationError>();
+            return value != null &&
+                   (value.Contains("yes", StringComparison.OrdinalIgnoreCase) ||
+                    value.Contains("true", StringComparison.OrdinalIgnoreCase));
+        }
+
+        
+
+
+
+        bool IsValidReference(string name, HashSet<string> validAgentNames, HashSet<string> validRoomNames, HashSet<string?>? validTerminationNames)
+        {
+            return validAgentNames.Contains(name)
+                || validRoomNames.Contains(name)
+                || (validTerminationNames != null && validTerminationNames.Contains(name))
+                || name.Equals("start", StringComparison.OrdinalIgnoreCase)
+                || name.Equals("any", StringComparison.OrdinalIgnoreCase);
+        }
+
+
+        bool AllNextRefsHaveContextTransfer(YamlStratergyRules rule)
+        {
+            var nextRefs = new List<dynamic>();
+
+            foreach (var next in rule.Next)
+            {
+                nextRefs.Add(next);
+            }
+            return nextRefs.Count > 0 && nextRefs.All(n => n.ContextTransfer != null && !string.IsNullOrWhiteSpace(n.ContextTransfer.Prompt));
+        }
+
+        
+        public void Validate(YamlMultipleChatRooms config, IList<ValidationError> errors)
+        {
+            if (errors is not IList<ValidationError> errorList)
+                throw new ArgumentException("errors must be a mutable collection");
+
             var errorKeys = new HashSet<string>();
 
-            bool IsTrue(string? value)
-            {
-                return value != null &&
-                       (value.Contains("yes", StringComparison.OrdinalIgnoreCase) ||
-                        value.Contains("true", StringComparison.OrdinalIgnoreCase));
-            }
-
-            void AddError(ValidationError err)
-            {
-                var key = $"{err.Message}|{err.LineNumber}|{err.CharPosition}";
-                if (errorKeys.Add(key))
-                    errors.Add(err);
-            }
-
-            (int? line, int? ch) FindLineAndCharInYaml(string? yaml, string search)
-            {
-                if (yaml == null) return (null, null);
-                var lines = yaml.Split('\n');
-                for (int i = 0; i < lines.Length; i++)
-                {
-                    var idx = lines[i].IndexOf(search, StringComparison.OrdinalIgnoreCase);
-                    if (idx >= 0)
-                        return (i + 1, idx + 1);
-                }
-                return (null, null);
-            }
-
-            bool IsValidReference(string name, HashSet<string> validAgentNames, HashSet<string> validRoomNames, HashSet<string?>? validTerminationNames)
-            {
-                return validAgentNames.Contains(name)
-                    || validRoomNames.Contains(name)
-                    || (validTerminationNames != null && validTerminationNames.Contains(name))
-                    || name.Equals("start", StringComparison.OrdinalIgnoreCase)
-                    || name.Equals("any", StringComparison.OrdinalIgnoreCase);
-            }
-
-
-            bool AllNextRefsHaveContextTransfer(YamlStratergyRules rule)
-            {
-                var nextRefs = new List<dynamic>();
-
-                foreach (var next in rule.Next)
-                {
-                    nextRefs.Add(next);
-                }
-                return nextRefs.Count > 0 && nextRefs.All(n => n.ContextTransfer != null && !string.IsNullOrWhiteSpace(n.ContextTransfer.Prompt));
-            }
-
-            void AddErrorWithYamlLocation(string message, string path, string? yaml, string search, Action<ValidationError> add)
-            {
-                var (line, ch) = FindLineAndCharInYaml(yaml, search);
-                add(new ValidationError(message, path, line, ch));
-            }
+   
 
             if (config.Rooms != null)
             {
                 var validRoomNames = config.Rooms.Keys.ToHashSet(StringComparer.OrdinalIgnoreCase);
-
-                if (!string.IsNullOrEmpty(config.StartRoom) && !validRoomNames.Contains(config.StartRoom))
+                var startRoomName = config.StartRoom?.Value ?? string.Empty;
+                if ((config.StartRoom != null) && !string.IsNullOrEmpty(startRoomName) && !validRoomNames.Contains(startRoomName))
                 {
-                    AddError(new ValidationError(
+                    errors.Add(new ValidationError(
                         $"StartRoom is not a valid room: '{config.StartRoom}'",
-                        $"[{config.Name}].StartRoom"
+                        config.StartRoom
                     ));
+                    
                 }
 
                 foreach (var roomPair in config.Rooms)
@@ -96,13 +81,9 @@ namespace YamlConfigurations.Validations
                             {
                                 if (!IsValidReference(current.Name, validAgentNames, validRoomNames, validTerminationNames))
                                 {
-                                    AddErrorWithYamlLocation(
-                                        $"Current reference '{current.Name}' is not a valid agent or room in room '{roomName}'.",
-                                        $"Rooms[{roomName}].Strategies.Rule[{rule.Name}].Current[{current.Name}]",
-                                        yamlText,
-                                        current.Name,
-                                        AddError
-                                    );
+                                    errors.Add(new ValidationError(
+                                     $"Current reference '{current.Name}' is not a valid agent or room in room '{roomName}'.",
+                                    current));
                                 }
                             }
 
@@ -110,24 +91,17 @@ namespace YamlConfigurations.Validations
                             {
                                 if (!IsValidReference(next.Name, validAgentNames, validRoomNames, validTerminationNames))
                                 {
-                                    AddErrorWithYamlLocation(
-                                        $"Next reference '{next.Name}' is not a valid agent or room in room '{roomName}'.",
-                                        $"Rooms[{roomName}].Strategies.Rule[{rule.Name}].Next[{next.Name}]",
-                                        yamlText,
-                                        next.Name,
-                                        AddError
-                                    );
+                                    errors.Add(new ValidationError(
+                                       $"Next reference '{next.Name}' is not a valid agent or room in room '{roomName}'.",
+                                       next));
                                 }
 
                                 if (validTerminationNames != null && validTerminationNames.Contains(next.Name))
                                 {
-                                    AddErrorWithYamlLocation(
-                                        $"Next reference '{next.Name}' is Termination Name and can not be used in next statement.",
+                                    errors.Add(new ValidationError(
                                         $"Rooms[{roomName}].Strategies.Rule[{rule.Name}].Next[{next.Name}]",
-                                        yamlText,
-                                        next.Name,
-                                        AddError
-                                    );
+                                        next));
+  
                                 }
                             }
                         }
@@ -155,13 +129,10 @@ namespace YamlConfigurations.Validations
                                         //if constant, could be automatically 
                                         if ((termination.ConstantTermination == null) || (IsTrue(termination.ConstantTermination.Value)))
                                         {
-                                            AddErrorWithYamlLocation(
-                                                $"ContinuationAgentName '{termination.ContinuationAgentName}' is not reference in any rule.",
-                                                $"Rooms[{roomName}].Strategies.Rule[{rule.Name}].Termination.ContinuationAgentName",
-                                                yamlText,
-                                                termination.ContinuationAgentName,
-                                                AddError
-                                            );
+                                            errors.Add(new ValidationError(
+                                               $"ContinuationAgentName '{termination.ContinuationAgentName}' is not reference in any rule.",
+                                               termination));
+                                           
                                         }
                                     }
                                 }
@@ -171,7 +142,7 @@ namespace YamlConfigurations.Validations
                 }
             }
 
-            return errors;
+            // No return, mutate errorList in place
         }
     }
 }

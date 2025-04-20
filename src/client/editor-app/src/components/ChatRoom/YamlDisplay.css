@@ -52,7 +52,6 @@
   display: inline-block;
   width: 2em;
   color: #888;
-  user-select: none;
   text-align: right;
   margin-right: 0.75em;
 }
@@ -79,6 +78,21 @@
   white-space: pre-wrap;
   overflow-wrap: anywhere;
   max-width: 60vw;
+}
+
+.yaml-error-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15em;
+}
+
+/* Highlight for selected error message */
+.selected-error-message {
+  outline: 2px solid #b59a00;
+  background: #fffbe6 !important;
+  color: #000 !important;
+  border-left: 3px solid #b59a00 !important;
+  z-index: 2;
 }
 
 .yaml-line-container.has-error {
