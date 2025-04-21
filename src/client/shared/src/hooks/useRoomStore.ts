@@ -20,6 +20,24 @@ export function useRoomStore(sender: (message: WebSocketBaseMessage) => void) {
     setRooms(newRooms);
   };
 
+  /** Handle config change actions for rooms */
+  const handleConfigChange = (action: string, changedRoom: WebSocketRoom) => {
+    if (!changedRoom) return;
+    if (action === "configAdded") {
+      setRooms(prevRooms => {
+        const exists = prevRooms.some((r) => r.Name === changedRoom.Name);
+        if (!exists) {
+          return [...prevRooms, changedRoom];
+        }
+        return prevRooms;
+      });
+    } else if (action === "configRemoved") {
+      setRooms(prevRooms => prevRooms.filter((r) => r.Name !== changedRoom.Name));
+    } else if (action === "configReloaded") {
+      setRooms(prevRooms => prevRooms.map((r) => r.Name === changedRoom.Name ? { ...r, ...changedRoom } : r));
+    }
+  };
+
   /** Create a message to request the list of rooms */
   const triggerRoomsRequest = (socket: WebSocket): void => {
     const requestRoomsMessage: WebSocketBaseMessage = {
@@ -86,5 +104,6 @@ export function useRoomStore(sender: (message: WebSocketBaseMessage) => void) {
     resetRoom,
     setNewRoomListener,
     handleNewRoomMessage,
+    handleConfigChange,
   };
 }

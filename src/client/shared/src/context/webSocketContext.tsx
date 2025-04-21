@@ -113,6 +113,7 @@ export const WebSocketProvider = ({
     setNewRoomListener,
     handleNewRoomMessage,
     triggerRoomsRequest,
+    handleConfigChange,
   } = useRoomStore(sender);
 
   const { appType: currentAppType, triggerEditorMode } = useEditorMode(appType);
@@ -202,7 +203,6 @@ export const WebSocketProvider = ({
         return;
       }
       if (incomingMessage.Action === "pong") {
-        // Pong received, clear pong timeout
         if (pongTimer.current) clearTimeout(pongTimer.current);
         return;
       }
@@ -212,12 +212,26 @@ export const WebSocketProvider = ({
       }
       if (
         !incomingMessage ||
-        !incomingMessage.UserId ||
-        !incomingMessage.TransactionId ||
-        !incomingMessage.Action ||
-        !incomingMessage.SubAction
+        !incomingMessage.Action
       ) {
         console.error('Malformed message:', incomingMessage);
+        return;
+      }
+
+      // Handle YAML config reload/add/remove for editor
+      if (
+        incomingMessage.Action === "configReloaded" ||
+        incomingMessage.Action === "configAdded" ||
+        incomingMessage.Action === "configRemoved"
+      ) {
+        // Only handle in editor mode
+        if (currentAppType === "editor") {
+          // ChangedRoom may be null for delete
+          const changedRoom = incomingMessage.ChangedRoom;
+          if (changedRoom) {
+            handleConfigChange(incomingMessage.Action, changedRoom);
+          }
+        }
         return;
       }
 

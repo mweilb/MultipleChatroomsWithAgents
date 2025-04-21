@@ -15,8 +15,10 @@ namespace AppExtensions.Experience.Handlers
     /// <summary>
     /// Handles incoming WebSocket messages and orchestrates command processing.
     /// </summary>
-    public class MessageHandler
-    {
+public class MessageHandler
+{
+    private volatile bool _isProcessingRelevantMessage = false;
+    public bool IsProcessingRelevantMessage => _isProcessingRelevantMessage;
         private readonly ILogger<MessageHandler>? logger;
         private readonly string _name;
         private readonly TrackingInfo _trackingInfo;
@@ -80,35 +82,48 @@ namespace AppExtensions.Experience.Handlers
         /// <param name="message">The incoming WebSocket message.</param>
         /// <param name="webSocket">The WebSocket connection.</param>
         /// <param name="mode">The connection mode.</param>
-        public async Task HandleCommandAsync(WebSocketBaseMessage message, WebSocket webSocket, ConnectionMode mode)
+public async Task HandleCommandAsync(WebSocketBaseMessage message, WebSocket webSocket, ConnectionMode mode)
+{
+    // Only set as processing if not a ping
+    bool isPing = message.Action?.Equals("ping", StringComparison.OrdinalIgnoreCase) == true;
+    if (!isPing)
+        _isProcessingRelevantMessage = true;
+
+    try
+    {
+        // Wrap WebSocket connection with a sender helper for simplified messaging.
+        var sender = new WebSocketSender(webSocket);
+        using var cts = new CancellationTokenSource();
+        CancellationToken cancellationToken = cts.Token;
+
+        // Retrieve the orchestrator for the current chatroom.
+        var orchestrator = _trackingInfo.agentGroupChatOrchestrator;
+        if (orchestrator == null)
         {
-            // Wrap WebSocket connection with a sender helper for simplified messaging.
-            var sender = new WebSocketSender(webSocket);
-            using var cts = new CancellationTokenSource();
-            CancellationToken cancellationToken = cts.Token;
-
-            // Retrieve the orchestrator for the current chatroom.
-            var orchestrator = _trackingInfo.agentGroupChatOrchestrator;
-            if (orchestrator == null)
-            {
-                logger?.LogError("ChatRoom not initialized for {CommandName}", _name);
-                await sender.SendError(message.UserId, _name, "handler", $"ChatRoom not initialized {_name}");
-                return;
-            }
-
-            try
-            {
-                // Add incoming message to conversation history.
-                orchestrator.AddChatMessage(message.Content);
-
-                await ProcessMessage(message, mode, sender, orchestrator, cancellationToken);
-            }
-            catch (Exception ex)
-            {
-                logger?.LogError(ex, "Error occurred handling command {CommandName}", _name);
-                await sender.SendError(message.UserId, _name, "message processing", $"Initialization or logic error: {ex.Message}");
-            }
+            logger?.LogError("ChatRoom not initialized for {CommandName}", _name);
+            await sender.SendError(message.UserId, _name, "handler", $"ChatRoom not initialized {_name}");
+            return;
         }
+
+        try
+        {
+            // Add incoming message to conversation history.
+            orchestrator.AddChatMessage(message.Content);
+
+            await ProcessMessage(message, mode, sender, orchestrator, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            logger?.LogError(ex, "Error occurred handling command {CommandName}", _name);
+            await sender.SendError(message.UserId, _name, "message processing", $"Initialization or logic error: {ex.Message}");
+        }
+    }
+    finally
+    {
+        if (!isPing)
+            _isProcessingRelevantMessage = false;
+    }
+}
 
         public async Task ProcessMessage(WebSocketBaseMessage message, ConnectionMode mode, WebSocketSender sender, AgentGroupChatOrchestrator orchestrator, CancellationToken cancellationToken)
         {

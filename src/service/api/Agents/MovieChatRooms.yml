@@ -1,7 +1,7 @@
 Movie Chat Rooms:
   emoji: "🎬"
   auto-start: true
-  start-room: Intro_Lobby
+  start-room: Classic_Cinema
   agents:
     Film_Historian:
       display-name: "Film Historian" 

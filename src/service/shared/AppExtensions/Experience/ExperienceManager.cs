@@ -6,11 +6,14 @@ using WebSocketMessages;
 using YamlConfigurations;
  
 using YamlConfigurations.Librarians;
+using static AppExtensions.Experience.ExperienceManager;
 
 namespace AppExtensions.Experience
 {
     public class ExperienceManager
     {
+        public bool IsProcessingRelevantWebSocketMessage =>
+            Experiences.Values.Any(t => t.handler != null && t.handler.IsProcessingRelevantMessage);
         public Kernel Kernel { get; }
      
         public class VisualInfo
@@ -54,9 +57,35 @@ namespace AppExtensions.Experience
                     trackingInfo.Librarians = await ExperienceLoader.GatherLibrariansAsync(kvp.Value, Kernel);
                 }
             }
-
             return true;
         }
+
+        /// <summary>
+        /// Updates the Experiences dictionary to add or update rooms from the provided config.
+        /// Removal of rooms is handled externally.
+        /// </summary>
+        public async Task UpdateFromConfigAsync(Dictionary<string, YamlMultipleChatRooms> config)
+        {
+            // Add or update rooms
+            foreach (var kvp in config)
+            {
+                string roomName = kvp.Key;
+                var updatedRoom = kvp.Value;
+                if (updatedRoom == null) continue;
+
+                // Only update if not present or changed (reference or simple equality)
+                if (!Experiences.TryGetValue(roomName, out var tracking) ||
+                    !Equals(tracking.Experience, updatedRoom))
+                {
+                    var trackingInfo = new TrackingInfo { Experience = updatedRoom };
+                    var (orchestrator, visualInfo) = await AgentGroupChatOrchestratorFactory.Create(updatedRoom, Kernel);
+                    trackingInfo.agentGroupChatOrchestrator = orchestrator;
+                    trackingInfo.VisualInfoPerName = visualInfo;
+                    Experiences[roomName] = trackingInfo;
+                }
+            }
+        }
+        
 
 
         public async Task<bool> CreateOrchestratorsAsync()
@@ -94,5 +123,6 @@ namespace AppExtensions.Experience
 
         }
 
+       
     }
 }

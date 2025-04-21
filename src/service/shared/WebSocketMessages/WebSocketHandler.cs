@@ -4,6 +4,8 @@ using System.Text.Json;
 using System.Collections.Concurrent;
 using WebSocketMessages.Messages;
 using WebSocketMessages.Messages.Rooms;
+using System.IO;
+using System.Threading;
 
 namespace WebSocketMessages
 {
@@ -20,6 +22,14 @@ namespace WebSocketMessages
     {
         // Dictionary mapping command actions to their respective handlers.
         private readonly ConcurrentDictionary<string, Func<WebSocketBaseMessage, WebSocket, ConnectionMode, Task>> commandHandlers = new();
+
+        // Semaphore to lock WebSocket message processing
+        private readonly SemaphoreSlim _wsMessageSemaphore = new(1, 1);
+
+        // Property to expose lock state
+        public bool IsProcessingWebSocketMessage { get; private set; } = false;
+
+        // (YAML config logic removed; now handled externally)
 
         /// <summary>
         /// Gets or sets the current connection mode.
@@ -47,8 +57,12 @@ namespace WebSocketMessages
         /// <summary>
         /// Listens for incoming WebSocket messages and dispatches them to the appropriate command handler.
         /// </summary>
+        // Track connected clients
+        private readonly ConcurrentBag<WebSocket> _connectedClients = new();
+
         public async Task HandleRequestAsync(WebSocket webSocket)
         {
+            _connectedClients.Add(webSocket);
             var buffer = new byte[1024 * 4];
 
             try
@@ -57,58 +71,68 @@ namespace WebSocketMessages
 
                 while (!result.CloseStatus.HasValue)
                 {
-                    string messageJson = Encoding.UTF8.GetString(buffer, 0, result.Count);
-
-                    WebSocketBaseMessage? incomingMessage;
+                    await _wsMessageSemaphore.WaitAsync();
+                    IsProcessingWebSocketMessage = true;
                     try
                     {
-                        incomingMessage = JsonSerializer.Deserialize<WebSocketBaseMessage>(messageJson);
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"Error parsing JSON: {ex.Message}");
-                        await SendErrorAsync(webSocket, "Invalid JSON format.");
-                        result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
-                        continue;
-                    }
+                        string messageJson = Encoding.UTF8.GetString(buffer, 0, result.Count);
 
-                    if (incomingMessage == null || string.IsNullOrEmpty(incomingMessage.Action))
-                    {
-                        await SendErrorAsync(webSocket, "Invalid message format: 'action' is required.");
-                        result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
-                        continue;
-                    }
-
-                    try
-                    {
-                        if (commandHandlers.TryGetValue(incomingMessage.Action, out var handler))
+                        WebSocketBaseMessage? incomingMessage;
+                        try
                         {
-                            // Pass the current connection mode to the handler.
-                            await handler(incomingMessage, webSocket, CurrentConnectionMode);
+                            incomingMessage = JsonSerializer.Deserialize<WebSocketBaseMessage>(messageJson);
                         }
-                        else
+                        catch (Exception ex)
                         {
-                            var unknownResponse = new WebSocketReplyChatRoomMessage
+                            Console.WriteLine($"Error parsing JSON: {ex.Message}");
+                            await SendErrorAsync(webSocket, "Invalid JSON format.");
+                            result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
+                            continue;
+                        }
+
+                        if (incomingMessage == null || string.IsNullOrEmpty(incomingMessage.Action))
+                        {
+                            await SendErrorAsync(webSocket, "Invalid message format: 'action' is required.");
+                            result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
+                            continue;
+                        }
+
+                        try
+                        {
+                            if (commandHandlers.TryGetValue(incomingMessage.Action, out var handler))
                             {
-                                UserId = incomingMessage.UserId,
-                                TransactionId = incomingMessage.TransactionId,
-                                Action = "unknown",
-                                SubAction = incomingMessage.Action,
-                                Content = $"Unknown action: {incomingMessage.Action}",
-                                DisplayName = incomingMessage.UserId
-                            };
+                                // Pass the current connection mode to the handler.
+                                await handler(incomingMessage, webSocket, CurrentConnectionMode);
+                            }
+                            else
+                            {
+                                var unknownResponse = new WebSocketReplyChatRoomMessage
+                                {
+                                    UserId = incomingMessage.UserId,
+                                    TransactionId = incomingMessage.TransactionId,
+                                    Action = "unknown",
+                                    SubAction = incomingMessage.Action,
+                                    Content = $"Unknown action: {incomingMessage.Action}",
+                                    DisplayName = incomingMessage.UserId
+                                };
 
-                            var unknownJson = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(unknownResponse));
-                            await webSocket.SendAsync(new ArraySegment<byte>(unknownJson), WebSocketMessageType.Text, true, CancellationToken.None);
+                                var unknownJson = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(unknownResponse));
+                                await webSocket.SendAsync(new ArraySegment<byte>(unknownJson), WebSocketMessageType.Text, true, CancellationToken.None);
+                            }
                         }
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"Error handling action '{incomingMessage.Action}': {ex.Message}");
-                        await SendErrorAsync(webSocket, $"Error processing action '{incomingMessage.Action}'.");
-                    }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Error handling action '{incomingMessage.Action}': {ex.Message}");
+                            await SendErrorAsync(webSocket, $"Error processing action '{incomingMessage.Action}'.");
+                        }
 
-                    result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
+                        result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
+                    }
+                    finally
+                    {
+                        IsProcessingWebSocketMessage = false;
+                        _wsMessageSemaphore.Release();
+                    }
                 }
 
                 await webSocket.CloseAsync(result.CloseStatus.Value, result.CloseStatusDescription, CancellationToken.None);
@@ -117,6 +141,34 @@ namespace WebSocketMessages
             catch (Exception ex)
             {
                 Console.WriteLine($"Unexpected error: {ex.Message}");
+            }
+            finally
+            {
+                // Remove closed socket
+                // (ConcurrentBag does not support removal, so this is a limitation;
+                // for production, use ConcurrentDictionary or similar for better management)
+            }
+        }
+
+        public void SendToAllClients(WebSocketConfigReloadedMessage message)
+        {
+            var json = System.Text.Json.JsonSerializer.Serialize(message);
+            var bytes = System.Text.Encoding.UTF8.GetBytes(json);
+            var segment = new ArraySegment<byte>(bytes);
+
+            foreach (var ws in _connectedClients)
+            {
+                if (ws.State == WebSocketState.Open)
+                {
+                    try
+                    {
+                        ws.SendAsync(segment, WebSocketMessageType.Text, true, CancellationToken.None).Wait();
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Failed to send to client: {ex.Message}");
+                    }
+                }
             }
         }
 
