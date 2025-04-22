@@ -46,4 +46,25 @@ humanReviewPromptTemplate: |
   ---
   {{fixedYaml}}
 
-  Explain the changes in the Fixed YAML that addresses the error.  Be consice and clear.  Just the summary of the changes.  Do not include any other information.  
+  Explain the changes in the Fixed YAML that addresses the error.  Be consice and clear.  Just the summary of the changes.  Do not include any other information.
+
+applyFixStepPrompt: |
+  You are an expert YAML fixer.
+
+  Input:
+      ```yaml
+      {{yaml}}
+      ```
+
+  Error:
+      Line: {{line}}
+      Column: {{col}}
+      Message: {{error}}
+
+  Fix request:
+      {{patch}}
+
+  Instructions:
+  - Apply the fix only to address the specified error.
+  - Preserve all original characters exactly as they appear in the input; do NOT convert characters like `>` to `&gt;` or emojis to HTML entities.
+  - Output only the complete corrected YAML document, wrapped in a YAML code block (```yaml …```), with no additional text.

@@ -46,7 +46,10 @@ namespace YamlConfigurations.FileReader
                 Dictionary<string, YamlMultipleChatRooms> dictExperiences = ReadIndivualRoomFormat(yamlText);
                 return dictExperiences;
             }
-            catch { }
+            catch { 
+
+                
+            }
 
             return ([]);
         }

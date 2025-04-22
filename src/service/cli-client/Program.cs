@@ -62,11 +62,19 @@ namespace cli_client
             }
             else
             {
-                var yaml = File.ReadAllText(configYmlPath);
-                var deserializer = new DeserializerBuilder()
-                    .WithNamingConvention(CamelCaseNamingConvention.Instance)
-                    .Build();
-                checkerConfig = deserializer.Deserialize<YamlErrorCheckerConfig>(yaml) ?? new YamlErrorCheckerConfig();
+                try
+                {
+                    var yaml = File.ReadAllText(configYmlPath);
+                    var deserializer = new DeserializerBuilder()
+                        .WithNamingConvention(CamelCaseNamingConvention.Instance)
+                        .Build();
+                    checkerConfig = deserializer.Deserialize<YamlErrorCheckerConfig>(yaml) ?? new YamlErrorCheckerConfig();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error loading configuration.yml: {ex.Message}");
+                    throw;
+                }
             }
 
             var processBuilder = Installer.GetYamlErrorCheckerBuilder(checkerConfig);
@@ -165,8 +173,8 @@ namespace cli_client
                         Console.WriteLine(explainDifferences);
                       
                         Console.WriteLine("Do you want to accept the fix? (y/n)");
-                        var accept = Console.ReadLine();
-                        if (accept == "y")
+                        var accept = Console.ReadLine() ?? "";
+                        if ((accept.ToLower() == "y") || (accept.ToLower() == "yes"))
                         {
                             Console.WriteLine("You accepted the fix.");
                             currentEvent = new() { Id = ProcessEvents.SaveFix, Data = localState };

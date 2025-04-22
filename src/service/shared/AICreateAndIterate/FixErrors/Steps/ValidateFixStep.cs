@@ -1,7 +1,6 @@
 // ValidateFixStep.cs
 using Microsoft.SemanticKernel;
 using YamlConfigurations.FileReader;
-using AICreateAndIterate.FixErrors.Steps;
 using AICreateAndIterate.FixErrors.Events;
 
 #pragma warning disable SKEXP0080
@@ -21,24 +20,43 @@ namespace AICreateAndIterate.FixErrors.Steps
             }
 
             int maxAttempts = state.MaxAttempts;
-            int attempts = state.Suggestions?.Attempts ?? 0;
+            int attempts = state.Suggestions.Attempts;
             bool errorStillPresent = false;
             Exception? loadException = null;
 
             try
             {
-                var newInfo = YamlFileReader.ReadFromString(state.YamlText);
+                var newInfo = YamlFileReader.ReadFromString(state.Suggestions.FixedYaml);
 
-                // Check if the original error is still present
-                var errorContext = state.Recommendation?.Error;
-                if (errorContext != null)
+                if (newInfo.Count == 0 || newInfo.First().Value == null)
                 {
-                    errorStillPresent = newInfo.Values
-                        .SelectMany(room => room.Errors)
-                        .Any(err =>
-                            err.Message == errorContext?.Message &&
-                            err.Location == errorContext?.Location
-                        );
+                    // If the new info is empty or null, we consider the error still present
+                    errorStillPresent = true;
+                }   
+                else
+                {
+        
+                    // Check if the original error is still present
+                    var errorContext = state.Recommendation?.Error;
+                    if (errorContext != null)
+                    {
+                        errorStillPresent = false;
+                        foreach (var room in newInfo.Values)
+                        {
+                            foreach (var err in room.Errors)
+                            {
+                                // Set a breakpoint here to debug error matching
+                                if (err.Message == errorContext?.Message &&
+                                    err.Location == errorContext?.Location)
+                                {
+                                    errorStillPresent = true;
+                                    break;
+                                }
+                            }
+                            if (errorStillPresent)
+                                break;
+                        }
+                    }
                 }
             }
             catch (Exception ex)
@@ -49,19 +67,18 @@ namespace AICreateAndIterate.FixErrors.Steps
 
             if (state.Suggestions != null)
             {
-                state.Suggestions.FixedYaml = state.YamlText;
                 state.Suggestions.Attempts = attempts + (errorStillPresent && attempts < maxAttempts ? 1 : 0);
             }
 
             if (errorStillPresent && attempts + 1 >= maxAttempts)
             {
-                state.IsComplete = true;
-                await ctx.EmitEventAsync(ProcessEvents.TryToApplyFixAgain, data: state, visibility: KernelProcessEventVisibility.Public);
+                state.IsComplete = false;
+                await ctx.EmitEventAsync(ProcessEvents.RequestHumanInTheLoopForFailure, data: state, visibility: KernelProcessEventVisibility.Public);
             }
             else if (errorStillPresent)
             {
-                state.IsComplete = false;
-                await ctx.EmitEventAsync(ProcessEvents.RequestHumanInTheLoopForFailure, data: state, visibility: KernelProcessEventVisibility.Public);
+                state.IsComplete = true;
+                await ctx.EmitEventAsync(ProcessEvents.TryToApplyFixAgain, data: state, visibility: KernelProcessEventVisibility.Public);
             }
             else
             {

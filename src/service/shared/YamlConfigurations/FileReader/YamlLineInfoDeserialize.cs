@@ -19,28 +19,25 @@ namespace YamlConfigurations.FileReader
             out object? value,
             ObjectDeserializer rootDeserializer)
         {
-            // Try to get the start mark from the current event
+            // Try to get the start mark from the current event, but do not advance unless necessary
             Mark start = Mark.Empty;
-            if (parser.Current is ParsingEvent ev)
+            ParsingEvent? parsingEvent = parser.Current as ParsingEvent;
+            if (parsingEvent == null)
             {
-                start = ev.Start;
-            }
-            else if (parser.MoveNext() && parser.Current is ParsingEvent ev2)
-            {
-                start = ev2.Start;
-            }
-
-            try{
-            // Let the default deserializer do its job
-                if (!_inner.Deserialize(parser, expectedType, nestedObjectDeserializer, out value, rootDeserializer))
+                if (parser.MoveNext())
                 {
-                    return false;
+                    parsingEvent = parser.Current as ParsingEvent;
                 }
             }
-            catch (Exception ex)
+            if (parsingEvent != null)
             {
-                // Handle deserialization errors
-                throw new YamlException($"Error deserializing YAML at line {start.Line}, column {start.Column}: {ex.Message}", ex);
+                start = parsingEvent.Start;
+            }
+
+            // Let the default deserializer do its job
+            if (!_inner.Deserialize(parser, expectedType, nestedObjectDeserializer, out value, rootDeserializer))
+            {
+                return false;
             }
 
             // Set line info if applicable

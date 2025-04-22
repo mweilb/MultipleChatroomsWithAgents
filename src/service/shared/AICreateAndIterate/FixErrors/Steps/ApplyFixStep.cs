@@ -1,12 +1,27 @@
-﻿using Microsoft.SemanticKernel;
+﻿﻿using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.PromptTemplates.Handlebars;
- 
+using System.Net; 
 #pragma warning disable SKEXP0080
 
 namespace AICreateAndIterate.FixErrors.Steps
 {
-    public class ApplyFixStep : KernelProcessStep<YamlFixState>
+    public class ApplyFixStep:KernelProcessStep<InputPromptState>
     {
+        private InputPromptState _initialState;
+      
+
+        public ApplyFixStep()
+        {
+            _initialState = new InputPromptState { PromptTemplate = "" };
+        }
+
+
+        public override ValueTask ActivateAsync(KernelProcessStepState<InputPromptState> state)
+        {
+            _initialState = state.State!;
+            return base.ActivateAsync(state);
+        }
+
         [KernelFunction]
         public async Task<YamlFixState> ApplyFixAsync(
             KernelProcessStepContext ctx,
@@ -32,21 +47,6 @@ namespace AICreateAndIterate.FixErrors.Steps
             var errorCol = errorContext?.CharPosition ?? 0;
 
             // Prompt template for LLM
-            var prompt = @"You are an expert YAML fixer. Given the original YAML, a specific error to fix, and a patch/fix description, apply the patch ONLY to fix the described error. Do not change unrelated parts of the YAML.
-
-                Original YAML:
-                {{yaml}}
-
-                Error to fix:
-                Message: {{errorMessage}}
-                Line: {{errorLine}}
-                Column: {{errorCol}}
-
-                Patch/Fix:
-                {{patch}}
-
-                Return ONLY the fixed YAML.";
-
             var arguments = new KernelArguments
             {
                 { "yaml", originalYaml },
@@ -59,7 +59,7 @@ namespace AICreateAndIterate.FixErrors.Steps
             var promptTemplateFactory = new HandlebarsPromptTemplateFactory();
 
             var response = await kernel.InvokePromptAsync(
-                prompt,
+                _initialState.PromptTemplate,
                 arguments,
                 templateFormat: HandlebarsPromptTemplateFactory.HandlebarsTemplateFormat,
                 promptTemplateFactory: promptTemplateFactory
@@ -76,9 +76,15 @@ namespace AICreateAndIterate.FixErrors.Steps
             if (cleaned.EndsWith("```"))
                 cleaned = cleaned.Substring(0, cleaned.Length - 3).TrimEnd();    
 
-            state.YamlText = cleaned;
+            state.Suggestions.FixedYaml = DecodeHtmlEntities(cleaned);
 
             return state;
+        }
+
+        public static string DecodeHtmlEntities(string htmlEncodedYaml)
+        {
+            if (htmlEncodedYaml == null) throw new ArgumentNullException(nameof(htmlEncodedYaml));
+            return WebUtility.HtmlDecode(htmlEncodedYaml);
         }
     }
 

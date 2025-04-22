@@ -1,4 +1,4 @@
-﻿using AICreateAndIterate.FixErrors;
+﻿﻿﻿using AICreateAndIterate.FixErrors;
 using AICreateAndIterate.FixErrors.Steps;
 using AICreateAndIterate.FixErrors.Events;
 using Microsoft.SemanticKernel;
@@ -26,8 +26,9 @@ namespace AICreateAndIterate
 
             var iterateStep = builder.AddStepFromType<HumanIterateStep>();
 
-            var applyStep = builder.AddStepFromType<ApplyFixStep>();
-
+            var applyStep = builder.AddStepFromType<ApplyFixStep, InputPromptState>(
+                 new InputPromptState{ PromptTemplate = config.ApplyFixStepPrompt});
+            
             var validateFixStep = builder.AddStepFromType<ValidateFixStep>();
 
             var saveFixStep = builder.AddStepFromType<SaveFixStep>();
