@@ -17,7 +17,7 @@ namespace WebSocketMessages.Messages
         /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
         /// <returns>A task representing the asynchronous send operation.</returns>
         Task SendAsync(WebSocketReplyChatRoomMessage replyMessage, ConnectionMode mode, CancellationToken cancellationToken = default);
-        
+
         //Todo: do this is more cleaner way
         //Task SendSpeachAsync(WebSocketReplyChatRoomMessage currentMessage, IAgentSpeech speech, CancellationToken cancellationToken);
 

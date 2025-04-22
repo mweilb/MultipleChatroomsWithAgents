@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
-using System.Linq;
-using YamlConfigurations;
+﻿﻿ 
 
 namespace YamlConfigurations.Validations
 {
@@ -31,7 +27,7 @@ namespace YamlConfigurations.Validations
                     // If a global termination is defined, validate it and compare with child rules.
                     if (room.Strategies.GlobalTermination is YamlTerminationDecisionConfig globalTerm)
                     {
-                        ValidateTerminations(globalTerm, validAgentNames, errors);
+                        ValidateTerminations(globalTerm, validAgentNames, errors, $"Room:{roomName}:GlobalTermination");
 
                         foreach (var rule in room.Strategies.Rules)
                         {
@@ -39,7 +35,7 @@ namespace YamlConfigurations.Validations
                             {
                                 if (ruleTerm != globalTerm)
                                 {
-                                    ValidateTerminations(ruleTerm, validAgentNames, errors);
+                                    ValidateTerminations(ruleTerm, validAgentNames, errors, $"Room:{roomName}:Rule:{rule.Name}");
                                 }
                             }
                         }
@@ -51,7 +47,7 @@ namespace YamlConfigurations.Validations
                         {
                             if (rule.Termination is YamlTerminationDecisionConfig ruleTerm)
                             {
-                                ValidateTerminations(ruleTerm, validAgentNames, errors);
+                                ValidateTerminations(ruleTerm, validAgentNames, errors, $"Room:{roomName}:Rule:{rule.Name}");
                             }
                         }
                     }
@@ -64,7 +60,8 @@ namespace YamlConfigurations.Validations
         private void ValidateTerminations(
                     YamlTerminationDecisionConfig termConfig,
                     HashSet<string> validAgentNames,
-                    IList<ValidationError> errors)
+                    IList<ValidationError> errors,
+                    string parentLocation)
         {
             // Track which members are not null
             var nonNullMembers = new List<string>();
@@ -85,6 +82,7 @@ namespace YamlConfigurations.Validations
             {
                 errors.Add(new ValidationError(
                     $"Only one termination type may be specified, but found multiple: {string.Join(", ", nonNullMembers)}.",
+                    $"{parentLocation}[Termination:{termConfig.ContinuationAgentName}]",
                     termConfig
                 ));
             }

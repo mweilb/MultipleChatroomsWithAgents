@@ -1,29 +1,29 @@
 Movie Chat Rooms:
-  emoji: "🎬"
+  emoji: &#127916;
   auto-start: true
   start-room: Classic_Cinema
   agents:
     Film_Historian:
       display-name: "Film Historian" 
-      emoji: "📚"
+      emoji: "&#128218;"
       model: gpt-4
       instructions: >
         Welcome to the world of classic cinema! Ask me about legendary films, directors, or the history of movies.
     SciFi_Buff:
       display-name: "Sci-Fi Buff"
-      emoji: "👽"
+      emoji: "&#128125;"
       model: gpt-4
       instructions: >
         Ready to discuss time travel, aliens, and futuristic tech in movies? Let's geek out on all things sci-fi!
     Oscar_Critic:
       display-name: "Oscar Critic"
-      emoji: "🏆"
+      emoji: "&#127942;"
       model: gpt-4
       instructions: >
         I analyze Oscar winners and snubs. Ask me about the Academy Awards, predictions, or controversies.
     Animation_Expert:
       display-name: "Animation Expert"
-      emoji: "🎨"
+      emoji: "&#127912;"
       model: gpt-4
       instructions: >
         From Disney classics to anime, I know animation inside out. Let's talk about your favorite animated movies!
@@ -35,7 +35,7 @@ Movie Chat Rooms:
         Test your movie knowledge with my quizzes and trivia challenges!
     Indie_Guru:
       display-name: "Indie Guru"
-      emoji: "🎬"
+      emoji: "&#127916;"
       model: gpt-4
       instructions: >
         Discover hidden gems and indie masterpieces. Ask me for recommendations or discuss festival favorites.
@@ -43,7 +43,7 @@ Movie Chat Rooms:
   chatrooms:
     Classic_Cinema:
       display-name: "Classic Cinema"
-      emoji: "📽️"
+      emoji: "&#128333;️"
       agents:
         - name: Film_Historian
         - name: Oscar_Critic
@@ -55,8 +55,6 @@ Movie Chat Rooms:
               {{messages}}
               Move to the next room after both Film_Historian and Oscar_Critic have responded at least once.
             history-variable-name: messages
-          constant-termination:
-            value: false
         selection:
           sequential-selection:
             initial-agent: Film_Historian
@@ -97,7 +95,7 @@ Movie Chat Rooms:
 
     SciFi_Universe:
       display-name: "Sci-Fi Universe"
-      emoji: "👾"
+      emoji: "&#128752;️"
       agents:
         - name: SciFi_Buff
         - name: Movie_Quizmaster
@@ -110,8 +108,6 @@ Movie Chat Rooms:
               {{messages}}
               Move to the next room after the user and at least one agent have both responded.
             history-variable-name: messages
-          constant-termination:
-            value: false
         selection:
           sequential-selection:
             initial-agent: SciFi_Buff
@@ -147,7 +143,7 @@ Movie Chat Rooms:
 
     Animation_Station:
       display-name: "Animation Station"
-      emoji: "🎬"
+      emoji: "&#127916;"
       agents:
         - name: Animation_Expert
         - name: Indie_Guru
@@ -160,8 +156,6 @@ Movie Chat Rooms:
               {{messages}}
               Move to the next room after the user and at least one agent have both responded.
             history-variable-name: messages
-          constant-termination:
-            value: false
         selection:
           sequential-selection:
             initial-agent: Animation_Expert
@@ -197,7 +191,7 @@ Movie Chat Rooms:
 
     Awards_Lounge:
       display-name: "Awards Lounge"
-      emoji: "🏆"
+      emoji: "&#127942;"
       agents:
         - name: Oscar_Critic
         - name: Indie_Guru
@@ -211,8 +205,6 @@ Movie Chat Rooms:
               End the room after the user and at least one agent have both responded.
             history-variable-name: messages
           continuation-agent-name: User Input
-          constant-termination:
-            value: true
         selection:
           sequential-selection:
             initial-agent: Oscar_Critic

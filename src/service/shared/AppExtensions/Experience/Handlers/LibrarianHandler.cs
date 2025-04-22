@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿using api.src.SemanticKernel.VectorStore;
+﻿using api.src.SemanticKernel.VectorStore;
 
 using Microsoft.SemanticKernel;
 
@@ -21,20 +21,20 @@ namespace AppExtensions.Experience.Handlers
         // The kernel instance used for processing librarian requests.
         private readonly Kernel _kernel = kernel;
         // The tracking information for the current experience.
-    
-        private readonly Dictionary<string, TrackingInfo> _trackingInfo  = trackingInfo;
+
+        private readonly Dictionary<string, TrackingInfo> _trackingInfo = trackingInfo;
 
         // Dictionary to hold librarians data.
         static public int EmbeddingDimension = 0;
         /// <summary>
         /// Appends additional librarians groups to the registry.
         /// </summary>
-      
+
         /// <summary>
         /// Handles the "librarians" command by checking the SubAction and dispatching
         /// to the appropriate method.
         /// </summary>
-        public async Task HandleLibrariansCommandAsync(WebSocketBaseMessage message, WebSocket socket,  ConnectionMode mode)
+        public async Task HandleLibrariansCommandAsync(WebSocketBaseMessage message, WebSocket socket, ConnectionMode mode)
         {
             if (message.SubAction == "get")
             {
@@ -42,15 +42,15 @@ namespace AppExtensions.Experience.Handlers
             }
             else if (message.SubAction == "converse")
             {
-                 await HandleConverseWithLibrary(message, socket, _kernel);
+                await HandleConverseWithLibrary(message, socket, _kernel);
             }
             else if (message.SubAction == "list")
             {
-               await HandleListWithLibrary(message, socket, _kernel);
+                await HandleListWithLibrary(message, socket, _kernel);
             }
             else if (message.SubAction == "docs")
             {
-             await HandleDocRequestWithLibrary(message, socket, _kernel);
+                await HandleDocRequestWithLibrary(message, socket, _kernel);
             }
         }
 
@@ -77,7 +77,7 @@ namespace AppExtensions.Experience.Handlers
                 {
                     continue;
                 }
-                if (librariansGroup.ActiveLibrarians.Count +librariansGroup.NotActiveLibrarians.Count <= 0)
+                if (librariansGroup.ActiveLibrarians.Count + librariansGroup.NotActiveLibrarians.Count <= 0)
                 {
                     continue;
                 }
@@ -107,7 +107,7 @@ namespace AppExtensions.Experience.Handlers
                     roomProfile.NotActiveLibrarians.Add(new WebSocketLibrarianProfile
                     {
                         Name = librarian.Name,
-                        Emoji = librarian.Emoji  ?? ""
+                        Emoji = librarian.Emoji ?? ""
                     });
                 }
 
@@ -278,11 +278,11 @@ namespace AppExtensions.Experience.Handlers
                 IncludeFields = true
             };
 
-         
-     
+
+
             if (EmbeddingDimension == 3584)
             {
-                await foreach (var document in VectorStoreHelper<TextParagraphEmbeddingOf3584>.GetRelatedDocuments(kernel, agentCollection,  payload.Text, 5))
+                await foreach (var document in VectorStoreHelper<TextParagraphEmbeddingOf3584>.GetRelatedDocuments(kernel, agentCollection, payload.Text, 5))
                 {
                     WebSocketLibrainDocRef reference = new()
                     {
@@ -311,7 +311,7 @@ namespace AppExtensions.Experience.Handlers
                         DocumentUri = document.Record.DocumentUri,
                         Question = document.Record.Question,
                     };
-                    
+
                     socketMessage.References.Add(reference);
 
                     string json = JsonSerializer.Serialize(socketMessage, optionsJsonWrite);

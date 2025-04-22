@@ -2,7 +2,7 @@
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 using System.Runtime.CompilerServices;
- 
+
 
 namespace AppExtensions.Logging
 {
@@ -13,7 +13,7 @@ namespace AppExtensions.Logging
     public class LearningInterceptor : IChatCompletionService
     {
         private readonly IChatCompletionService _innerService;
- 
+
 
         // Optional event to allow external processing of intercepted messages.
         static public event Action<string, ChatMessageContent>? OnMessageCaptured;
@@ -38,9 +38,9 @@ namespace AppExtensions.Logging
             Kernel? kernel = null,
             CancellationToken cancellationToken = default)
         {
-             ChatMessageContent response = await _innerService.GetChatMessageContentAsync(chat, settings, kernel, cancellationToken);
+            ChatMessageContent response = await _innerService.GetChatMessageContentAsync(chat, settings, kernel, cancellationToken);
 
-             OnMessageCaptured?.Invoke("GetChatMessageContentAsync", response);
+            OnMessageCaptured?.Invoke("GetChatMessageContentAsync", response);
 
             return response;
         }
@@ -56,10 +56,10 @@ namespace AppExtensions.Logging
         {
 
             var responses = await _innerService.GetChatMessageContentsAsync(chatHistory, settings, kernel, cancellationToken);
- 
+
             foreach (var message in responses)
             {
-                 OnMessageCaptured?.Invoke("GetChatMessageContentsAsync", message);
+                OnMessageCaptured?.Invoke("GetChatMessageContentsAsync", message);
             }
 
             return responses;

@@ -1,6 +1,4 @@
-using System.Collections.Generic;
-using System.Linq;
-using YamlConfigurations;
+ 
 
 namespace YamlConfigurations.Validations
 {
@@ -19,10 +17,11 @@ namespace YamlConfigurations.Validations
                     var roomValue = roomPair.Value;
                     if (!YamlInstanceOfAgentConfig.IsValidRoomName(roomName))
                     {
-errorList.Add(new ValidationError(
-    $"Room name '{roomName}' is invalid. Names must not contain spaces or any of: < | \\ / >",
-    roomValue
-));
+                        errorList.Add(new ValidationError(
+                            $"Room name '{roomName}' is invalid. Names must not contain spaces or any of: < | \\ / >",
+                            $"[Room:{roomName}]",
+                            roomValue
+                        ));
                     }
                 }
             }

@@ -16,7 +16,7 @@ namespace AppExtensions.SemanticKernel.VectorStore.Documents
     /// </remarks>
     internal class DataUploader(IVectorStore vectorStore, ITextEmbeddingGenerationService textEmbeddingGenerationService)
     {
-         
+
         /// <summary>
         /// Generates an embedding for each text paragraph of type T and uploads it to the specified collection.
         /// </summary>
@@ -24,7 +24,7 @@ namespace AppExtensions.SemanticKernel.VectorStore.Documents
         /// <param name="collectionName">The name of the collection to upload the text paragraphs to.</param>
         /// <param name="textParagraphs">The text paragraphs to process and upload.</param>
         /// <returns>An asynchronous task representing the upload operation.</returns>
-        public async Task GenerateEmbeddingsAndUploadAsync<T>(string collectionName, string uri,string paragraphId, string question, string? answer, string fullText)
+        public async Task GenerateEmbeddingsAndUploadAsync<T>(string collectionName, string uri, string paragraphId, string question, string? answer, string fullText)
             where T : TextParagraph, new()
         {
             // Retrieve the collection from the vector store using the specified collection name.
@@ -40,9 +40,9 @@ namespace AppExtensions.SemanticKernel.VectorStore.Documents
                 DocumentUri = uri,
                 Text = fullText,
                 Question = question,
-                Answer = answer??"full text",
+                Answer = answer ?? "full text",
                 // Generate the text embedding for the paragraph using the provided text embedding generation service.
-                TextEmbedding = await textEmbeddingGenerationService.GenerateEmbeddingAsync(answer?? fullText)
+                TextEmbedding = await textEmbeddingGenerationService.GenerateEmbeddingAsync(answer ?? fullText)
             };
             try
             {

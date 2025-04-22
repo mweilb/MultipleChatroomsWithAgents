@@ -45,15 +45,15 @@ namespace AppExtensions.Watcher
             _experienceManager = experienceManager;
             _notifier = new ConfigReloadNotifier(webSocketHandler);
 
-             // Initial load of all existing YAML configs from ExperienceManager
-             var initialConfig = new Dictionary<string, YamlMultipleChatRooms>();
-             foreach (var kvp in experienceManager.Experiences)
-             {
-                 if (kvp.Value?.Experience != null)
-                 {
-                     initialConfig[kvp.Key] = kvp.Value.Experience;
-                 } 
-             }
+            // Initial load of all existing YAML configs from ExperienceManager
+            var initialConfig = new Dictionary<string, YamlMultipleChatRooms>();
+            foreach (var kvp in experienceManager.Experiences)
+            {
+                if (kvp.Value?.Experience != null)
+                {
+                    initialConfig[kvp.Key] = kvp.Value.Experience;
+                }
+            }
 
             // Watch the directory for any YAML changes/additions/deletions/renames
             _directoryWatcher = new FileSystemWatcher(agentsDirectory)
@@ -91,7 +91,7 @@ namespace AppExtensions.Watcher
         private void OnRenamedEvent(object sender, RenamedEventArgs e)
         {
             SafeReload(e.FullPath, "configReloaded");
-   
+
         }
 
         private void SafeReload(string path, string action)
@@ -108,7 +108,7 @@ namespace AppExtensions.Watcher
                 Dictionary<string, YamlMultipleChatRooms> newConfig;
                 try
                 {
-                    newConfig = YamlFileReader.Read(path);
+                    (_, newConfig) = YamlFileReader.ReadFile(path);
                 }
                 catch
                 {
@@ -179,14 +179,14 @@ namespace AppExtensions.Watcher
         private async Task UpdateExperienceManagerAsync(Dictionary<string, YamlMultipleChatRooms> config)
         {
             await _experienceManager.UpdateFromConfigAsync(config);
-          
+
         }
 
         private void NotifyClients(Dictionary<string, YamlMultipleChatRooms> config, string action)
         {
             foreach (var kvp in config)
             {
-               
+
                 var value = kvp.Value;
 
                 List<WebSocketValidationError> wsErrors = value.Errors?

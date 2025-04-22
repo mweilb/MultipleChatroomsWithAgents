@@ -1,4 +1,4 @@
-﻿ 
+﻿
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Agents;
 using SemanticKernelExtension.AgentGroupChats.Strategies.Terminations;

@@ -1,11 +1,11 @@
-﻿ 
+﻿
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Agents;
 using Microsoft.SemanticKernel.ChatCompletion;
 using SemanticKernelExtension.Hacks;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
- 
+
 
 #pragma warning disable SKEXP0110
 #pragma warning disable SKEXP0001
@@ -29,7 +29,7 @@ namespace SemanticKernelExtension.Agents
             Name = name;
         }
 
-        public (string,string) TempFunctionUntilPortingIsOver() { return (_agentName, _message); }
+        public (string, string) TempFunctionUntilPortingIsOver() { return (_agentName, _message); }
 
         // 1) Non-streaming ChatMessageContent (history-based InvokeAsync)
         [Obsolete]
@@ -125,7 +125,7 @@ namespace SemanticKernelExtension.Agents
             var response = new StreamingChatMessageContent(
                 _visible ? AuthorRole.System : AuthorRole.Tool,
                 _message,
-                modelId:_modelId)
+                modelId: _modelId)
             {
                 AuthorName = _agentName,
             };

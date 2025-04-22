@@ -30,14 +30,16 @@ namespace YamlConfigurations.Validations
                                     {
                                         errors.Add(new ValidationError(
                                             $"Next reference '{next.Name}' is a room and must have a valid ContextTransfer defined.",
-                                             next 
+                                            $"[Room:{roomName}][Rule:{rule.Name}][Next:{next.Name}]",
+                                            next
                                         ));
                                     }
                                     else if (string.IsNullOrWhiteSpace(next.ContextTransfer.Prompt))
                                     {
-                                          errors.Add(new ValidationError(
+                                        errors.Add(new ValidationError(
                                             $"ContextTransfer for next reference '{next.Name}' must have a non-empty prompt.",
-                                            next 
+                                            $"[Room:{roomName}][Rule:{rule.Name}][Next:{next.Name}]",
+                                            next
                                         ));
                                     }
                                 }

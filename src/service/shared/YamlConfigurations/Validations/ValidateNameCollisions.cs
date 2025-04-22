@@ -1,9 +1,4 @@
-﻿using DocumentFormat.OpenXml.Wordprocessing;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using YamlConfigurations;
-
+﻿ 
 namespace YamlConfigurations.Validations
 {
     public class NameCollisionValidation : IValidationPass
@@ -29,10 +24,11 @@ namespace YamlConfigurations.Validations
                         {
                             if (!existingCategory.Equals("room", StringComparison.OrdinalIgnoreCase))
                             {
-errors.Add(new ValidationError(
-    $"Name collision: '{room.Name}' is used for both a room and a {existingCategory}.",
-    room
-));
+                                errors.Add(new ValidationError(
+                                    $"Name collision: '{room.Name}' is used for both a room and a {existingCategory}.",
+                                    $"[Room:{room.Name}]",
+                                    room
+                                ));
                             }
                         }
                         else
@@ -52,10 +48,11 @@ errors.Add(new ValidationError(
                                 {
                                     if (!existingCategory.Equals("agent", StringComparison.OrdinalIgnoreCase))
                                     {
-errors.Add(new ValidationError(
-    $"Name collision: '{agent.Name}' is used for both an agent and a {existingCategory}.",
-    agent
-));
+                                        errors.Add(new ValidationError(
+                                            $"Name collision: '{agent.Name}' is used for both an agent and a {existingCategory}.",
+                                            $"[Room:{room.Name}][Agent:{agent.Name}]",
+                                            agent
+                                        ));
                                     }
                                 }
                                 else
@@ -78,10 +75,11 @@ errors.Add(new ValidationError(
                                 {
                                     if (!existingCategory.Equals("termination", StringComparison.OrdinalIgnoreCase))
                                     {
-errors.Add(new ValidationError(
-    $"Name collision: '{terminationName}' is used for both a termination and a {existingCategory}.",
-    rule.Termination
-));
+                                        errors.Add(new ValidationError(
+                                            $"Name collision: '{terminationName}' is used for both a termination and a {existingCategory}.",
+                                            $"[Room:{room.Name}][Rule:{rule.Name}][Termination:{terminationName}]",
+                                            rule.Termination
+                                        ));
                                     }
                                 }
                                 else

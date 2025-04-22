@@ -3,7 +3,7 @@ using YamlDotNet.Serialization;
 
 namespace YamlConfigurations
 {
-    public abstract class YamlLineInfo
+    public class YamlLineInfo
     {
         [YamlMember(Alias = "start-line")]
         public long StartLine { get; set; }
@@ -11,6 +11,6 @@ namespace YamlConfigurations
         [YamlMember(Alias = "start-column")]
         public long StartColumn { get; set; }
 
- 
+
     }
 }

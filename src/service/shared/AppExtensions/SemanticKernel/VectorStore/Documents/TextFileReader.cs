@@ -14,7 +14,7 @@ namespace AppExtensions.SemanticKernel.VectorStore.Documents
     /// The type of TextParagraph to return. T must inherit from TextParagraph and have a parameterless constructor.
     /// </typeparam>
     internal static class TextFileReader
-    { 
+    {
         public static (string[], string) ReadText(string filePath)
         {
             // Read the entire content from the text file.

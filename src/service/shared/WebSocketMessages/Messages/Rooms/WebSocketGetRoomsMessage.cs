@@ -1,5 +1,5 @@
 using WebSocketMessages.Messages;
- 
+
 
 namespace WebSocketMessages.Messages.Rooms
 {
@@ -70,7 +70,7 @@ namespace WebSocketMessages.Messages.Rooms
         /// </summary>
         public string Name { get; set; } = string.Empty;
 
-         /// <summary>
+        /// <summary>
         /// Gets or sets the emoji representing the room.
         /// </summary>
         public string Emoji { get; set; } = string.Empty;

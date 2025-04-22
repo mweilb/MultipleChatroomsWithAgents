@@ -19,7 +19,7 @@ namespace SemanticKernelExtension.AgentGroupChats.Strategies.RuleBased
         /// <summary>
         /// Gets or sets the current active rule.
         /// </summary>
-        public RuleBasedDefinition? CurrentRule { get; set; }= null;
+        public RuleBasedDefinition? CurrentRule { get; set; } = null;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RuleBasedSettings"/> class with the specified rule-based definitions.
@@ -35,12 +35,12 @@ namespace SemanticKernelExtension.AgentGroupChats.Strategies.RuleBased
 
             // Initialize the selection strategy using the current settings.
             SelectionStrategy = new RuleBasedSelectionStrategy(this, factory.CreateLogger<RuleBasedSelectionStrategy>());
- 
+
 
             // Initialize the termination strategy using the current settings.
             TerminationStrategy = new RuleBasedTerminationStrategy(this, factory.CreateLogger<RuleBasedSelectionStrategy>());
         }
- 
+
 
     }
 }

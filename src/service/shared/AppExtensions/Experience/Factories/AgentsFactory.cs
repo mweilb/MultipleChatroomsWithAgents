@@ -59,7 +59,7 @@ namespace AppExtensions.Experience.Factories
                 }
 
                 // Find the parent room by key, or use the first as fallback
- 
+
                 // Add all other rooms as echo agents with rules
                 foreach (var (otherRoomName, otherRoom) in experience.Rooms ?? [])
                 {
@@ -95,9 +95,9 @@ namespace AppExtensions.Experience.Factories
                             roomAgent.InsertRuleInfo(roomName, rule.Name, instructions, yieldOnChange, yieldCanceledName);
                         }
                     }
-                    
+
                 }
-                 
+
             }
             else
             {

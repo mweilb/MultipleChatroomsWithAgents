@@ -154,7 +154,7 @@ namespace AppExtensions.Experience.Factories
                 string resultValue = fr.GetValue<string>() ?? string.Empty;
                 return IsTrue(resultValue);
             };
-            
+
             if (expressions is { Count: > 0 })
             {
                 return (fr) =>

@@ -10,7 +10,7 @@ namespace SemanticKernelExtension.Orchestrator
         private static readonly Action<ILogger, string, string, string, string, Exception?> s_logRoomChangeStarted =
             LoggerMessage.Define<string, string, string, string>(
                 logLevel: LogLevel.Information,
-                eventId: new EventId(20, "LogRoomChangeStarted"),   
+                eventId: new EventId(20, "LogRoomChangeStarted"),
                 formatString: "[{Method}] Room change started: orchestrator '{OrchestratorName}', current room '{CurrentRoom}', new room '{NewRoom}'");
 
         /// <summary>

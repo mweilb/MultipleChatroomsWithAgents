@@ -1,7 +1,7 @@
 ﻿using YamlDotNet.Core;
 using YamlDotNet.Core.Events;
 using YamlDotNet.Serialization;
- 
+
 
 namespace YamlConfigurations.FileReader
 {
@@ -30,10 +30,17 @@ namespace YamlConfigurations.FileReader
                 start = ev2.Start;
             }
 
+            try{
             // Let the default deserializer do its job
-            if (!_inner.Deserialize(parser, expectedType, nestedObjectDeserializer, out value, rootDeserializer))
+                if (!_inner.Deserialize(parser, expectedType, nestedObjectDeserializer, out value, rootDeserializer))
+                {
+                    return false;
+                }
+            }
+            catch (Exception ex)
             {
-                return false;
+                // Handle deserialization errors
+                throw new YamlException($"Error deserializing YAML at line {start.Line}, column {start.Column}: {ex.Message}", ex);
             }
 
             // Set line info if applicable

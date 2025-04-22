@@ -1,8 +1,8 @@
-﻿﻿﻿﻿
+﻿
 using YamlConfigurations.Validations;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NodeDeserializers;
- 
+
 
 namespace YamlConfigurations.FileReader
 {
@@ -10,7 +10,7 @@ namespace YamlConfigurations.FileReader
     {
         // Helper method to setup and validate a YamlMultipleChatRooms instance.
         private static void SetupAndValidate(YamlMultipleChatRooms experience)
-        { 
+        {
             experience.ApplyParentOverride();
 
             var validator = new YamlChatRoomsValidator();
@@ -23,33 +23,32 @@ namespace YamlConfigurations.FileReader
         }
 
         // Deserialize a YAML file into a dictionary of YamlMultipleChatRooms.
-        public static Dictionary<string, YamlMultipleChatRooms> Read(string yamlFilePath)
+        public static (string, Dictionary<string, YamlMultipleChatRooms>) ReadFile(string yamlFilePath)
         {
             string yamlText = File.ReadAllText(yamlFilePath);
-           
+            return (yamlText, ReadFromString(yamlText));
+        }
+
+        // Deserialize YAML content from a string into a dictionary of YamlMultipleChatRooms.
+        public static Dictionary<string, YamlMultipleChatRooms> ReadFromString(string yamlText)
+        {
             //try the first format
             try
             {
                 Dictionary<string, YamlMultipleChatRooms> experienceDict = ReadExperienceFormat(yamlText);
                 return experienceDict;
             }
-            catch { } 
-            { 
-            }
-            
+            catch { }
+
             //try the second format
             try
             {
                 Dictionary<string, YamlMultipleChatRooms> dictExperiences = ReadIndivualRoomFormat(yamlText);
-
                 return dictExperiences;
             }
-            catch {
-            
-            }
+            catch { }
 
-            return [];
-            
+            return ([]);
         }
 
         private static Dictionary<string, YamlMultipleChatRooms> ReadIndivualRoomFormat(string yamlText)

@@ -16,7 +16,7 @@ namespace SemanticKernelExtension.Hacks
     /// A <see cref="AgentChannel"/> specialization for use with <see cref="OpenAIAssistantAgent"/>.
     /// </summary>
 #pragma warning disable SKEXP0110
- 
+
     internal sealed class EchoAgentChannel(ChatHistory history) : AgentChannel<EchoAgent>
     {
 
@@ -26,7 +26,7 @@ namespace SemanticKernelExtension.Hacks
             throw new NotImplementedException();
         }
 
- 
+
         protected override IAsyncEnumerable<(bool IsVisible, ChatMessageContent Message)> InvokeAsync(EchoAgent agent, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();

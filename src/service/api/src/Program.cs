@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿// Program.cs - Main entry point for the API service
+﻿// Program.cs - Main entry point for the API service
 
 using api.src;
 using AppExtensions;

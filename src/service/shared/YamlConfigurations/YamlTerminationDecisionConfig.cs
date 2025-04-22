@@ -10,10 +10,10 @@ namespace YamlConfigurations
 
     // The decision object used in various places.
     public class YamlTerminationDecisionConfig : YamlLineInfo
-    {  
+    {
         //New code and the rest of the above will be cleaned up
         [YamlMember(Alias = "continuation-agent-name")]
-        public string? ContinuationAgentName { get; set; } 
+        public string? ContinuationAgentName { get; set; }
 
         [YamlMember(Alias = "regex-termination")]
         public YarmRegexTermination? RegexTermination { get; set; }
@@ -24,5 +24,5 @@ namespace YamlConfigurations
         [YamlMember(Alias = "prompt-termination")]
         public YamlPromptTermination? PromptTermination { get; set; }
     }
- 
+
 }

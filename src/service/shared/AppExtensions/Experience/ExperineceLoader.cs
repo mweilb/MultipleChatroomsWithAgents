@@ -30,7 +30,7 @@ namespace AppExtensions.Experience
             {
                 // This method presumably returns a Dictionary<string, YamlMultipleChatRooms>
                 // Key: experience name, Value: the YamlMultipleChatRooms definition
-                var experienceDict = YamlFileReader.Read(yamlFilePath);
+                var (_, experienceDict) = YamlFileReader.ReadFile(yamlFilePath);
 
                 // Merge into the final dictionary
                 foreach (var kvp in experienceDict)
@@ -47,7 +47,7 @@ namespace AppExtensions.Experience
         }
 
 
-      
+
 
         public async static Task<YamLibrarians?> GatherLibrariansAsync(YamlMultipleChatRooms config, Kernel kernel)
         {
@@ -128,6 +128,6 @@ namespace AppExtensions.Experience
 
             return yamLibrarians;
         }
- 
+
     }
 }

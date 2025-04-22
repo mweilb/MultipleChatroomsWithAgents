@@ -211,3 +211,4 @@ FodyWeavers.xsd
 src/service/api/appsettings.Development.json
 src/service/vectordb/load-vector-db-with-sk/appsettings.Development.json
 src/service/vectordb/appsettings.Development.json
+src/service/cli-client/appsettings.Development.json

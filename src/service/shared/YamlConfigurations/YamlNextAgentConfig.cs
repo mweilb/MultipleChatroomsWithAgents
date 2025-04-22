@@ -1,6 +1,6 @@
 ﻿using YamlDotNet.Serialization;
 
-namespace  YamlConfigurations
+namespace YamlConfigurations
 {
     // This class represents a reference to an agent in lists (for current/next steps).
     // It now uses the name NextAgent instead of AgentReference.
@@ -14,6 +14,6 @@ namespace  YamlConfigurations
         public YamlTransferConfig? ContextTransfer { get; set; }
 
 
-        
+
     }
 }

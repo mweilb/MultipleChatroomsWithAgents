@@ -35,7 +35,7 @@ namespace SemanticKernelExtension.AgentGroupChats.Strategies.RuleBased
         private const string AnyRuleDesignation = "any";
         private const string UserDesignation = "user";
 
-        protected new ILogger Logger { get; } = logger?? NullLogger.Instance;
+        protected new ILogger Logger { get; } = logger ?? NullLogger.Instance;
 
 
 
@@ -77,7 +77,7 @@ namespace SemanticKernelExtension.AgentGroupChats.Strategies.RuleBased
 #pragma warning restore SKEXP0001
             }
 
-  
+
             // If the last message came from the user, override with the continuation agent name if set.
             if (lastAuthorName.Equals(UserDesignation, StringComparison.OrdinalIgnoreCase))
             {
@@ -94,7 +94,7 @@ namespace SemanticKernelExtension.AgentGroupChats.Strategies.RuleBased
                 throw new InvalidOperationException("No valid rule was found based on the provided agent name and history.");
             }
 
-     
+
             // Set the current rule in settings.
             _settings.CurrentRule = rule;
             if (rule.Selection is null)

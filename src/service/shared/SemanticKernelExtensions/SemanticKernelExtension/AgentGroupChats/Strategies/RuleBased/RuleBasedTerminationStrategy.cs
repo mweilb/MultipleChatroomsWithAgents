@@ -15,7 +15,7 @@ namespace SemanticKernelExtension.AgentGroupChats.Strategies.RuleBased
     /// If termination is required, it updates the shared settings with the name of the continue agent.
     /// </summary>
 #pragma warning disable SKEXP0110
-    internal class RuleBasedTerminationStrategy(RuleBasedSettings settings,ILogger logger) : TerminationStrategy
+    internal class RuleBasedTerminationStrategy(RuleBasedSettings settings, ILogger logger) : TerminationStrategy
 #pragma warning restore SKEXP0110
     {
         // The shared settings that store rule-based definitions.
@@ -56,7 +56,7 @@ namespace SemanticKernelExtension.AgentGroupChats.Strategies.RuleBased
                                           .ConfigureAwait(false);
 
             // Log the chosen rule details.
-            Logger.LogInformation($"Should Terminate: {(shouldTerminate ? "Yes":"No")}");
+            Logger.LogInformation($"Should Terminate: {(shouldTerminate ? "Yes" : "No")}");
 
 
 
@@ -64,7 +64,7 @@ namespace SemanticKernelExtension.AgentGroupChats.Strategies.RuleBased
 
 
             return shouldTerminate;
-            
+
         }
     }
 }

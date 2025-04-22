@@ -104,7 +104,7 @@ namespace AppExtensions.SemanticKernel
             // The extension method is expected to integrate with the Ollama API.
 #pragma warning disable SKEXP0070
 
- 
+
             // Create Ollama client and register it with DI
             var ollamaClient = new OllamaApiClient(uriString: ollamaEndpoint, defaultModel: modelId);
             kernelBuilder.Services.AddSingleton(ollamaClient);
@@ -126,12 +126,12 @@ namespace AppExtensions.SemanticKernel
 #pragma warning restore SKEXP0070
         }
 
-            /// <summary>
-            /// Configures the kernel to use the Pinecone vector store.
-            /// </summary>
-            /// <param name="builder">The kernel builder used to add services.</param>
-            /// <param name="configuration">The configuration containing the Pinecone API key.</param>
-            static public void SetupPinecone(IKernelBuilder builder, IConfiguration configuration)
+        /// <summary>
+        /// Configures the kernel to use the Pinecone vector store.
+        /// </summary>
+        /// <param name="builder">The kernel builder used to add services.</param>
+        /// <param name="configuration">The configuration containing the Pinecone API key.</param>
+        static public void SetupPinecone(IKernelBuilder builder, IConfiguration configuration)
         {
             // Retrieve the Pinecone API key from the configuration or use a placeholder.
             var pineconeApiKey = configuration["PINECONE_API_KEY"] ?? "your-pinecone-api-key";

@@ -1,7 +1,7 @@
 ﻿using YamlDotNet.Serialization;
 
 
-namespace  YamlConfigurations
+namespace YamlConfigurations
 {
     // A rule with its children promoted up (no nested agentFlowList).
     public class YamlStratergyRules : YamlLineInfo
@@ -26,7 +26,7 @@ namespace  YamlConfigurations
         [YamlMember(Alias = "next")]
         public List<YamlNextAgentConfig> Next { get; set; } = [];
 
-     
+
     }
 
 }

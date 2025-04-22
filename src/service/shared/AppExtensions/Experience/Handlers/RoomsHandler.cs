@@ -11,14 +11,14 @@ using YamlConfigurations.FileReader;
 namespace AppExtensions.Experience.Handlers
 {
 
- 
+
     /// <summary>
     /// Handles all "rooms" commands: get, change, reset, etc.
     /// </summary>
     public class RoomsHandler(ExperienceManager experienceManager)
     {
         private readonly ExperienceManager _manager = experienceManager;
- 
+
         /// <summary>
         /// The entry point that the WebSocket command dispatcher calls for "rooms" commands.
         /// Dispatches to the appropriate sub-handler method based on SubAction.
@@ -75,7 +75,7 @@ namespace AppExtensions.Experience.Handlers
 
             foreach (var (name, experience) in _manager.Experiences)
             {
-                var  group = experience.Experience;
+                var group = experience.Experience;
                 if (group == null)
                 {
                     continue;
@@ -90,7 +90,7 @@ namespace AppExtensions.Experience.Handlers
                         Agents = kvp.Value.Agents?.Select(agent => new WebSocketAgentProfile
                         {
                             Name = agent.Name,
-                            Emoji = agent.Emoji??string.Empty
+                            Emoji = agent.Emoji ?? string.Empty
                         }).ToList() ?? []
                     })
                 ?? [];
@@ -100,7 +100,7 @@ namespace AppExtensions.Experience.Handlers
                     .Select(e => new WebSocketValidationError
                     {
                         Message = e.Message,
-                         
+
                         LineNumber = e.LineNumber,
                         CharPosition = e.CharPosition
                     }).ToList() ?? new List<WebSocketValidationError>();
@@ -143,7 +143,7 @@ namespace AppExtensions.Experience.Handlers
             );
         }
 
-     
+
         /// <summary>
         /// Handles the "rooms/reset" subcommand: resets a chat room.
         /// </summary>
@@ -178,21 +178,22 @@ namespace AppExtensions.Experience.Handlers
                         return;
                     }
 
-                    
-                  
+
+
                     // If AutoStart is set, you can perform any additional logic:
                     bool autoStart = string.Equals(chatRoomGroup.AutoStart, "yes", StringComparison.OrdinalIgnoreCase)
                                         || string.Equals(chatRoomGroup.AutoStart, "true", StringComparison.OrdinalIgnoreCase);
                     if (autoStart)
                     {
-                     
 
-                        if (_manager.Experiences.TryGetValue(chatRoomGroup.Name, out var tracking)){
-                           
-                            
+
+                        if (_manager.Experiences.TryGetValue(chatRoomGroup.Name, out var tracking))
+                        {
+
+
                             var agentGroupChatOrchestrator = tracking.agentGroupChatOrchestrator;
                             var messageHandler = tracking.handler;
-                            if ((agentGroupChatOrchestrator != null)  && (messageHandler != null))
+                            if ((agentGroupChatOrchestrator != null) && (messageHandler != null))
                             {
                                 var sender = new WebSocketSender(webSocket);
                                 using var cts = new CancellationTokenSource();
@@ -201,9 +202,9 @@ namespace AppExtensions.Experience.Handlers
                                 message.UserId = "system";
                                 await messageHandler.ProcessMessage(message, mode, sender, agentGroupChatOrchestrator, cancellationToken);
                             }
-                          
+
                         }
-                                        
+
                     }
 
                     // Otherwise, confirm success:
@@ -241,7 +242,7 @@ namespace AppExtensions.Experience.Handlers
             var errorResponse = new WebSocketBaseMessage
             {
                 Action = "error",
-                SubAction = subAction??string.Empty,
+                SubAction = subAction ?? string.Empty,
                 Content = errorMessage
             };
 

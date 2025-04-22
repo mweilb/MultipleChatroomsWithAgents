@@ -14,6 +14,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YamlConfigurations", "share
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebSocketMessages", "shared\WebSocketMessages\WebSocketMessages.csproj", "{4CAE04D1-0B8E-48BB-A8B7-9D08BC20A81B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AICreateAndIterate", "shared\AICreateAndIterate\AICreateAndIterate.csproj", "{EB22ED55-0A8A-226B-2704-2974E4352999}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cli-client", "cli-client\cli-client.csproj", "{1B02862A-A109-5A45-10AA-270CA256DCC3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -40,6 +44,14 @@ Global
 		{4CAE04D1-0B8E-48BB-A8B7-9D08BC20A81B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4CAE04D1-0B8E-48BB-A8B7-9D08BC20A81B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4CAE04D1-0B8E-48BB-A8B7-9D08BC20A81B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EB22ED55-0A8A-226B-2704-2974E4352999}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB22ED55-0A8A-226B-2704-2974E4352999}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EB22ED55-0A8A-226B-2704-2974E4352999}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EB22ED55-0A8A-226B-2704-2974E4352999}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1B02862A-A109-5A45-10AA-270CA256DCC3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1B02862A-A109-5A45-10AA-270CA256DCC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1B02862A-A109-5A45-10AA-270CA256DCC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1B02862A-A109-5A45-10AA-270CA256DCC3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -49,6 +61,7 @@ Global
 		{6E5C9A55-3320-4418-8103-9832AF351043} = {00700662-ABE6-4447-8FF6-50051E4F5F00}
 		{96C99A81-8C45-7891-2D9C-DFC939D2C7BA} = {00700662-ABE6-4447-8FF6-50051E4F5F00}
 		{4CAE04D1-0B8E-48BB-A8B7-9D08BC20A81B} = {00700662-ABE6-4447-8FF6-50051E4F5F00}
+		{EB22ED55-0A8A-226B-2704-2974E4352999} = {00700662-ABE6-4447-8FF6-50051E4F5F00}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C1D7BA89-AE71-434A-A7AF-3D47C5E918EF}

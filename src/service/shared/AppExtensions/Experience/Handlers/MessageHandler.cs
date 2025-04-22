@@ -1,4 +1,4 @@
-﻿ 
+﻿
 using Microsoft.Extensions.Logging;
 using SemanticKernelExtension.Orchestrator;
 using System.Net.WebSockets;
@@ -15,10 +15,10 @@ namespace AppExtensions.Experience.Handlers
     /// <summary>
     /// Handles incoming WebSocket messages and orchestrates command processing.
     /// </summary>
-public class MessageHandler
-{
-    private volatile bool _isProcessingRelevantMessage = false;
-    public bool IsProcessingRelevantMessage => _isProcessingRelevantMessage;
+    public class MessageHandler
+    {
+        private volatile bool _isProcessingRelevantMessage = false;
+        public bool IsProcessingRelevantMessage => _isProcessingRelevantMessage;
         private readonly ILogger<MessageHandler>? logger;
         private readonly string _name;
         private readonly TrackingInfo _trackingInfo;
@@ -59,10 +59,10 @@ public class MessageHandler
                     // e.g., chatRoomGroup.ChangeRoom(payload.To);
                     // If your chatRoomGroup has a method for changing a room:
                     chatRoomGroup.UserRequestSwitchTo(payload.To);
- 
+
                     message.Action = this._name;
 
-                    await ProcessMessage(message,mode, new WebSocketSender(webSocket), chatRoomGroup, CancellationToken.None);
+                    await ProcessMessage(message, mode, new WebSocketSender(webSocket), chatRoomGroup, CancellationToken.None);
 
                     return;
 
@@ -82,48 +82,48 @@ public class MessageHandler
         /// <param name="message">The incoming WebSocket message.</param>
         /// <param name="webSocket">The WebSocket connection.</param>
         /// <param name="mode">The connection mode.</param>
-public async Task HandleCommandAsync(WebSocketBaseMessage message, WebSocket webSocket, ConnectionMode mode)
-{
-    // Only set as processing if not a ping
-    bool isPing = message.Action?.Equals("ping", StringComparison.OrdinalIgnoreCase) == true;
-    if (!isPing)
-        _isProcessingRelevantMessage = true;
-
-    try
-    {
-        // Wrap WebSocket connection with a sender helper for simplified messaging.
-        var sender = new WebSocketSender(webSocket);
-        using var cts = new CancellationTokenSource();
-        CancellationToken cancellationToken = cts.Token;
-
-        // Retrieve the orchestrator for the current chatroom.
-        var orchestrator = _trackingInfo.agentGroupChatOrchestrator;
-        if (orchestrator == null)
+        public async Task HandleCommandAsync(WebSocketBaseMessage message, WebSocket webSocket, ConnectionMode mode)
         {
-            logger?.LogError("ChatRoom not initialized for {CommandName}", _name);
-            await sender.SendError(message.UserId, _name, "handler", $"ChatRoom not initialized {_name}");
-            return;
-        }
+            // Only set as processing if not a ping
+            bool isPing = message.Action?.Equals("ping", StringComparison.OrdinalIgnoreCase) == true;
+            if (!isPing)
+                _isProcessingRelevantMessage = true;
 
-        try
-        {
-            // Add incoming message to conversation history.
-            orchestrator.AddChatMessage(message.Content);
+            try
+            {
+                // Wrap WebSocket connection with a sender helper for simplified messaging.
+                var sender = new WebSocketSender(webSocket);
+                using var cts = new CancellationTokenSource();
+                CancellationToken cancellationToken = cts.Token;
 
-            await ProcessMessage(message, mode, sender, orchestrator, cancellationToken);
+                // Retrieve the orchestrator for the current chatroom.
+                var orchestrator = _trackingInfo.agentGroupChatOrchestrator;
+                if (orchestrator == null)
+                {
+                    logger?.LogError("ChatRoom not initialized for {CommandName}", _name);
+                    await sender.SendError(message.UserId, _name, "handler", $"ChatRoom not initialized {_name}");
+                    return;
+                }
+
+                try
+                {
+                    // Add incoming message to conversation history.
+                    orchestrator.AddChatMessage(message.Content);
+
+                    await ProcessMessage(message, mode, sender, orchestrator, cancellationToken);
+                }
+                catch (Exception ex)
+                {
+                    logger?.LogError(ex, "Error occurred handling command {CommandName}", _name);
+                    await sender.SendError(message.UserId, _name, "message processing", $"Initialization or logic error: {ex.Message}");
+                }
+            }
+            finally
+            {
+                if (!isPing)
+                    _isProcessingRelevantMessage = false;
+            }
         }
-        catch (Exception ex)
-        {
-            logger?.LogError(ex, "Error occurred handling command {CommandName}", _name);
-            await sender.SendError(message.UserId, _name, "message processing", $"Initialization or logic error: {ex.Message}");
-        }
-    }
-    finally
-    {
-        if (!isPing)
-            _isProcessingRelevantMessage = false;
-    }
-}
 
         public async Task ProcessMessage(WebSocketBaseMessage message, ConnectionMode mode, WebSocketSender sender, AgentGroupChatOrchestrator orchestrator, CancellationToken cancellationToken)
         {
@@ -137,7 +137,7 @@ public async Task HandleCommandAsync(WebSocketBaseMessage message, WebSocket web
             // Process streaming responses from the orchestrator.
             await foreach (var streamingContent in orchestrator.InvokeStreamingAsync(cancellationToken))
             {
-                
+
                 if (streamingContent == null)
                 {
                     logger?.LogWarning("Received null streaming content for {CommandName}", _name);
@@ -161,7 +161,7 @@ public async Task HandleCommandAsync(WebSocketBaseMessage message, WebSocket web
                 // If the event is AgentFinished or RoomMessageFinished, do nothing.
             }
 
-        
+
 
             if (yieldOnRoom == false)
             {
@@ -338,8 +338,9 @@ public async Task HandleCommandAsync(WebSocketBaseMessage message, WebSocket web
         /// </summary>
         /// <param name="userId">The user identifier.</param>
         /// <param name="command">The command or action name.</param>
-        private static async void SendCompleteRequest(WebSocketSender sender, string userId, string command, CancellationToken cancellationToken) { 
-            
+        private static async void SendCompleteRequest(WebSocketSender sender, string userId, string command, CancellationToken cancellationToken)
+        {
+
             var completeMessage = new WebSocketReplyChatRoomMessage
             {
                 UserId = userId,
@@ -352,9 +353,9 @@ public async Task HandleCommandAsync(WebSocketBaseMessage message, WebSocket web
                 DisplayName = command
             };
 
-              await sender.SendAsync(completeMessage, ConnectionMode.App,cancellationToken);
+            await sender.SendAsync(completeMessage, ConnectionMode.App, cancellationToken);
 
-                
+
         }
 
 
@@ -373,7 +374,7 @@ public async Task HandleCommandAsync(WebSocketBaseMessage message, WebSocket web
                 Action = command,
                 SubAction = "reply",
                 AgentName = "Unknown",
-              
+
             };
 
 

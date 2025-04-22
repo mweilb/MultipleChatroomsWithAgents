@@ -13,7 +13,7 @@ namespace SemanticKernelExtension.AgentGroupChats.Strategies.RuleBased
         private static readonly Action<ILogger, string, string, string, string, Exception?> s_logTermStrategyEvaluatingCriteria =
             LoggerMessage.Define<string, string, string, string>(
                 logLevel: LogLevel.Debug,
-                eventId: new EventId(101, "LogRuleTerminationStrategyEvaluatingCriteria"),  
+                eventId: new EventId(101, "LogRuleTerminationStrategyEvaluatingCriteria"),
                 formatString: "[{Method}] Evaluating termination criteria for agent {AgentType}: {AgentId}/{AgentName}");
 
         // This delegate logs the outcome after evaluating the termination strategy.

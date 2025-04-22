@@ -67,7 +67,7 @@ namespace api.src.SemanticKernel.VectorStore
                 // Extract the answer from the Variables collection.
                 string embeddedText = response.GetValue<string>() ?? "";
 
-  
+
 
                 if (!string.IsNullOrWhiteSpace(embeddedText))
                 {
@@ -231,7 +231,7 @@ namespace api.src.SemanticKernel.VectorStore
                 collectionName = "default";
             }
 
- 
+
             var vectorStore = kernel.Services.GetService<IVectorStore>();
             var textEmbeddingGeneration = kernel.Services.GetService<ITextEmbeddingGenerationService>();
 
@@ -305,7 +305,7 @@ namespace api.src.SemanticKernel.VectorStore
                 Console.WriteLine("VectorStore service is not available.");
                 yield break;
             }
-           
+
 
             var collection = vectorStore.GetCollection<Guid, T>(collectionName);
             if (collection == null)
@@ -317,10 +317,10 @@ namespace api.src.SemanticKernel.VectorStore
             T temp = new T();
             float[] dummyVectorArray = new float[temp.EmbeddingDimension];
             ReadOnlyMemory<float> queryVector = dummyVectorArray;
-            
+
 
             // Do the search, passing the top value to limit the number of results.
-            var searchResult = await collection.VectorizedSearchAsync(queryVector, new() { Top = Math.Max(top,1), Skip = Math.Max(skip,0) });
+            var searchResult = await collection.VectorizedSearchAsync(queryVector, new() { Top = Math.Max(top, 1), Skip = Math.Max(skip, 0) });
 
             // Yield each record so that the caller can enumerate them.
             await foreach (var record in searchResult.Results)

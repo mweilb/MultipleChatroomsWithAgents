@@ -3,9 +3,9 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Agents;
 using Microsoft.SemanticKernel.ChatCompletion;
-using SemanticKernelExtension.Agents; 
+using SemanticKernelExtension.Agents;
 using System.Runtime.CompilerServices;
- 
+
 
 #pragma warning disable SKEXP0110
 #pragma warning disable SKEXP0001
@@ -103,7 +103,7 @@ namespace SemanticKernelExtension.Orchestrator
             if ((name != null) && (name != _activeChatName) && _chats.ContainsKey(name))
             {
                 _activeChatName = name;
-                _startRoom = name;   
+                _startRoom = name;
                 return true;
             }
             return false;
@@ -179,7 +179,7 @@ namespace SemanticKernelExtension.Orchestrator
             return removed;
         }
 
- 
+
         /// <summary>
         /// Adds a user chat message to the active chat.
         /// </summary>
@@ -220,7 +220,7 @@ namespace SemanticKernelExtension.Orchestrator
                 {
                     _logger?.LogError("No active AgentGroupChat selected.");
                     var errorContent = new StreamingChatMessageContent(AuthorRole.System, "No active AgentGroupChat selected.");
-                    yield return new StreamingOrchestratorContent(StreamingOrchestratorContent.ActionTypes.Error, Name, _activeChatName, string.Empty,false, errorContent);
+                    yield return new StreamingOrchestratorContent(StreamingOrchestratorContent.ActionTypes.Error, Name, _activeChatName, string.Empty, false, errorContent);
                     yield break;
                 }
 
@@ -268,7 +268,7 @@ namespace SemanticKernelExtension.Orchestrator
                             _lastRoomName = _activeChatName;
                             Logger.LogInformation("Room Agent was selected: '{0}'", newRoomName);
 
-        
+
                             // Find and assign the corresponding room agent.
                             var matchingAgent = agentGroupChat.Agents.FirstOrDefault(a =>
                                 !string.IsNullOrEmpty(a.Name) &&
@@ -292,7 +292,7 @@ namespace SemanticKernelExtension.Orchestrator
                         }
 
                         currentAgent = agentChunk.AuthorName;
-                        yield return new StreamingOrchestratorContent(StreamingOrchestratorContent.ActionTypes.AgentStarted, Name, _activeChatName, currentAgent,false,  agentChunk);
+                        yield return new StreamingOrchestratorContent(StreamingOrchestratorContent.ActionTypes.AgentStarted, Name, _activeChatName, currentAgent, false, agentChunk);
                         continue;
                     }
 
@@ -314,7 +314,7 @@ namespace SemanticKernelExtension.Orchestrator
                     }
                     else
                     {
-                     
+
                         Logger.LogInformation("Waiting for input to switch to room '{0}'", newRoomName);
                         yield break;
                     }

@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "cli-client": {
+      "commandName": "Project",
+      "commandLineArgs": "C:\\Github\\MW\\MultipleChatroomsWithAgents\\src\\service\\api\\Agents\\MovieChatRooms.yml"
+    }
+  }
+}

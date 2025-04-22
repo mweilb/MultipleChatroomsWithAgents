@@ -1,6 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿ 
-using YamlConfigurations;
-
+﻿﻿ 
 namespace YamlConfigurations.Validations
 {
     public class YamlChatRoomsValidator

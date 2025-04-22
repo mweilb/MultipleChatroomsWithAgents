@@ -1,4 +1,4 @@
-﻿ 
+﻿
 using YamlDotNet.Serialization;
 
 namespace YamlConfigurations
@@ -17,7 +17,7 @@ namespace YamlConfigurations
 
         [YamlMember(Alias = "skip")]
         public int Skip { get; set; }
- 
+
     }
 
 }

@@ -2,6 +2,17 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": ".NET CLI Client",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/src/service/cli-client/bin/Debug/net9.0/cli-client.dll",
+      "args": ["${workspaceFolder}/src/service/api/Agents/MovieChatRooms.yml"],
+      "cwd": "${workspaceFolder}",
+      "stopAtEntry": false,
+      "console": "integratedTerminal"
+    },
+    {
       "name": ".NET API",
       "type": "coreclr",
       "request": "launch",

@@ -3,8 +3,8 @@
 namespace SemanticKernelExtension.Orchestrator
 {
 
-    public class StreamingOrchestratorContent(StreamingOrchestratorContent.ActionTypes actionType, 
-        string orchestratorName, string chatName, string agentName, bool yieldOnRoomChange = false, 
+    public class StreamingOrchestratorContent(StreamingOrchestratorContent.ActionTypes actionType,
+        string orchestratorName, string chatName, string agentName, bool yieldOnRoomChange = false,
         StreamingChatMessageContent? content = null)
     {
         public enum ActionTypes
@@ -45,7 +45,7 @@ namespace SemanticKernelExtension.Orchestrator
         /// </summary>
         public string ChatName { get; set; } = chatName;
 
-          /// <summary>
+        /// <summary>
         /// Optional: chat name or conversation name, if needed.
         /// </summary>
         public bool YieldOnRoomChange { get; set; } = yieldOnRoomChange;

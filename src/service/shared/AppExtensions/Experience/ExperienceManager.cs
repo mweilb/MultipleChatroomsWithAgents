@@ -4,7 +4,7 @@ using Microsoft.SemanticKernel;
 using SemanticKernelExtension.Orchestrator;
 using WebSocketMessages;
 using YamlConfigurations;
- 
+
 using YamlConfigurations.Librarians;
 using static AppExtensions.Experience.ExperienceManager;
 
@@ -15,14 +15,15 @@ namespace AppExtensions.Experience
         public bool IsProcessingRelevantWebSocketMessage =>
             Experiences.Values.Any(t => t.handler != null && t.handler.IsProcessingRelevantMessage);
         public Kernel Kernel { get; }
-     
+
         public class VisualInfo
         {
-            public string Emoji=string.Empty;
-            public string DisplayName=string.Empty;
+            public string Emoji = string.Empty;
+            public string DisplayName = string.Empty;
         }
 
-        public class TrackingInfo {
+        public class TrackingInfo
+        {
             public YamlMultipleChatRooms? Experience = null;
             public YamLibrarians? Librarians = null;
             public AgentGroupChatOrchestrator? agentGroupChatOrchestrator = null;
@@ -31,15 +32,15 @@ namespace AppExtensions.Experience
         }
 
         public Dictionary<string, TrackingInfo> Experiences = [];
-        
+
         private readonly RoomsHandler RoomsHandler;
-         private readonly LibrarianHandler LibrarianHandler;
+        private readonly LibrarianHandler LibrarianHandler;
 
         public ExperienceManager(Kernel kernel)
         {
             Kernel = kernel;
             RoomsHandler = new RoomsHandler(this);
-            LibrarianHandler = new LibrarianHandler(this.Experiences,kernel);
+            LibrarianHandler = new LibrarianHandler(this.Experiences, kernel);
         }
 
         public async Task<bool> ReadDirectoryAsync(string directory)
@@ -85,7 +86,7 @@ namespace AppExtensions.Experience
                 }
             }
         }
-        
+
 
 
         public async Task<bool> CreateOrchestratorsAsync()
@@ -110,19 +111,19 @@ namespace AppExtensions.Experience
             webSocketHandler.RegisterCommand("rooms", RoomsHandler.HandleRoomsCommandAsync);
             webSocketHandler.RegisterCommand("librarians", LibrarianHandler.HandleLibrariansCommandAsync);
 
-            foreach(var (key,group) in Experiences)
+            foreach (var (key, group) in Experiences)
             {
                 if (group != null)
                 {
                     group.handler = new MessageHandler(group, key);
                     webSocketHandler.RegisterCommand(key, group.handler.HandleCommandAsync);
-                    webSocketHandler.RegisterCommand(key+"-change-room", group.handler.HandleChangeRoomRequestAsync);
+                    webSocketHandler.RegisterCommand(key + "-change-room", group.handler.HandleChangeRoomRequestAsync);
                 }
             }
-            
+
 
         }
 
-       
+
     }
 }

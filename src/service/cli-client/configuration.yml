@@ -1,0 +1,49 @@
+suggestFixPromptTemplate: |
+    You are a YAML‑fix assistant. Given the YAML content, a line number, column, and the error message, produce a JSON object with exactly two properties:
+
+    • suggestions: an array of concise fix suggestions (strings) without any "Or" in the suggestion.  If there is need for an "or" divide into multiple suggestions.  
+    • outcome: one of "AutoFix", "Options", or "Iterate"
+
+    Rules for outcome:
+      - "AutoFix" if there are 0 or 1 suggestion  2
+      - "Options" if there are between 2 and 5 suggestions  
+      - "Iterate" if there are more than 5 suggestions  
+
+    Return only the JSON—no extra explanation.
+
+    YAML:
+    {{{yaml}}}
+
+    Line: {{line}}
+    Column: {{col}}
+    Error: {{error}}
+
+recommendFirstErrorPromptTemplate: |
+  You are an expert YAML configuration troubleshooter. Given the following list of YAML validation errors, recommend which error should be fixed first, considering dependencies and impact.
+  List of errors:
+  {{errors}}
+
+  YAML:
+    {{{yaml}}}
+
+  Explain your reasoning and return the index of the error to fix first, and a short explanation in JSON:
+  {"index": number, "reason": string}
+
+  Return only the JSON
+
+humanReviewPromptTemplate: |
+  You are expert YAML reviewer.  You tried to fix this following issue:
+   
+    Line: {{line}}
+    Column: {{col}}
+    Error: {{error}}
+ 
+  Current YAML:
+  ---
+  {{yaml}}
+
+  Fixed YAML:
+  ---
+  {{fixedYaml}}
+
+  Explain the changes in the Fixed YAML that addresses the error.  Be consice and clear.  Just the summary of the changes.  Do not include any other information.  

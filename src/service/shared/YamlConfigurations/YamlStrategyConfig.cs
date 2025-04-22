@@ -1,4 +1,4 @@
-﻿ 
+﻿
 using YamlDotNet.Serialization;
 
 namespace YamlConfigurations
@@ -25,14 +25,14 @@ namespace YamlConfigurations
             // If no rules exist, create one.
             if (Rules == null || Rules.Count == 0)
             {
-                Rules =[new YamlStratergyRules()];
+                Rules = [new YamlStratergyRules()];
             }
 
             if (GlobalTermination != null)
             {
                 if (string.IsNullOrEmpty(GlobalTermination.ContinuationAgentName))
                 {
-                    GlobalTermination.ContinuationAgentName = $"{room.Name} Termination"; 
+                    GlobalTermination.ContinuationAgentName = $"{room.Name}_Termination";
                 }
             }
 
@@ -62,7 +62,7 @@ namespace YamlConfigurations
                 {
                     if (string.IsNullOrEmpty(rule.Termination.ContinuationAgentName))
                     {
-                        rule.Termination.ContinuationAgentName = $"{rule.Name} Termination";
+                        rule.Termination.ContinuationAgentName = $"{rule.Name}_Termination";
                     }
 
                     if (GlobalTermination != null)
@@ -76,13 +76,13 @@ namespace YamlConfigurations
                             rule.Termination.PromptTermination = GlobalTermination.PromptTermination;
                         }
                     }
-                   
+
+                }
+
+
+
             }
-                 
- 
-                
-            }
- 
+
             return true;
         }
 

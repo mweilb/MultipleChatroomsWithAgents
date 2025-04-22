@@ -1,5 +1,5 @@
-﻿ 
- 
+﻿
+
 using Microsoft.SemanticKernel.Agents;
 using Microsoft.SemanticKernel.Agents.Chat;
 using YamlConfigurations;

@@ -1,5 +1,5 @@
-﻿﻿﻿
- 
+﻿
+
 using YamlDotNet.Serialization;
 
 
@@ -20,7 +20,7 @@ namespace YamlConfigurations
         // YAML "start room" maps to our CurrentRoom property.
         [YamlMember(Alias = "start-room")]
         public YamlStringWithLocation? StartRoom { get; set; } = null!;
-      
+
         // YAML "start room" maps to our CurrentRoom property.
         [YamlMember(Alias = "auto-start")]
         public string AutoStart { get; set; } = string.Empty;
@@ -32,10 +32,10 @@ namespace YamlConfigurations
         // YAML "chatrooms" node.
         [YamlMember(Alias = "chatrooms")]
         public Dictionary<string, YamlRoomConfig>? Rooms { get; set; } = new Dictionary<string, YamlRoomConfig>();
-        
+
         //track the original Yaml file
         public string Yaml { get; internal set; } = string.Empty;
-       
+
         public List<YamlConfigurations.Validations.ValidationError> Errors { get; internal set; } = new();
 
         public void ApplyParentOverride()
@@ -50,12 +50,12 @@ namespace YamlConfigurations
                     ApplyParentOverride(room);
                     // Setup strategies and moderation.
                     room.Strategies?.Setup(room);
-           
+
                 }
             }
         }
 
-       
+
 
         private void ApplyParentOverride(YamlRoomConfig room)
         {

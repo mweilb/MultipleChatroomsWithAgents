@@ -1,8 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using YamlConfigurations;
-
+﻿﻿ 
 namespace YamlConfigurations.Validations
 {
     public class AgentReferenceValidation : IValidationPass
@@ -58,6 +54,7 @@ namespace YamlConfigurations.Validations
                 {
                     errors.Add(new ValidationError(
                         $"StartRoom is not a valid room: '{config.StartRoom}'",
+                        "[StartRoom]",
                         config.StartRoom
                     ));
                     
@@ -82,8 +79,9 @@ namespace YamlConfigurations.Validations
                                 if (!IsValidReference(current.Name, validAgentNames, validRoomNames, validTerminationNames))
                                 {
                                     errors.Add(new ValidationError(
-                                     $"Current reference '{current.Name}' is not a valid agent or room in room '{roomName}'.",
-                                    current));
+                                        $"Current reference '{current.Name}' is not a valid 'user' keyword, agent in '{roomName}', or another room name.",
+                                        $"[Room:{roomName}][Rule:{rule.Name}][Current:{current.Name}]",
+                                        current));
                                 }
                             }
 
@@ -92,14 +90,16 @@ namespace YamlConfigurations.Validations
                                 if (!IsValidReference(next.Name, validAgentNames, validRoomNames, validTerminationNames))
                                 {
                                     errors.Add(new ValidationError(
-                                       $"Next reference '{next.Name}' is not a valid agent or room in room '{roomName}'.",
-                                       next));
+                                        $"Next reference '{next.Name}' is not a valid agent or room in room '{roomName}'.",
+                                        $"[Room:{roomName}][Rule:{rule.Name}][Next:{next.Name}]",
+                                        next));
                                 }
 
                                 if (validTerminationNames != null && validTerminationNames.Contains(next.Name))
                                 {
                                     errors.Add(new ValidationError(
                                         $"Rooms[{roomName}].Strategies.Rule[{rule.Name}].Next[{next.Name}]",
+                                        $"[Room:{roomName}][Rule:{rule.Name}][Next:{next.Name}]",
                                         next));
   
                                 }
@@ -130,8 +130,9 @@ namespace YamlConfigurations.Validations
                                         if ((termination.ConstantTermination == null) || (IsTrue(termination.ConstantTermination.Value)))
                                         {
                                             errors.Add(new ValidationError(
-                                               $"ContinuationAgentName '{termination.ContinuationAgentName}' is not reference in any rule.",
-                                               termination));
+                                            $"ContinuationAgentName '{termination.ContinuationAgentName}' is not reference in any rule.",
+                                            $"[Room:{roomName}][Rule:{rule.Name}][Termination]",
+                                            termination));
                                            
                                         }
                                     }

@@ -1,4 +1,4 @@
-﻿ 
+﻿
 using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
@@ -34,7 +34,7 @@ namespace WebSocketMessages
         /// <param name="message">The chat room reply message to be sent.</param>
         /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
         /// <returns>A task that represents the asynchronous send operation.</returns>
-        public async Task SendAsync(WebSocketReplyChatRoomMessage message,ConnectionMode mode, CancellationToken cancellationToken = default)
+        public async Task SendAsync(WebSocketReplyChatRoomMessage message, ConnectionMode mode, CancellationToken cancellationToken = default)
         {
             // Configure JSON serialization options to format the output and include public fields.
             var options = new JsonSerializerOptions
@@ -51,13 +51,13 @@ namespace WebSocketMessages
                     return;
                 }
 
-                if (string.Compare(message.Mode, "App",true)  != 0)
+                if (string.Compare(message.Mode, "App", true) != 0)
                 {
                     return;
                 }
             }
 
-    		
+
             // Serialize the message to a JSON string.
             string json = JsonSerializer.Serialize(message, options);
             // Convert the JSON string to UTF8-encoded bytes.
@@ -74,7 +74,7 @@ namespace WebSocketMessages
 
         public async Task SendAsync(WebSocketChangeRoom message, ConnectionMode mode, CancellationToken cancellationToken = default)
         {
- 
+
             // Configure JSON serialization options to format the output and include public fields.
             var options = new JsonSerializerOptions
             {

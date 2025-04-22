@@ -45,22 +45,25 @@
             if ((agentConfig.Instructions != null) && (agentConfig.Echo != null))
             {
                 errors.Add(new ValidationError(
-                       "Agent instructions and echo must not be both defined.",
-                       agentConfig 
+                    "Agent instructions and echo must not be both defined.",
+                    $"[Agent:{agentName}]",
+                    agentConfig
                     ));
             }
             else if ((agentConfig.Instructions != null) && bInstruciton)
             {
                 errors.Add(new ValidationError(
-                   "Agent instructions must not be empty.",
-                    agentConfig 
+                "Agent instructions must not be empty.",
+                $"[Agent:{agentName}]",
+                    agentConfig
                 ));
             }
             else if ((agentConfig.Echo != null) && bEcho)
             {
                 errors.Add(new ValidationError(
-                   "Agent Echo must not be empty.",
-                   agentConfig 
+                "Agent Echo must not be empty.",
+                $"[Agent:{agentName}]",
+                agentConfig
                 ));
             }
         }

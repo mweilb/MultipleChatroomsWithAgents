@@ -3,10 +3,10 @@ using Microsoft.SemanticKernel.Agents;
 using Microsoft.SemanticKernel.ChatCompletion;
 using SemanticKernelExtension.AgentGroupChats.Strategies.RuleBased;
 using SemanticKernelExtension.Orchestrator;
- 
+
 using System.Runtime.CompilerServices;
- 
-  
+
+
 
 namespace SemanticKernelExtension.Agents
 {
@@ -59,34 +59,34 @@ namespace SemanticKernelExtension.Agents
                         instructions = ruleInstruction;
                     }
 
-                this.setInstructions(instructions);
+                    this.setInstructions(instructions);
 
-                await foreach (var agentChunk in SuccesfullChangedRoom(orchestratorName, currentChatRoomName, currentChatRoom, lastChatRoom, cancellationToken))
-                {
-                    yield return agentChunk;
-                }
-            }
-            else
-            {
-                if (currentChatRoom != null)
-                {
-                    string returnAgentName = "System";
-                    if (_ruleBasedSettings != null && _ruleBasedSettings.CurrentRule != null)
+                    await foreach (var agentChunk in SuccesfullChangedRoom(orchestratorName, currentChatRoomName, currentChatRoom, lastChatRoom, cancellationToken))
                     {
-                        string ruleName = _ruleBasedSettings.CurrentRule.Name;
-                        if (_ruleInfoManager.TryGetYieldCanceledName(currentChatRoomName, ruleName, out string? cancelName) && !string.IsNullOrEmpty(cancelName))
-                        {
-                            returnAgentName = cancelName;
-                        }
+                        yield return agentChunk;
                     }
-
-                    currentChatRoom.AddChatMessage(new ChatMessageContent(AuthorRole.System, "User Canceled Room Change")
+                }
+                else
+                {
+                    if (currentChatRoom != null)
                     {
-                        AuthorName = $"{returnAgentName}",
-                    });
+                        string returnAgentName = "System";
+                        if (_ruleBasedSettings != null && _ruleBasedSettings.CurrentRule != null)
+                        {
+                            string ruleName = _ruleBasedSettings.CurrentRule.Name;
+                            if (_ruleInfoManager.TryGetYieldCanceledName(currentChatRoomName, ruleName, out string? cancelName) && !string.IsNullOrEmpty(cancelName))
+                            {
+                                returnAgentName = cancelName;
+                            }
+                        }
+
+                        currentChatRoom.AddChatMessage(new ChatMessageContent(AuthorRole.System, "User Canceled Room Change")
+                        {
+                            AuthorName = $"{returnAgentName}",
+                        });
+                    }
                 }
             }
-        }
         }
 
         public void SetExecutionSettings(RuleBasedSettings? ruleBasedSettings)

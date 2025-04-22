@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SemanticKernelExtensions\SemanticKernelExtension\SemanticKernelExtension.csproj" />
+    <ProjectReference Include="..\YamlConfigurations\YamlConfigurations.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SemanticKernel.Process.Core" Version="1.47.0-alpha" />
+    <PackageReference Include="Microsoft.SemanticKernel.Process.LocalRuntime" Version="1.47.0-alpha" />
+    <PackageReference Include="Microsoft.SemanticKernel.PromptTemplates.Handlebars" Version="1.47.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="FixErrors\Steps\" />
+  </ItemGroup>
+
+</Project>

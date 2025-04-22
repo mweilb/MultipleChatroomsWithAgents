@@ -15,7 +15,7 @@ namespace AppExtensions.Logging.Aggregators
         public string EventName { get; }
         public ChatMessageContent Content { get; }
 
-        public ChatMessageEventData(string eventName,  ChatMessageContent content)
+        public ChatMessageEventData(string eventName, ChatMessageContent content)
         {
             EventName = eventName;
             Content = content;

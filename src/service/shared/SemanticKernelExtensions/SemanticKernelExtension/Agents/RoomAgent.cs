@@ -3,10 +3,10 @@ using Microsoft.SemanticKernel.Agents;
 using Microsoft.SemanticKernel.ChatCompletion;
 using SemanticKernelExtension.Hacks;
 using SemanticKernelExtension.Orchestrator;
- 
+
 using System.Runtime.CompilerServices;
 using System.Text;
- 
+
 
 namespace SemanticKernelExtension.Agents
 {
@@ -15,7 +15,7 @@ namespace SemanticKernelExtension.Agents
     public class RoomAgent : EchoAgent
     {
         private string _instructionToSummary;
- 
+
         private readonly bool _yieldOnRoomChange = false;
         private readonly string _yieldCanceledName = string.Empty;
 
@@ -31,7 +31,7 @@ namespace SemanticKernelExtension.Agents
 
         public virtual void ReportRoomChangeRquest(bool changed)
         {
-           
+
         }
 
         public void setInstructions(string instructions)
@@ -102,7 +102,7 @@ namespace SemanticKernelExtension.Agents
 
         internal string GetAgentName()
         {
-           return _agentName;
+            return _agentName;
         }
 
         /// <summary>

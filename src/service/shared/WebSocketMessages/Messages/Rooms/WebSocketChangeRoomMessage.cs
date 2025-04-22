@@ -1,4 +1,4 @@
-﻿ 
+﻿
 namespace WebSocketMessages.Messages.Rooms
 {
     public class WebSocketChangeRoom : WebSocketReplyChatRoomMessage
@@ -12,6 +12,6 @@ namespace WebSocketMessages.Messages.Rooms
         /// Gets or sets the emoji representing the actor.
         /// </summary>
         public string To { get; set; } = string.Empty;
- 
+
     }
 }

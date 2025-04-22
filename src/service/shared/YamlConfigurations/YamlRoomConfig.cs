@@ -1,4 +1,4 @@
-﻿ 
+﻿
 using YamlDotNet.Serialization;
 
 namespace YamlConfigurations

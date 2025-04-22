@@ -23,24 +23,26 @@
                                 rule.Selection.PromptSelect != null &&
                                 string.IsNullOrWhiteSpace(rule.Selection.PromptSelect.Instructions))
                             {
-errors.Add(new ValidationError(
-    "Prompt must not be empty.",
-    rule.Selection
-));
+                                errors.Add(new ValidationError(
+                                    "Prompt must not be empty.",
+                                    $"[Room:{roomName}][Rule:{rule.Name}][Selection]",
+                                    rule.Selection
+                                ));
                             }
 
                             // For Termination, if presets are available then an empty prompt is acceptable.
                             if (rule.Termination != null)
                             {
-                            
+
                                 if (rule.Termination != null &&
                                     rule.Termination.PromptTermination != null &&
                                     string.IsNullOrWhiteSpace(rule.Termination.PromptTermination.Instructions))
                                 {
-errors.Add(new ValidationError(
-    "Prompt must not be empty.",
-    rule.Termination
-));
+                                    errors.Add(new ValidationError(
+                                        "Prompt must not be empty.",
+                                        $"[Room:{roomName}][Rule:{rule.Name}][Termination]",
+                                        rule.Termination
+                                    ));
                                 }
                             }
                         }

@@ -34,7 +34,7 @@ namespace AppExtensions.Experience.Factories
                         RuleBasedDefinition ruleForSK = new();
 
                         index++;
-                        Console.WriteLine($"    [{index}] Rule Name: {rule.Name}"); 
+                        Console.WriteLine($"    [{index}] Rule Name: {rule.Name}");
 
                         AddCurrentAgents(rule, ruleForSK);
                         AddNextAgents(rule, ruleForSK);
@@ -57,7 +57,7 @@ namespace AppExtensions.Experience.Factories
 
             return listSKRules;
         }
- 
+
 
         private static void AddCurrentAgents(YamlStratergyRules rule, SemanticKernelExtension.AgentGroupChats.Strategies.RuleBased.RuleBasedDefinition ruleForSK)
         {
@@ -151,7 +151,7 @@ namespace AppExtensions.Experience.Factories
                     ruleForSK.Termination = ConstantTerminationStrategyFactory.Create(termination.ConstantTermination, agents);
                 }
             }
-            
+
             ruleForSK.Termination ??= new ConstantTerminationStrategy(false);
 
 
@@ -169,7 +169,7 @@ namespace AppExtensions.Experience.Factories
             }
 
         }
-        
+
     }
 
 

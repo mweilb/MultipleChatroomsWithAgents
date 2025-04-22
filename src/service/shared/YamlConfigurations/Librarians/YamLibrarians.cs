@@ -1,4 +1,4 @@
-﻿ 
+﻿
 
 namespace YamlConfigurations.Librarians
 {
@@ -8,6 +8,6 @@ namespace YamlConfigurations.Librarians
         public List<YamlInstanceOfAgentConfig> NotActiveLibrarians { get; set; } = [];
         public string RoomName { get; set; } = string.Empty;
         public string RoomEmoji { get; set; } = string.Empty;
- 
+
     }
 }

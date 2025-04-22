@@ -11,27 +11,79 @@ namespace YamlConfigurations.Validations
             if (errors is not IList<ValidationError> errorList)
                 throw new System.ArgumentException("errors must be a mutable collection");
 
-            if (config.Rooms != null)
+if (config.Rooms != null)
+{
+    foreach (var roomPair in config.Rooms)
+    {
+        var roomName = roomPair.Key;
+        var room = roomPair.Value;
+        // Validate agent names in room.Agents
+        if (room.Agents != null)
+        {
+            foreach (var agent in room.Agents)
             {
-                foreach (var roomPair in config.Rooms)
+                if (!YamlInstanceOfAgentConfig.IsValidAgentName(agent.Name))
                 {
-                    var roomName = roomPair.Key;
-                    var room = roomPair.Value;
-                    if (room.Agents != null)
+                    errorList.Add(new ValidationError(
+                        $"Agent name '{agent.Name}' in room '{roomName}' is invalid. Names must not contain spaces or any of: < | \\ / >",
+                        $"[Room:{roomName}][Agent:{agent.Name}]",
+                        agent
+                    ));
+                }
+            }
+        }
+        // Validate agent names in rules: current, next, and continuation-agent-name
+        if (room.Strategies?.Rules != null)
+        {
+            foreach (var rule in room.Strategies.Rules)
+            {
+                // Validate current agent names
+                if (rule.Current != null)
+                {
+                    foreach (var current in rule.Current)
                     {
-                        foreach (var agent in room.Agents)
+                        if (!string.IsNullOrEmpty(current.Name) && !YamlInstanceOfAgentConfig.IsValidAgentName(current.Name))
                         {
-                            if (!YamlInstanceOfAgentConfig.IsValidAgentName(agent.Name))
-                            {
-errorList.Add(new ValidationError(
-    $"Agent name '{agent.Name}' in room '{roomName}' is invalid. Names must not contain spaces or any of: < | \\ / >",
-    agent
-));
-                            }
+                            errorList.Add(new ValidationError(
+                                $"Current agent name '{current.Name}' in rule '{rule.Name}' of room '{roomName}' is invalid. Names must not contain spaces or any of: < | \\ / >",
+                                $"[Room:{roomName}][Rule:{rule.Name}][Current:{current.Name}]",
+                                current
+                            ));
                         }
                     }
                 }
+                // Validate next agent names
+                if (rule.Next != null)
+                {
+                    foreach (var next in rule.Next)
+                    {
+                        if (!string.IsNullOrEmpty(next.Name) && !YamlInstanceOfAgentConfig.IsValidAgentName(next.Name))
+                        {
+                            errorList.Add(new ValidationError(
+                                $"Next agent name '{next.Name}' in rule '{rule.Name}' of room '{roomName}' is invalid. Names must not contain spaces or any of: < | \\ / >",
+                                $"[Room:{roomName}][Rule:{rule.Name}][Next:{next.Name}]",
+                                next
+                            ));
+                        }
+                    }
+                }
+                // Validate continuation-agent-name in termination
+                if (rule.Termination != null && !string.IsNullOrEmpty(rule.Termination.ContinuationAgentName))
+                {
+                    var contName = rule.Termination.ContinuationAgentName;
+                    if (!YamlInstanceOfAgentConfig.IsValidAgentName(contName))
+                    {
+                        errorList.Add(new ValidationError(
+                            $"Continuation agent name '{contName}' in rule '{rule.Name}' of room '{roomName}' is invalid. Names must not contain spaces or any of: < | \\ / >",
+                            $"[Room:{roomName}][Rule:{rule.Name}][ContinuationAgentName:{contName}]",
+                            rule.Termination
+                        ));
+                    }
+                }
             }
+        }
+    }
+}
             // No return, mutate errorList in place
         }
     }

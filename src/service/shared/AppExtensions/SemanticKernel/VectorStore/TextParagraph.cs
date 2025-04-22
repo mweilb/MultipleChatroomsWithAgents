@@ -5,7 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 #pragma warning disable SKEXP0001
 namespace AppExtensions.SemanticKernel.VectorStore
 {
-    
+
 
     public class TextParagraph
     {

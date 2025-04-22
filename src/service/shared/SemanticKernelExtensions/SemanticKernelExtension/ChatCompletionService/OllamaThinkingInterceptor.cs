@@ -73,7 +73,7 @@ namespace SemanticKernelExtension.ChatCompletionService
             Kernel? kernel = null,
             [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-           
+
             bool captureThinking = false;
             string thinkingChunk;
             string responseChunk;
@@ -108,14 +108,14 @@ namespace SemanticKernelExtension.ChatCompletionService
                     }
 
                 }
-                
+
 
                 // Attach thought to all subsequent chunks as metadata
                 var metadata = captureThinking
                         ? new Dictionary<string, object?> { ["think"] = thinkingChunk }
                         : new Dictionary<string, object?> { ["think"] = "" };
 
-                yield return new StreamingChatMessageContent(chunk.Role, responseChunk, metadata:metadata)
+                yield return new StreamingChatMessageContent(chunk.Role, responseChunk, metadata: metadata)
                 {
                     Encoding = chunk.Encoding
                 };

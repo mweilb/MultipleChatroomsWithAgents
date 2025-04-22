@@ -25,7 +25,7 @@ namespace SemanticKernelExtension.AgentGroupChats.Strategies.Terminations
         /// A boolean value that determines whether the termination should signal to stop (true) or continue (false).
         /// </param>
         /// <param name="agents">An optional list of agents that can cause termination. If null, all agents can terminate.</param>
-        public ConstantTerminationStrategy(bool shouldTerminate, IReadOnlyList<Agent>? agents= null)
+        public ConstantTerminationStrategy(bool shouldTerminate, IReadOnlyList<Agent>? agents = null)
         {
             _shouldTerminate = shouldTerminate;
             Agents = agents;

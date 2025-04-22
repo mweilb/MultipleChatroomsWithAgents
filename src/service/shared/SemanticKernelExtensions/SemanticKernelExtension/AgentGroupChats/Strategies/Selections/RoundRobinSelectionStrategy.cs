@@ -1,7 +1,7 @@
 ﻿using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Agents;
 using Microsoft.SemanticKernel.Agents.Chat;
- 
+
 
 namespace SemanticKernelExtension.AgentGroupChats.Strategies.Selections
 {

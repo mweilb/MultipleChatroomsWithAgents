@@ -23,10 +23,11 @@ namespace YamlConfigurations.Validations
                             // Always require a termination decision.
                             if (rule.Termination == null)
                             {
-errorList.Add(new ValidationError(
-    "Rule must have a termination decision defined.",
-    rule
-));
+                                errorList.Add(new ValidationError(
+                                    "Rule must have a termination decision defined.",
+                                    $"[Rule:{rule.Name}]",
+                                    rule
+                                ));
                             }
 
                             // If the selection decision is null, ensure both "current" and "next" are provided.
@@ -39,6 +40,7 @@ errorList.Add(new ValidationError(
                                 {
 errorList.Add(new ValidationError(
     "Rule must have a selection decision defined unless both current and next agents are specified.",
+    $"[Rule:{rule.Name}]",
     rule
 ));
                                 }

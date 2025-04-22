@@ -59,7 +59,7 @@ namespace AppExtensions.Experience.Factories
                     // Use agent.Name if available, fallback to ToString()
                     var nameProp = agent.GetType().GetProperty("Name", BindingFlags.Public | BindingFlags.Instance);
                     string agentName = nameProp?.GetValue(agent)?.ToString() ?? agent.ToString() ?? "";
-                    agentVisualInfo[agentName] = visualInfo;          
+                    agentVisualInfo[agentName] = visualInfo;
                 }
                 roomVisualInfo[roomName] = agentVisualInfo;
 
@@ -74,7 +74,7 @@ namespace AppExtensions.Experience.Factories
                     ExecutionSettings = new RuleBasedSettings(listSKRules, factory)
                 };
 
-                foreach(var agent in completionAgents)
+                foreach (var agent in completionAgents)
                 {
                     if (agent is RoomRuleBasedAgent roomAgent)
                     {
@@ -98,8 +98,8 @@ namespace AppExtensions.Experience.Factories
             return await Task.FromResult((orchestrator, roomVisualInfo));
         }
 
-    
- 
-       
+
+
+
     }
 }

@@ -1,7 +1,7 @@
-﻿﻿﻿﻿﻿
+﻿
 using YamlDotNet.Serialization;
 
-namespace  YamlConfigurations
+namespace YamlConfigurations
 {
     // An instance of an agent in a room, which may include position overrides.
     public class YamlInstanceOfAgentConfig : YamlAgentConfig
@@ -28,7 +28,7 @@ namespace  YamlConfigurations
         }
 
 
-        public void ApplyParentOverride( YamlAgentConfig parent)
+        public void ApplyParentOverride(YamlAgentConfig parent)
         {
             if (string.IsNullOrEmpty(Emoji)) { DisplayName = parent.DisplayName; }
             if (string.IsNullOrEmpty(Emoji)) { Emoji = parent.Emoji; }
@@ -41,7 +41,7 @@ namespace  YamlConfigurations
                 Collection = parent.Collection;
             }
         }
- 
+
     }
 
 }

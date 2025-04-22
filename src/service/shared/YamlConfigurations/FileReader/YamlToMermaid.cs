@@ -1,4 +1,4 @@
-﻿﻿﻿
+﻿
 using DocumentFormat.OpenXml.Math;
 using System.Data;
 using System.Text;
@@ -66,7 +66,7 @@ namespace YamlConfigurations.FileReader
             allEdges.AddRange(BuildWithinRoomEdges(chatRooms, agentsPerRoom));
 
             // 5b. Cross-room edges
-            allEdges.AddRange(BuildCrossRoomEdges(chatRooms, sb,  agentsPerRoom));
+            allEdges.AddRange(BuildCrossRoomEdges(chatRooms, sb, agentsPerRoom));
 
             // 6. Render the edges (in the order we collected them)
             foreach (var edgeItem in allEdges)
@@ -322,8 +322,8 @@ namespace YamlConfigurations.FileReader
                         foreach (var nA in nextAgents)
                         {
                             if (cA == nA) continue;
-                            if (nA.StartsWith(roomId)  && (cA.StartsWith(roomId) || cA.StartsWith("start")))
-                            {    
+                            if (nA.StartsWith(roomId) && (cA.StartsWith(roomId) || cA.StartsWith("start")))
+                            {
                                 edges.Add(new DiagramEdge
                                 {
                                     EdgeDefinition = $"{cA} -->|{ruleLabel}| {nA}",

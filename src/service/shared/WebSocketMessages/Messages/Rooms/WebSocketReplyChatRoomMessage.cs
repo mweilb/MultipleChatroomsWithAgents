@@ -1,9 +1,9 @@
- 
+
 namespace WebSocketMessages.Messages.Rooms
 {
     /// <summary>
     /// Represents a reply message for a chat room sent over WebSocket.
- /// </summary>
+    /// </summary>
     public class WebSocketReplyChatRoomMessage : WebSocketBaseMessage
     {
         /// <summary>

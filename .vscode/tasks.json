@@ -61,7 +61,9 @@
       "label": "Start Editor",
       "type": "shell",
       "command": "npm",
-      "args": ["start"],
+      "args": [
+        "start"
+      ],
       "options": {
         "cwd": "${workspaceFolder}/src/client/editor-app",
         "env": {
@@ -71,13 +73,18 @@
       "runOptions": {
         "runOn": "folderOpen"
       },
-      "dependsOn": ["Init Editor", "Init Shared"]
+      "dependsOn": [
+        "Init Editor",
+        "Init Shared"
+      ]
     },
     {
       "label": "Start Sample App",
       "type": "shell",
       "command": "npm",
-      "args": ["start"],
+      "args": [
+        "start"
+      ],
       "options": {
         "cwd": "${workspaceFolder}/src/client/sample-app",
         "env": {
@@ -87,7 +94,27 @@
       "runOptions": {
         "runOn": "folderOpen"
       },
-      "dependsOn": ["Init Sample App", "Init Shared"]
+      "dependsOn": [
+        "Init Sample App",
+        "Init Shared"
+      ]
+    },
+    {
+      "type": "dotnet",
+      "task": "build",
+      "group": "build",
+      "problemMatcher": [],
+      "label": "dotnet: build"
+    },
+    {
+      "label": "build",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "build",
+        "${workspaceFolder}/src/service/cli-client/cli-client.csproj"
+      ],
+      "problemMatcher": "$msCompile"
     }
   ]
 }

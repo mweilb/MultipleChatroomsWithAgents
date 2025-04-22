@@ -51,7 +51,7 @@ namespace WebSocketMessages.AgentLifecycle
         {
             //The app does not need log eventgs
             if (CurrentConnectionMode == ConnectionMode.App) { return; }
-  
+
             try
             {
                 if (WebSocket == null)
@@ -175,7 +175,7 @@ namespace WebSocketMessages.AgentLifecycle
                     };
                     await SendMessageAsync(wsMessage, cancellationToken);
                 }
-                
+
             }
 
 

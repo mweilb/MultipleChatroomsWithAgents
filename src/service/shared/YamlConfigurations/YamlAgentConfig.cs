@@ -16,7 +16,7 @@ namespace YamlConfigurations
 
         [YamlMember(Alias = "instructions")]
         public string? Instructions { get; set; } = null;
-       
+
         [YamlMember(Alias = "echo")]
         public string? Echo { get; set; } = null;
 
@@ -27,4 +27,4 @@ namespace YamlConfigurations
     }
 }
 
- 
+

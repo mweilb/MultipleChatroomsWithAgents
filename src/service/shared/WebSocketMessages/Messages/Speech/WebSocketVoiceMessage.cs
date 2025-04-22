@@ -1,4 +1,4 @@
-﻿ 
+﻿
 
 namespace WebSocketMessages.Messages.Speech
 {
