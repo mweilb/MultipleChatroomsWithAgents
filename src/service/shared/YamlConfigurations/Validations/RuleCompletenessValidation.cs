@@ -39,12 +39,12 @@ namespace YamlConfigurations.Validations
 
                                 if (!hasCurrent || !hasNext)
                                 {
-errorList.Add(new ValidationError(
-    "Rule must have a selection decision defined unless both current and next agents are specified.",
-    $"[Rule:{rule.Name}]",
-    rule,
-    ValidationErrorKeywords.Rule
-));
+                                    errorList.Add(new ValidationError(
+                                        "Rule must have a selection decision defined unless both current and next agents are specified.",
+                                        $"[Rule:{rule.Name}]",
+                                        rule,
+                                        ValidationErrorKeywords.Rule
+                                    ));
                                 }
                             }
                         }

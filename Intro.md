@@ -117,6 +117,25 @@ rooms:
 - The `termination` block ends the conversation in MainRoom if the user's message matches "goodbye" or "exit".
 - Rules can trigger transitions to other rooms.
 
+## Agent Instructions Example
+
+Each agent should have clear, specific instructions to define its role and behavior:
+
+```yaml
+start-room: "MainRoom"
+rooms:
+  - name: "MainRoom"
+    agents:
+      - name: "Greeter"
+        instructions: "Welcome the user and introduce the available services."
+      - name: "SupportAgent"
+        instructions: "Answer technical questions and provide troubleshooting steps."
+      - name: "SalesAgent"
+        instructions: "Provide information about products and assist with purchases."
+```
+
+- Each agent's `instructions` field describes its unique responsibilities and conversational style.
+
 ## Best Practices
 
 - Use unique, descriptive names for all entities.

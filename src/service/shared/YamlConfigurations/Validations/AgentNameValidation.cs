@@ -49,7 +49,7 @@ if (config.Rooms != null)
                                 $"Current agent name '{current.Name}' in rule '{rule.Name}' of room '{roomName}' is invalid. Names must not contain spaces or any of: < | \\ / >",
                                 $"[Room:{roomName}][Rule:{rule.Name}][Current:{current.Name}]",
                                 current,
-                                ValidationErrorKeywords.Agent
+                                ValidationErrorKeywords.Current
                             ));
                         }
                     }
@@ -65,7 +65,7 @@ if (config.Rooms != null)
                                 $"Next agent name '{next.Name}' in rule '{rule.Name}' of room '{roomName}' is invalid. Names must not contain spaces or any of: < | \\ / >",
                                 $"[Room:{roomName}][Rule:{rule.Name}][Next:{next.Name}]",
                                 next,
-                                ValidationErrorKeywords.Agent
+                                ValidationErrorKeywords.Next
                             ));
                         }
                     }
@@ -80,7 +80,7 @@ if (config.Rooms != null)
                             $"Continuation agent name '{contName}' in rule '{rule.Name}' of room '{roomName}' is invalid. Names must not contain spaces or any of: < | \\ / >",
                             $"[Room:{roomName}][Rule:{rule.Name}][ContinuationAgentName:{contName}]",
                             rule.Termination,
-                            ValidationErrorKeywords.Agent
+                            ValidationErrorKeywords.Termination
                         ));
                     }
                 }

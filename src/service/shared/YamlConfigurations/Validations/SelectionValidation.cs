@@ -94,13 +94,13 @@ namespace YamlConfigurations.Validations
             // Validate SequentialSelection's InitialAgent
             if (selection.SequentialSelection?.InitialAgent is string seqAgent && !string.IsNullOrWhiteSpace(seqAgent))
             {
-                ValidateAgentName(seqAgent, validAgentNames, errors, selection.SequentialSelection, parentLocation + "[SequentialSelection]");
+                ValidateAgentName(seqAgent, validAgentNames, errors, selection.SequentialSelection, parentLocation + "[SequentialSelection]",ValidationErrorKeywords.SequentialSelection);
             }
 
             // Validate RoundRobinSelection's InitialAgent
             if (selection.RoundRobinSelection?.InitialAgent is string rrAgent && !string.IsNullOrWhiteSpace(rrAgent))
             {
-                ValidateAgentName(rrAgent, validAgentNames, errors, selection.RoundRobinSelection, parentLocation + "[RoundRobinSelection]");
+                ValidateAgentName(rrAgent, validAgentNames, errors, selection.RoundRobinSelection, parentLocation + "[RoundRobinSelection]",ValidationErrorKeywords.RoundRobinSelection);
             }
 
             // Validate RoundRobinSelection's Agents list
@@ -111,13 +111,13 @@ namespace YamlConfigurations.Validations
                     var agentName = rrAgents[i];
                     if (!string.IsNullOrWhiteSpace(agentName))
                     {
-                        ValidateAgentName(agentName, validAgentNames, errors, selection.RoundRobinSelection, parentLocation + $"[RoundRobinSelection][Agent:{agentName}]");
+                        ValidateAgentName(agentName, validAgentNames, errors, selection.RoundRobinSelection, parentLocation + $"[RoundRobinSelection][Agent:{agentName}]",ValidationErrorKeywords.RoundRobinSelection);
                     }
                 }
             }
         }
 
-        private static void ValidateAgentName(string agentName, HashSet<string> validAgentNames, IList<ValidationError> errors, YamlLineInfo lineInfo, string parentLocation)
+        private static void ValidateAgentName(string agentName, HashSet<string> validAgentNames, IList<ValidationError> errors, YamlLineInfo lineInfo, string parentLocation, String keyword)
         {
             if (!validAgentNames.Contains(agentName))
             {
@@ -125,7 +125,7 @@ namespace YamlConfigurations.Validations
                     $"Unknown agent name '{agentName}'. Must be one of: {string.Join(", ", validAgentNames)}",
                     $"{parentLocation}",
                     lineInfo,
-                    ValidationErrorKeywords.Selection
+                    keyword
                 ));
             }
         }

@@ -27,7 +27,7 @@
                                     "Prompt must not be empty.",
                                     $"[Room:{roomName}][Rule:{rule.Name}][Selection]",
                                     rule.Selection,
-                                    ValidationErrorKeywords.Prompt
+                                    ValidationErrorKeywords.Selection
                                 ));
                             }
 
@@ -43,7 +43,7 @@
                                         "Prompt must not be empty.",
                                         $"[Room:{roomName}][Rule:{rule.Name}][Termination]",
                                         rule.Termination,
-                                        ValidationErrorKeywords.Prompt
+                                        ValidationErrorKeywords.Termination
                                     ));
                                 }
                             }

@@ -56,7 +56,7 @@ namespace YamlConfigurations.Validations
                         $"StartRoom is not a valid room: '{config.StartRoom}'",
                         "[StartRoom]",
                         config.StartRoom,
-                        ValidationErrorKeywords.Agent
+                        ValidationErrorKeywords.StartRoom
                     ));
                     
                 }
@@ -91,7 +91,7 @@ namespace YamlConfigurations.Validations
                                         $"Current reference '{current.Name}' is not a valid 'user' keyword, agent in '{roomName}', or another room name.",
                                         $"[Room:{roomName}][Rule:{rule.Name}][Current:{current.Name}]",
                                         current,
-                                        ValidationErrorKeywords.Agent));
+                                        ValidationErrorKeywords.Current));
                                 }
                             }
 
@@ -105,7 +105,7 @@ namespace YamlConfigurations.Validations
                                         $"Next reference 'any' or 'start' are not valid.  It must be an agent or room name.",
                                         $"[Room:{roomName}][Rule:{rule.Name}][Next:{next.Name}]",
                                         next,
-                                        ValidationErrorKeywords.Agent));
+                                        ValidationErrorKeywords.Next));
                                              continue;
                                     }
                                         
@@ -118,7 +118,7 @@ namespace YamlConfigurations.Validations
                                         $"Next reference '{next.Name}' is not a valid agent or room in room '{roomName}'.",
                                         $"[Room:{roomName}][Rule:{rule.Name}][Next:{next.Name}]",
                                         next,
-                                                ValidationErrorKeywords.Agent));
+                                                ValidationErrorKeywords.Next));
                                 }
                                
                             }
@@ -156,7 +156,7 @@ namespace YamlConfigurations.Validations
                                                 $"Please add your own  `continuation-agent-name: <agent_or_room_name>` as a child of the `termination` section.",
                                                 $"[Room:{roomName}][Rule:{rule.Name}][Termination]",
                                                 termination,
-                                                ValidationErrorKeywords.Agent));
+                                                ValidationErrorKeywords.Termination));
                                                 continue;
                                             }
                                             else{
@@ -164,7 +164,7 @@ namespace YamlConfigurations.Validations
                                                 $"ContinuationAgentName '{termination.ContinuationAgentName}' is not reference in any 'current' field of any rule.",
                                                 $"[Room:{roomName}][Rule:{rule.Name}][Termination]",
                                                 termination,
-                                                ValidationErrorKeywords.Agent));
+                                                ValidationErrorKeywords.Termination));
                                             }
                                            
                                         }

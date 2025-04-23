@@ -18,7 +18,7 @@ A termination block can be added to a room or rule. Only one of the following ke
 
 You may also specify:
 
-- `continuation-agent-name` (optional): The agent or room to continue processing after termination. If not set, the system auto-generates a name (e.g., `<room_name>_Termination` or `<rule_name>_Termination`). This default may not correspond to any real agent or room unless you define it.
+- `continuation-agent-name` (optional): The agent or room to continue processing after termination. If not set, the system auto-generates a name (e.g., `<room_name>_Termination`). This default may not correspond to any real agent or room unless you define it.
 
 **Note:** If more than one termination type is specified, it is a configuration error.
 
