@@ -12,13 +12,20 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="FixErrors\Steps\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Contexts\**\*.*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>%(RecursiveDir)%(Filename)%(Extension)</TargetPath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SemanticKernel" Version="1.47.0" />
     <PackageReference Include="Microsoft.SemanticKernel.Process.Core" Version="1.47.0-alpha" />
     <PackageReference Include="Microsoft.SemanticKernel.Process.LocalRuntime" Version="1.47.0-alpha" />
     <PackageReference Include="Microsoft.SemanticKernel.PromptTemplates.Handlebars" Version="1.47.0" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="FixErrors\Steps\" />
-  </ItemGroup>
-
 </Project>
