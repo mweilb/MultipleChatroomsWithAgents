@@ -27,7 +27,8 @@ if (config.Rooms != null)
                     errorList.Add(new ValidationError(
                         $"Agent name '{agent.Name}' in room '{roomName}' is invalid. Names must not contain spaces or any of: < | \\ / >",
                         $"[Room:{roomName}][Agent:{agent.Name}]",
-                        agent
+                        agent,
+                        ValidationErrorKeywords.Name
                     ));
                 }
             }
@@ -47,7 +48,8 @@ if (config.Rooms != null)
                             errorList.Add(new ValidationError(
                                 $"Current agent name '{current.Name}' in rule '{rule.Name}' of room '{roomName}' is invalid. Names must not contain spaces or any of: < | \\ / >",
                                 $"[Room:{roomName}][Rule:{rule.Name}][Current:{current.Name}]",
-                                current
+                                current,
+                                ValidationErrorKeywords.Name
                             ));
                         }
                     }
@@ -62,7 +64,8 @@ if (config.Rooms != null)
                             errorList.Add(new ValidationError(
                                 $"Next agent name '{next.Name}' in rule '{rule.Name}' of room '{roomName}' is invalid. Names must not contain spaces or any of: < | \\ / >",
                                 $"[Room:{roomName}][Rule:{rule.Name}][Next:{next.Name}]",
-                                next
+                                next,
+                                ValidationErrorKeywords.Name
                             ));
                         }
                     }
@@ -76,7 +79,8 @@ if (config.Rooms != null)
                         errorList.Add(new ValidationError(
                             $"Continuation agent name '{contName}' in rule '{rule.Name}' of room '{roomName}' is invalid. Names must not contain spaces or any of: < | \\ / >",
                             $"[Room:{roomName}][Rule:{rule.Name}][ContinuationAgentName:{contName}]",
-                            rule.Termination
+                            rule.Termination,
+                            ValidationErrorKeywords.Name
                         ));
                     }
                 }

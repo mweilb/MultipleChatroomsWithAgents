@@ -20,7 +20,8 @@ namespace YamlConfigurations.Validations
                         errorList.Add(new ValidationError(
                             $"Room name '{roomName}' is invalid. Names must not contain spaces or any of: < | \\ / >",
                             $"[Room:{roomName}]",
-                            roomValue
+                            roomValue,
+                            ValidationErrorKeywords.Name
                         ));
                     }
                 }

@@ -1,4 +1,4 @@
-﻿﻿ 
+﻿﻿﻿﻿ 
 
 namespace YamlConfigurations.Validations
 {
@@ -83,7 +83,8 @@ namespace YamlConfigurations.Validations
                 errors.Add(new ValidationError(
                     $"Only one termination type may be specified, but found multiple: {string.Join(", ", nonNullMembers)}.",
                     $"{parentLocation}[Termination:{termConfig.ContinuationAgentName}]",
-                    termConfig
+                    termConfig,
+                    ValidationErrorKeywords.Termination
                 ));
             }
 

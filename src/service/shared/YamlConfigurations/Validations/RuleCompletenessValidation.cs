@@ -26,7 +26,8 @@ namespace YamlConfigurations.Validations
                                 errorList.Add(new ValidationError(
                                     "Rule must have a termination decision defined.",
                                     $"[Rule:{rule.Name}]",
-                                    rule
+                                    rule,
+                                    ValidationErrorKeywords.Rule
                                 ));
                             }
 
@@ -41,7 +42,8 @@ namespace YamlConfigurations.Validations
 errorList.Add(new ValidationError(
     "Rule must have a selection decision defined unless both current and next agents are specified.",
     $"[Rule:{rule.Name}]",
-    rule
+    rule,
+    ValidationErrorKeywords.Rule
 ));
                                 }
                             }

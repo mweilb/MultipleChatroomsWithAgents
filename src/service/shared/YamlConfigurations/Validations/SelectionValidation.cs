@@ -1,4 +1,4 @@
-﻿﻿ 
+﻿﻿﻿﻿ 
 
 namespace YamlConfigurations.Validations
 {
@@ -80,7 +80,8 @@ namespace YamlConfigurations.Validations
                 errors.Add(new ValidationError(
                     $"Only one selection type may be specified, but found multiple: {string.Join(", ", nonNullMembers)}.",
                     $"{parentLocation}[Selection]",
-                    selection
+                    selection,
+                    ValidationErrorKeywords.Selection
                 ));
             }
 
@@ -123,7 +124,8 @@ namespace YamlConfigurations.Validations
                 errors.Add(new ValidationError(
                     $"Unknown agent name '{agentName}'. Must be one of: {string.Join(", ", validAgentNames)}",
                     $"{parentLocation}",
-                    lineInfo
+                    lineInfo,
+                    ValidationErrorKeywords.Selection
                 ));
             }
         }

@@ -23,7 +23,8 @@ namespace YamlConfigurations.Validations
                             errors.Add(new ValidationError(
                                 "Moderation prompt must not be empty.",
                                 $"[Room:{roomName}][Moderation]",
-                                room.Moderation
+                                room.Moderation,
+                                ValidationErrorKeywords.Prompt
                             ));
                         }
                     }

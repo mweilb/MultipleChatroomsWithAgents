@@ -26,7 +26,8 @@
                                 errors.Add(new ValidationError(
                                     "Prompt must not be empty.",
                                     $"[Room:{roomName}][Rule:{rule.Name}][Selection]",
-                                    rule.Selection
+                                    rule.Selection,
+                                    ValidationErrorKeywords.Prompt
                                 ));
                             }
 
@@ -41,7 +42,8 @@
                                     errors.Add(new ValidationError(
                                         "Prompt must not be empty.",
                                         $"[Room:{roomName}][Rule:{rule.Name}][Termination]",
-                                        rule.Termination
+                                        rule.Termination,
+                                        ValidationErrorKeywords.Prompt
                                     ));
                                 }
                             }
