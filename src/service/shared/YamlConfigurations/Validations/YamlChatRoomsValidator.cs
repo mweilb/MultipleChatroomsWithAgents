@@ -1,4 +1,5 @@
-﻿﻿ 
+﻿﻿﻿﻿﻿ 
+using System.Linq;
 namespace YamlConfigurations.Validations
 {
     public class YamlChatRoomsValidator
@@ -30,7 +31,17 @@ namespace YamlConfigurations.Validations
             {
                 pass.Validate(config, errors);
             }
-            return errors;
+            var seen = new HashSet<string>();
+            var unique = new List<ValidationError>();
+            foreach (var error in errors)
+            {
+                var key = $"{error.Message}|{error.LineNumber}|{error.CharPosition}";
+                if (seen.Add(key))
+                {
+                    unique.Add(error);
+                }
+            }
+            return unique;
         }
     }
 
