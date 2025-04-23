@@ -39,11 +39,24 @@ namespace AICreateAndIterate.FixErrors.Steps
 
             var promptTemplate = _initialState.PromptTemplate;
 
+            // Check if the error keyword is available in ErrorHints
+            string hints = "No hints provided.";
+            if (!string.IsNullOrWhiteSpace(errorContext.Keyword) && state.ErrorHints != null)
+            {
+                if (state.ErrorHints.TryGetValue(errorContext.Keyword, out var foundHint) && !string.IsNullOrWhiteSpace(foundHint))
+                {
+                    hints = foundHint;
+                }
+            }
+
+
             var arguments = new KernelArguments
             {
+                { "location", errorContext.Location },
                 { "line", errorContext.LineNumber },
                 { "col", errorContext.CharPosition },
                 { "yaml", state.YamlText },
+                { "hints", hints },
                 { "error", errorContext.Message }
             };
 
@@ -66,7 +79,11 @@ namespace AICreateAndIterate.FixErrors.Steps
                 try
                 {
                     using var doc = System.Text.Json.JsonDocument.Parse(cleaned);
-                    if (doc.RootElement.TryGetProperty("suggestions", out var suggestionsElement) && suggestionsElement.ValueKind == System.Text.Json.JsonValueKind.Array)
+                    if (doc.RootElement.ValueKind == System.Text.Json.JsonValueKind.Array)
+                    {
+                        suggestions = doc.RootElement.EnumerateArray().Select(e => e.GetString() ?? "").ToList();
+                    }
+                    else if (doc.RootElement.TryGetProperty("suggestions", out var suggestionsElement) && suggestionsElement.ValueKind == System.Text.Json.JsonValueKind.Array)
                     {
                         suggestions = suggestionsElement.EnumerateArray().Select(e => e.GetString() ?? "").ToList();
                     }
@@ -75,17 +92,18 @@ namespace AICreateAndIterate.FixErrors.Steps
                 {
                     suggestions = cleaned.Split('\n', StringSplitOptions.RemoveEmptyEntries).Select(l => l.Trim()).ToList();
                 }
+
+                string eventName = suggestions.Count switch
+                {
+                    0 => ProcessEvents.AutoFixReady,
+                    1 => ProcessEvents.ApplyFix,
+                    <= OptionThreshold => ProcessEvents.ApplyFix,
+                    _ => ProcessEvents.IterateRequired
+                };
+
+                state.Suggestions = new ErrorToFixSolution(suggestions, eventName);
+                return state;
             }
-
-            string eventName = suggestions.Count switch
-            {
-                0 => ProcessEvents.AutoFixReady,
-                1 => ProcessEvents.ApplyFix,
-                <= OptionThreshold => ProcessEvents.ApplyFix,
-                _ => ProcessEvents.IterateRequired
-            };
-
-            state.Suggestions = new ErrorToFixSolution(suggestions, eventName);
             return state;
         }
     }

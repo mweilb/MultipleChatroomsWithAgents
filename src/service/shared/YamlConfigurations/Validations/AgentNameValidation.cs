@@ -28,7 +28,7 @@ if (config.Rooms != null)
                         $"Agent name '{agent.Name}' in room '{roomName}' is invalid. Names must not contain spaces or any of: < | \\ / >",
                         $"[Room:{roomName}][Agent:{agent.Name}]",
                         agent,
-                        ValidationErrorKeywords.Name
+                        ValidationErrorKeywords.Agent
                     ));
                 }
             }
@@ -49,7 +49,7 @@ if (config.Rooms != null)
                                 $"Current agent name '{current.Name}' in rule '{rule.Name}' of room '{roomName}' is invalid. Names must not contain spaces or any of: < | \\ / >",
                                 $"[Room:{roomName}][Rule:{rule.Name}][Current:{current.Name}]",
                                 current,
-                                ValidationErrorKeywords.Name
+                                ValidationErrorKeywords.Agent
                             ));
                         }
                     }
@@ -65,7 +65,7 @@ if (config.Rooms != null)
                                 $"Next agent name '{next.Name}' in rule '{rule.Name}' of room '{roomName}' is invalid. Names must not contain spaces or any of: < | \\ / >",
                                 $"[Room:{roomName}][Rule:{rule.Name}][Next:{next.Name}]",
                                 next,
-                                ValidationErrorKeywords.Name
+                                ValidationErrorKeywords.Agent
                             ));
                         }
                     }
@@ -80,7 +80,7 @@ if (config.Rooms != null)
                             $"Continuation agent name '{contName}' in rule '{rule.Name}' of room '{roomName}' is invalid. Names must not contain spaces or any of: < | \\ / >",
                             $"[Room:{roomName}][Rule:{rule.Name}][ContinuationAgentName:{contName}]",
                             rule.Termination,
-                            ValidationErrorKeywords.Name
+                            ValidationErrorKeywords.Agent
                         ));
                     }
                 }

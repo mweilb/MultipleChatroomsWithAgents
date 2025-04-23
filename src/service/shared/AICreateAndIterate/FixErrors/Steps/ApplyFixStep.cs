@@ -31,29 +31,36 @@ namespace AICreateAndIterate.FixErrors.Steps
             if (state.Suggestions == null)
                 return state;
 
-            var index = state.Suggestions.SelectedIndex;
-            if (index < 0 || index >= state.Suggestions.Options.Count)
-                return state;
-
-            var patch = state.Suggestions.Options[index];
-            var originalYaml = state.YamlText;
-
-
-
             // Get error context if available
             var errorContext = state.Recommendation?.Error;
-            var errorMessage = errorContext?.Message ?? "";
-            var errorLine = errorContext?.LineNumber ?? 0;
-            var errorCol = errorContext?.CharPosition ?? 0;
+            if (errorContext == null)
+                return state; // No errors to fix
+
+            var index = state.Suggestions.SelectedIndex;
+            if (index < 0 || index >= state.Suggestions.Options.Count)
+                return state;       
+
+
+            string hints = "No hints provided.";
+
+            if (!string.IsNullOrWhiteSpace(errorContext.Keyword) && state.ErrorHints != null)
+            {
+                if (state.ErrorHints.TryGetValue(errorContext.Keyword, out var foundHint) && !string.IsNullOrWhiteSpace(foundHint))
+                {
+                    hints = foundHint;
+                }
+            }
 
             // Prompt template for LLM
             var arguments = new KernelArguments
             {
-                { "yaml", originalYaml },
-                { "patch", patch },
-                { "errorMessage", errorMessage },
-                { "errorLine", errorLine },
-                { "errorCol", errorCol }
+                { "yaml", state.YamlText },
+                { "patch", state.Suggestions.Options[index] },
+                { "location", errorContext.Location ??"[No Location Provide]" },
+                { "line", errorContext.LineNumber },
+                { "col", errorContext.CharPosition },
+                { "hints", hints },
+                { "error", errorContext.Message }
             };
 
             var promptTemplateFactory = new HandlebarsPromptTemplateFactory();

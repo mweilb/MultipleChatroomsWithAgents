@@ -15,15 +15,49 @@ namespace AICreateAndIterate
         private readonly Kernel _kernel;
         private readonly KernelProcess _kernelProcess;
         private readonly ConsoleKernelProcessMessageChannel _messageChannel;
- 
+        private readonly Dictionary<string, string> _ErrorHints = new();
 
         public YamlFixProcessIterator(
             Kernel kernel,
             string yamlConfigPath)
         {
             _kernel = kernel;
-    
-            // Load YAML configuration.yml
+
+              // Load YAML configuration.yml
+            YamlErrorCheckerConfig checkerConfig;
+            checkerConfig = LoadConfigurations(yamlConfigPath);
+            LoadHints(yamlConfigPath);
+
+     
+            var processBuilder = GetYamlErrorCheckerBuilder(checkerConfig);
+            _kernelProcess = processBuilder.Build();
+            _messageChannel = new ConsoleKernelProcessMessageChannel();
+        }
+
+        private void LoadHints(string yamlConfigPath)
+        {
+            // Load .md files as category/content dictionary
+            try
+            {
+                var directory = Path.GetDirectoryName(yamlConfigPath) ?? "";
+                if (Directory.Exists(directory))
+                {
+                    foreach (var mdFile in Directory.GetFiles(directory, "*.md"))
+                    {
+                        var key = Path.GetFileNameWithoutExtension(mdFile);
+                        var value = File.ReadAllText(mdFile);
+                        _ErrorHints[key] = value;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error loading .md files: {ex.Message}");
+            }
+        }
+
+        private static YamlErrorCheckerConfig LoadConfigurations(string yamlConfigPath)
+        {
             YamlErrorCheckerConfig checkerConfig;
             if (!File.Exists(yamlConfigPath))
             {
@@ -46,11 +80,8 @@ namespace AICreateAndIterate
                 }
             }
 
-            var processBuilder =  GetYamlErrorCheckerBuilder(checkerConfig);
-            _kernelProcess = processBuilder.Build();
-            _messageChannel = new ConsoleKernelProcessMessageChannel();
+            return checkerConfig;
         }
-
 
         private static ProcessBuilder GetYamlErrorCheckerBuilder(YamlErrorCheckerConfig config)
         {
@@ -147,7 +178,8 @@ namespace AICreateAndIterate
         {
             YamlFixState state = new YamlFixState()
             {
-                YamlFilePath = yamlFileLocation
+                YamlFilePath = yamlFileLocation,
+                ErrorHints = _ErrorHints
             };
 
             KernelProcessEvent? currentEvent = new() { Id = "Start", Data = state };
@@ -192,7 +224,8 @@ namespace AICreateAndIterate
 
                         state = new YamlFixState()
                         {
-                            YamlFilePath = yamlFileLocation
+                            YamlFilePath = yamlFileLocation,
+                            ErrorHints = _ErrorHints
                         };
 
                         yield return new KernelProcessEvent

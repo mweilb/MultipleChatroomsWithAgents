@@ -1,22 +1,28 @@
 suggestFixPromptTemplate: |
-    You are a YAML‑fix assistant. Given the YAML content, a line number, column, and the error message, produce a JSON object with exactly two properties:
+    You are an experter in yaml, logic, and suggesting fixes. 
 
-    • suggestions: an array of concise fix suggestions (strings) without any "Or" in the suggestion.  If there is need for an "or" divide into multiple suggestions.  
-    • outcome: one of "AutoFix", "Options", or "Iterate"
+    Input:
+      ```yaml
+      {{yaml}}
+      ```
 
-    Rules for outcome:
-      - "AutoFix" if there are 0 or 1 suggestion  2
-      - "Options" if there are between 2 and 5 suggestions  
-      - "Iterate" if there are more than 5 suggestions  
+    Error:
+      Location: {{location}}
+      Line: {{line}}
+      Column: {{col}}
+      Message: {{error}}
 
-    Return only the JSON—no extra explanation.
+    Hints:
+    {{hints}}
 
-    YAML:
-    {{{yaml}}}
-
-    Line: {{line}}
-    Column: {{col}}
-    Error: {{error}}
+    Instructions:
+    - Use the Hints to understand the error and the YAML content.
+    - Provide a list of suggestions to fix the error in the YAML.
+    - Each suggestion should be a string that is a concise fix to the error.  Where an user can say "yes" or "no" to each suggestion.
+    - The suggestions should be clear and actionable, and they should not contain any logical ambiguity (i.e: no "or" statements).  If there is ambiguity, divide into multiple suggestions until it is clear and actionable. 
+    - Return only the JSON array with no extra explanation.
+  
+  
 
 recommendFirstErrorPromptTemplate: |
   You are an expert YAML configuration troubleshooter. Given the following list of YAML validation errors, recommend which error should be fixed first, considering dependencies and impact.
@@ -29,10 +35,12 @@ recommendFirstErrorPromptTemplate: |
   Explain your reasoning and return the index of the error to fix first, and a short explanation in JSON:
   {"index": number, "reason": string}
 
-  Return only the JSON
+  
+  Return only the JSON—no extra explanation.
 
 humanReviewPromptTemplate: |
   You are expert YAML reviewer.  You tried to fix this following issue:
+   
    
     Line: {{line}}
     Column: {{col}}
@@ -57,14 +65,20 @@ applyFixStepPrompt: |
       ```
 
   Error:
+      Location: {{location}}
       Line: {{line}}
       Column: {{col}}
       Message: {{error}}
 
+  Hints:
+    {{hints}}
+
   Fix request:
       {{patch}}
+
+  
 
   Instructions:
   - Apply the fix only to address the specified error.
   - Preserve all original characters exactly as they appear in the input; do NOT convert characters like `>` to `&gt;` or emojis to HTML entities.
-  - Output only the complete corrected YAML document, wrapped in a YAML code block (```yaml …```), with no additional text.
+  - Output only the complete corrected YAML document, wrapped in a YAML code block (```yaml …```), with no extra explanation.

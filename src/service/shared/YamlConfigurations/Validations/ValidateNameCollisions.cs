@@ -28,7 +28,7 @@ namespace YamlConfigurations.Validations
                                     $"Name collision: '{room.Name}' is used for both a room and a {existingCategory}.",
                                     $"[Room:{room.Name}]",
                                     room,
-                                    ValidationErrorKeywords.Collision
+                                    ValidationErrorKeywords.NameCollision
                                 ));
                             }
                         }
@@ -53,7 +53,7 @@ namespace YamlConfigurations.Validations
                                             $"Name collision: '{agent.Name}' is used for both an agent and a {existingCategory}.",
                                             $"[Room:{room.Name}][Agent:{agent.Name}]",
                                             agent,
-                                            ValidationErrorKeywords.Collision
+                                            ValidationErrorKeywords.NameCollision
                                         ));
                                     }
                                 }
@@ -81,7 +81,7 @@ namespace YamlConfigurations.Validations
                                             $"Name collision: '{terminationName}' is used for both a termination and a {existingCategory}.",
                                             $"[Room:{room.Name}][Rule:{rule.Name}][Termination:{terminationName}]",
                                             rule.Termination,
-                                            ValidationErrorKeywords.Collision
+                                            ValidationErrorKeywords.NameCollision
                                         ));
                                     }
                                 }
