@@ -28,7 +28,7 @@ namespace cli_client
             }
 
             // Determine if AI mode is enabled
-            bool useAI = args.Any(a => a.Equals("--ai", StringComparison.OrdinalIgnoreCase));
+            bool useAI = true;// args.Any(a => a.Equals("--ai", StringComparison.OrdinalIgnoreCase));
 
             string yamlPath = args[0];
             if (!File.Exists(yamlPath))

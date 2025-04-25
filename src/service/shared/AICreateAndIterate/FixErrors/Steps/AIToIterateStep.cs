@@ -27,14 +27,32 @@ namespace AICreateAndIterate.FixErrors.Steps
             Kernel kernel,
             YamlFixState state)
         {
-            var chat = kernel.GetRequiredService<IChatCompletionService>();
 
-            string promptTemplate = $"{_initialState.PromptTemplate}\n\nOptions:\n{string.Join("\n", state.Suggestions?.Options ?? new System.Collections.Generic.List<string>())}\n\nRecommendation: {state.Recommendation?.RecommendedReason}";
+
+            var errorContext = state.Recommendation?.Error;
+            if (errorContext == null)
+                return state; // No errors to fix
+
+ 
+
+            var promptTemplate = _initialState.PromptTemplate;
+
+            // Check if the error keyword is available in ErrorHints
+            string hints = "No hints provided.";
+            if (!string.IsNullOrWhiteSpace(errorContext.Keyword) && state.ErrorHints != null)
+            {
+                if (state.ErrorHints.TryGetValue(errorContext.Keyword, out var foundHint) && !string.IsNullOrWhiteSpace(foundHint))
+                {
+                    hints = foundHint;
+                }
+            }
 
             var arguments = new KernelArguments
             {
-                { "options", string.Join("\n", state.Suggestions?.Options ?? new System.Collections.Generic.List<string>()) },
-                { "recommendation", state.Recommendation?.RecommendedReason ?? "" }
+                {"hints",errorContext.Message},
+                {"error",errorContext.Message},
+                {"yaml", state.YamlText ?? "" },
+                {"options", string.Join("\n", state.Suggestions?.Options?.Select((opt, index) => $"{index + 1}. {opt}") ?? new System.Collections.Generic.List<string>())},
             };
 
             var promptTemplateFactory = new HandlebarsPromptTemplateFactory();

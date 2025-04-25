@@ -103,7 +103,7 @@ namespace AICreateAndIterate
 
             var iterateStep = builder.AddStepFromType<HumanIterateStep>();
             var aiIterateStep = builder.AddStepFromType<AIToIterateStep, InputPromptState>(
-                new InputPromptState { PromptTemplate = config.RecommendFirstErrorPromptTemplate }
+                new InputPromptState { PromptTemplate = config.AiIteratePromptTemplate }
             );
 
             var applyStep = builder.AddStepFromType<ApplyFixStep, InputPromptState>(
@@ -119,7 +119,7 @@ namespace AICreateAndIterate
                 new InputPromptState { PromptTemplate = config.HumanReviewPromptTemplate }
             );
             var aiReviewStep = builder.AddStepFromType<AIToReviewStep, InputPromptState>(
-                new InputPromptState { PromptTemplate = config.HumanReviewPromptTemplate }
+                new InputPromptState { PromptTemplate = config.AiReviewPromptTemplate }
             );
 
             var eventChannelStep = builder.AddProxyStep(ProcessEvents.HumanInTheLoopEvents);
@@ -160,6 +160,8 @@ namespace AICreateAndIterate
             builder.OnInputEvent(ProcessEvents.AIToIterate)
                 .SendEventTo(new(aiIterateStep));
             
+
+
             builder.OnInputEvent(ProcessEvents.AIToReview)   
                 .SendEventTo(new(aiReviewStep));
 
@@ -199,6 +201,13 @@ namespace AICreateAndIterate
             // External save fix entry
             builder.OnInputEvent(ProcessEvents.SaveFix)
                 .SendEventTo(new(saveFixStep));
+
+            aiReviewStep.OnEvent(ProcessEvents.SaveFix)
+                .SendEventTo(new(saveFixStep));
+
+            aiReviewStep.OnEvent(ProcessEvents.Start)
+                .SendEventTo(new(loadAndValidateStep));
+
 
             saveFixStep.OnEvent(ProcessEvents.RequestHumanToSaveFile)
                 .EmitExternalEvent(eventChannelStep, ProcessEvents.RequestSystemSaveFile);

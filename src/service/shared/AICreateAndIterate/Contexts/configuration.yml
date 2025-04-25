@@ -95,3 +95,41 @@ applyFixStepPrompt: |
   - Apply the fix only to address the specified error.
   - Preserve all original characters exactly as they appear in the input; do NOT convert characters like `>` to `&gt;` or emojis to HTML entities.
   - Output only the complete corrected YAML document, wrapped in a YAML code block (```yaml …```), with no extra explanation.
+
+
+aiIteratePromptTemplate: |
+   Yaml Input:
+      ```yaml
+      {{yaml}}
+      ```
+
+   Error:
+      Location: {{location}}
+      Line: {{line}}
+      Column: {{col}}
+      Message: {{error}}
+
+    Options:
+      {{options}} 
+
+    You must put pick one of the options in the above list. 
+    
+    Only return the number of the option you choose.  Do not include any other text or explanation.  Just the number of the option you choose.
+
+aiReviewPromptTemplate: |
+   The following error is trying to be fixed:
+   {{error}}
+
+   The YAML file is:
+   {{ymal}}
+
+   The person is trying to fix the error by doing the following:
+   {{suggestion}} 
+
+   The new YAML file is:
+   {{fixedYaml}}
+
+   The difference between the original YAML and the new YAML is:
+   {{explainDifferences}}
+
+   Reply with only a yes or no.  If you think the fix is correct, say "yes".  If you think the fix is incorrect, say "no".

@@ -26,12 +26,29 @@ namespace AICreateAndIterate.FixErrors.Steps
             Kernel kernel,
             YamlFixState state)
         {
-            var chat = kernel.GetRequiredService<IChatCompletionService>();
+ 
+            if (state.Suggestions == null)
+                return state;
 
-            string promptTemplate = $"{_initialState.PromptTemplate}\n\nFixedYaml:\n{state.Suggestions?.FixedYaml}\n\nExplainDifferences:\n{state.Suggestions?.ExplainDifferences}";
+            var index = state.Suggestions.SelectedIndex;
+            if (index < 0 || index >= state.Suggestions.Options.Count)
+                return state;   
+
+            var errorContext = state.Recommendation?.Error;
+            if (errorContext == null)
+                return state; // No errors to fix
+
+
+            string suggestedFix = state.Suggestions.Options[index];
+
+            string promptTemplate = _initialState.PromptTemplate;
 
             var arguments = new KernelArguments
             {
+            
+                {"error",errorContext.Message},
+                {"suggestion",suggestedFix},
+                { "yaml", state.YamlText ?? "" },
                 { "fixedYaml", state.Suggestions?.FixedYaml ?? "" },
                 { "explainDifferences", state.Suggestions?.ExplainDifferences ?? "" }
             };
