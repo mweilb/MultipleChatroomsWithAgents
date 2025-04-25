@@ -21,8 +21,18 @@ suggestFixPromptTemplate: |
     - Each suggestion should be a string that is a concise fix to the error.  Where an user can say "yes" or "no" to each suggestion.
     - The suggestions should be clear and actionable, and they should not contain any logical ambiguity (i.e: no "or" statements).  If there is ambiguity, divide into multiple suggestions until it is clear and actionable. 
     - Return only the JSON array with no extra explanation.
-  
-  
+
+fixSyntaxWithLLMPromptTemplate: |
+  You are an expert YAML syntax fixer.
+  Input YAML:
+  ```yaml
+  {{yaml}}
+  ```
+  Syntax Errors:
+  {{errors}}
+  Hints:
+  {{hints}}
+  Please use the above syntax errors and hints to correct all issues in the YAML. Output only the corrected YAML in a code block, with no extra explanation.
 
 recommendFirstErrorPromptTemplate: |
   You are an expert YAML configuration troubleshooter. Given the following list of YAML validation errors, recommend which error should be fixed first, considering dependencies and impact.

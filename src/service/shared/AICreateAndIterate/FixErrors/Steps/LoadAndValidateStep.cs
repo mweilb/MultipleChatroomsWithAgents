@@ -26,11 +26,14 @@ namespace AICreateAndIterate.FixErrors.Steps
             state.YamlText = yamlText;
             state.IsComplete = noErrors;
 
-
             // Emit events based on validation result
             if (noErrors)
             {
                 await ctx.EmitEventAsync(ProcessEvents.NoErrorsFound, data: state, visibility: KernelProcessEventVisibility.Public);  
+            }
+            else if (!syntaxValid)
+            {
+                await ctx.EmitEventAsync(ProcessEvents.FixSyntaxWithLLM, data: state, visibility: KernelProcessEventVisibility.Internal);  
             }
             else
             {

@@ -11,6 +11,7 @@ namespace AICreateAndIterate.FixErrors.Events
         public const string NoErrorsFound = "NoErrorsFound";
         
         public const string FixAnError = "FixAnError";
+        public const string FixSyntaxWithLLM = "FixSyntaxWithLLM";
         public const string ApplyFix = "ApplyFix";
         public const string AutoFixReady = "AutoFixReady";
         public const string IterateRequired = "IterateRequired";
@@ -24,11 +25,14 @@ namespace AICreateAndIterate.FixErrors.Events
         public const string WaitingOnHumanIterate = "WaitingOnHumanIterate";
         public const string WaitingOnHumanValidateMaxAttempts = "WaitingOnHumanValidateMaxAttempts";
         public const string WaitingOnHumanValidateError = "WaitingOnHumanValidateError";
-        public const string WaitingOnHumanValidateSuccess = "WaitingOnHumanValidateSuccess";
         public const string WaitingOnHumanReview = "WaitingOnHumanReview";
         public const string WaitingOnHumanFinished = "WaitingOnHumanFinished";
-        public const string WaitingOnHumanSaveFile = "WaitingOnHumanSaveFile";
+        public const string RequestSystemSaveFile = "RequestSystemSaveFile";
 
+
+        //AI steps
+        public const string AIToIterate = "AIProcessStep";
+        public const string AIToReview = "AIProcessStepCompleted";
 
         // Human request events (for explicit human actions)
         public const string RequestHumanInTheLoopForIterate = "RequestHumanInTheLoopIterate";
@@ -41,13 +45,14 @@ namespace AICreateAndIterate.FixErrors.Events
         [
             Start,
             StartProcess,
+            FixSyntaxWithLLM,
             ApplyFix,
             AutoFixReady,
             IterateRequired,
             WaitingOnHumanIterate,
             WaitingOnHumanValidateMaxAttempts,
             WaitingOnHumanValidateError,
-            WaitingOnHumanValidateSuccess,
+ 
             WaitingOnHumanReview,
             RequestHumanInTheLoopForIterate,
             RequestHumanInTheLoopForReview,
@@ -62,9 +67,9 @@ namespace AICreateAndIterate.FixErrors.Events
             WaitingOnHumanIterate,
             WaitingOnHumanValidateMaxAttempts,
             WaitingOnHumanValidateError,
-            WaitingOnHumanValidateSuccess,
+ 
             WaitingOnHumanReview,
-            WaitingOnHumanSaveFile,
+            RequestSystemSaveFile,
             WaitingOnHumanFinished,
         ];
 

@@ -5,7 +5,7 @@ namespace AICreateAndIterate.FixErrors
     public class ErrorToFixSolution
     {
         public List<string> Options { get; init; } = [];
-        public string EventName { get; init; } = string.Empty;
+        public string EventName { get; set; } = string.Empty;
         public int SelectedIndex { get; set; } = -1;
 
         public string FixedYaml { get; set; } = string.Empty;

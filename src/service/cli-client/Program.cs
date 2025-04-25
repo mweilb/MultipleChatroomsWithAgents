@@ -23,9 +23,12 @@ namespace cli_client
         {
             if (args.Length < 1)
             {
-                Console.WriteLine("Usage: cli-client <path-to-yaml>");
+                Console.WriteLine("Usage: cli-client <path-to-yaml> [--ai]");
                 return;
             }
+
+            // Determine if AI mode is enabled
+            bool useAI = args.Any(a => a.Equals("--ai", StringComparison.OrdinalIgnoreCase));
 
             string yamlPath = args[0];
             if (!File.Exists(yamlPath))
@@ -66,85 +69,105 @@ namespace cli_client
                     break;
                 }
 
-                var localState = evt.Data as YamlFixState;
+                var localState = evt.Data as YamlFixState;     
                 var suggestions = localState?.Suggestions;
+                if (suggestions == null)
+                {
+                    Console.WriteLine("No suggestions available.");
+                    continue;
+                }
 
                 switch (evt.Id)
                 {
                     case var id when id == ProcessEvents.WaitingOnHumanIterate:
-                        var recommendation = localState?.Recommendation;
-                        var options = suggestions?.Options ?? new System.Collections.Generic.List<string>();
 
-                        if (options.Count > 0)
-                        {
-                            if (recommendation != null && recommendation.Error != null)
+                        if (useAI){
+                            suggestions.EventName = ProcessEvents.AIToIterate;
+                        }
+                        else{
+                            var recommendation = localState?.Recommendation;
+                            var options = suggestions.Options ?? new System.Collections.Generic.List<string>();
+
+                            if (options.Count > 0)
                             {
-                                var err = recommendation.Error;
-                                Console.WriteLine("Recommended Error to Fix:");
-                                if (err != null)
+                                if (recommendation != null && recommendation.Error != null)
                                 {
-                                    Console.WriteLine($"\tLine {err.LineNumber}, Column {err.CharPosition}: {err.Message}");
+                                    var err = recommendation.Error;
+                                    Console.WriteLine("Recommended Error to Fix:");
+                                    if (err != null)
+                                    {
+                                        Console.WriteLine($"\tLine {err.LineNumber}, Column {err.CharPosition}: {err.Message}");
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("\tUnknown error type.");
+                                    }
+                                    Console.WriteLine($"\tReason: {recommendation.RecommendedReason}\n");
                                 }
                                 else
                                 {
-                                    Console.WriteLine("\tUnknown error type.");
+                                    Console.WriteLine("No recommended error found to fix.");
                                 }
-                                Console.WriteLine($"\tReason: {recommendation.RecommendedReason}\n");
-                            }
-                            else
-                            {
-                                Console.WriteLine("No recommended error found to fix.");
-                            }
 
-                            Console.WriteLine("Available Fix Suggestions:");
-                            for (int i = 0; i < options.Count; i++)
-                            {
-                                Console.WriteLine($"\t{i + 1}: {options[i]}");
-                            }
-
-                            Console.Write("Select a suggestion by number: ");
-                            if (int.TryParse(Console.ReadLine(), out int selected) &&
-                                selected > 0 && selected <= options.Count)
-                            {
-                                if (suggestions != null)
+                                Console.WriteLine("Available Fix Suggestions:");
+                                for (int i = 0; i < options.Count; i++)
                                 {
-                                    suggestions.SelectedIndex = selected - 1;
-                                    Console.WriteLine($"You selected: {options[selected - 1]}");
+                                    Console.WriteLine($"\t{i + 1}: {options[i]}");
                                 }
-                               
-                            }
-                            else
-                            {
-                                Console.WriteLine("Invalid selection. No suggestion selected.");
+
+                                Console.Write("Select a suggestion by number: ");
+                                if (int.TryParse(Console.ReadLine(), out int selected) &&
+                                    selected > 0 && selected <= options.Count)
+                                {
+                                    
+                                    suggestions.SelectedIndex = selected - 1;
+                                    suggestions.EventName = ProcessEvents.ApplyFix;
+                                    Console.WriteLine($"You selected: {options[selected - 1]}");
+                                   
+                                
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Invalid selection. No suggestion selected.");
+                                }
+
+                              
                             }
                         }
                         break;
+                      
 
                     case var id when id == ProcessEvents.WaitingOnHumanReview:
-                        var answer = suggestions?.FixedYaml;
-                        var explainDifferences = suggestions?.ExplainDifferences;
-
-                        Console.WriteLine("New Yaml");
-                        Console.WriteLine(answer);
-
-                        Console.WriteLine("Diff between the two ymls:");
-                        Console.WriteLine(explainDifferences);
-
-                        Console.WriteLine("Do you want to accept the fix? (y/n)");
-                        var accept = Console.ReadLine() ?? "";
-                        if ((accept.ToLower() == "y") || (accept.ToLower() == "yes"))
-                        {
-                            Console.WriteLine("You accepted the fix.");
-                            // Transition handled by iterator
+                        if (useAI){
+                            suggestions.EventName = ProcessEvents.AIToReview;
                         }
-                        else
-                        {
-                            Console.WriteLine("You rejected the fix.");
-                            // Transition handled by iterator
+                        else{
+                            var answer = suggestions.FixedYaml;
+                            var explainDifferences = suggestions.ExplainDifferences;
+
+                            Console.WriteLine("New Yaml");
+                            Console.WriteLine(answer);
+
+                            Console.WriteLine("Diff between the two ymls:");
+                            Console.WriteLine(explainDifferences);
+
+                            Console.WriteLine("Do you want to accept the fix? (y/n)");
+                            var accept = Console.ReadLine() ?? "";
+                            if ((accept.ToLower() == "y") || (accept.ToLower() == "yes"))
+                            {
+                                Console.WriteLine("You accepted the fix.");
+                                suggestions.EventName = ProcessEvents.AIToReview;
+                            }
+                            else
+                            {
+                                Console.WriteLine("You rejected the fix.");
+                                suggestions.EventName = ProcessEvents.Start;
+                                // Transition handled by iterator
+                            }
                         }
                         break;
 
-                    case var id when id == ProcessEvents.WaitingOnHumanSaveFile:
+                    case var id when id == ProcessEvents.RequestSystemSaveFile:
                         Console.WriteLine("Fix saved to file.");
                         break;
 

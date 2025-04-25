@@ -1,11 +1,11 @@
 namespace AICreateAndIterate.FixErrors
 {
-    public static class PromptJsonCleaner
+    public static class CodeBlockCleaner
     {
         /// <summary>
-        /// Removes code block markers (```json, ```) from a string for easier JSON parsing.
+        /// Removes code block markers (```json, ```yaml, ```, etc.) from a string for easier parsing.
         /// </summary>
-        public static string CleanJsonBlock(string input)
+        public static string CleanCodeBlock(string input)
         {
             if (string.IsNullOrWhiteSpace(input))
                 return string.Empty;
@@ -15,7 +15,11 @@ namespace AICreateAndIterate.FixErrors
             {
                 cleaned = cleaned.Substring(7).TrimStart();
             }
-            if (cleaned.StartsWith("```"))
+            else if (cleaned.StartsWith("```yaml"))
+            {
+                cleaned = cleaned.Substring(7).TrimStart();
+            }
+            else if (cleaned.StartsWith("```"))
             {
                 cleaned = cleaned.Substring(3).TrimStart();
             }

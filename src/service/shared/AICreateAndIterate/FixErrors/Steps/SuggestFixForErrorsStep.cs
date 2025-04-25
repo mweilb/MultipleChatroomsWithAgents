@@ -74,7 +74,7 @@ namespace AICreateAndIterate.FixErrors.Steps
             var suggestions = new List<string>();
             if (!string.IsNullOrWhiteSpace(result))
             {
-                var cleaned = PromptJsonCleaner.CleanJsonBlock(result);
+                var cleaned = CodeBlockCleaner.CleanCodeBlock(result);
 
                 try
                 {

@@ -58,7 +58,7 @@ namespace AICreateAndIterate.FixErrors.Steps
             string reason = "No reasoning provided.";
             if (!string.IsNullOrWhiteSpace(result))
             {
-                var cleaned = PromptJsonCleaner.CleanJsonBlock(result);
+                var cleaned = CodeBlockCleaner.CleanCodeBlock(result);
 
                 try
                 {

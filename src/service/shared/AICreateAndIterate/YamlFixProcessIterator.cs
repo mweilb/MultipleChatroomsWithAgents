@@ -83,12 +83,15 @@ namespace AICreateAndIterate
             return checkerConfig;
         }
 
-        private static ProcessBuilder GetYamlErrorCheckerBuilder(YamlErrorCheckerConfig config)
+  private static ProcessBuilder GetYamlErrorCheckerBuilder(YamlErrorCheckerConfig config)
         {
             var builder = new ProcessBuilder("Fix Errors");
 
             // --- Step Declarations ---
             var loadAndValidateStep = builder.AddStepFromType<LoadAndValidateStep>();
+            var fixSyntaxWithLLMStep = builder.AddStepFromType<FixSyntaxWithLLMStep, InputPromptState>(
+                new InputPromptState { PromptTemplate = config.FixSyntaxWithLLMPromptTemplate }
+            );
 
             var recommendStep = builder.AddStepFromType<RecommendFirstFixStep, InputPromptState>(
                 new InputPromptState { PromptTemplate = config.RecommendFirstErrorPromptTemplate }
@@ -99,6 +102,9 @@ namespace AICreateAndIterate
             );
 
             var iterateStep = builder.AddStepFromType<HumanIterateStep>();
+            var aiIterateStep = builder.AddStepFromType<AIToIterateStep, InputPromptState>(
+                new InputPromptState { PromptTemplate = config.RecommendFirstErrorPromptTemplate }
+            );
 
             var applyStep = builder.AddStepFromType<ApplyFixStep, InputPromptState>(
                  new InputPromptState{ PromptTemplate = config.ApplyFixStepPrompt});
@@ -108,6 +114,9 @@ namespace AICreateAndIterate
             var saveFixStep = builder.AddStepFromType<SaveFixStep>();
 
             var humanReviewStep = builder.AddStepFromType<HumanReviewStep, InputPromptState>(
+                new InputPromptState { PromptTemplate = config.HumanReviewPromptTemplate }
+            );
+            var aiReviewStep = builder.AddStepFromType<AIToReviewStep, InputPromptState>(
                 new InputPromptState { PromptTemplate = config.HumanReviewPromptTemplate }
             );
 
@@ -126,8 +135,14 @@ namespace AICreateAndIterate
             loadAndValidateStep.OnEvent(ProcessEvents.NoErrorsFound)
                 .EmitExternalEvent(eventChannelStep, ProcessEvents.WaitingOnHumanFinished);
 
+            loadAndValidateStep.OnEvent(ProcessEvents.FixSyntaxWithLLM)
+                .SendEventTo(new(fixSyntaxWithLLMStep));
+
             loadAndValidateStep.OnEvent(ProcessEvents.FixAnError)
                 .SendEventTo(new(recommendStep));
+
+            fixSyntaxWithLLMStep.OnFunctionResult()
+                .SendEventTo(new(humanReviewStep));
 
         
             recommendStep.OnFunctionResult()
@@ -140,6 +155,13 @@ namespace AICreateAndIterate
             // Human-in-the-loop event routing
             iterateStep.OnEvent(ProcessEvents.RequestHumanInTheLoopForIterate)
                 .EmitExternalEvent(eventChannelStep, ProcessEvents.WaitingOnHumanIterate);
+
+            // AI event routing
+            builder.OnInputEvent(ProcessEvents.AIToIterate)
+                .SendEventTo(new(aiIterateStep));
+            
+            builder.OnInputEvent(ProcessEvents.AIToReview)   
+                .SendEventTo(new(aiReviewStep));
 
             validateFixStep.OnEvent(ProcessEvents.RequestHumanInTheLoopForFailure)
                 .EmitExternalEvent(eventChannelStep, ProcessEvents.WaitingOnHumanValidateMaxAttempts);
@@ -168,7 +190,7 @@ namespace AICreateAndIterate
                 .SendEventTo(new(saveFixStep));
 
             saveFixStep.OnEvent(ProcessEvents.RequestHumanToSaveFile)
-                .EmitExternalEvent(eventChannelStep, ProcessEvents.WaitingOnHumanSaveFile);
+                .EmitExternalEvent(eventChannelStep, ProcessEvents.RequestSystemSaveFile);
 
             return builder;
         }
@@ -215,7 +237,7 @@ namespace AICreateAndIterate
                             Data = localState
                         };
                     }
-                    else if (_messageChannel.EventName == ProcessEvents.WaitingOnHumanSaveFile)
+                    else if (_messageChannel.EventName == ProcessEvents.RequestSystemSaveFile)
                     {
                         if (!string.IsNullOrWhiteSpace(localState.YamlFilePath) && !string.IsNullOrEmpty(localState.Suggestions?.FixedYaml))
                         {
@@ -230,7 +252,7 @@ namespace AICreateAndIterate
 
                         yield return new KernelProcessEvent
                         {
-                            Id = ProcessEvents.WaitingOnHumanSaveFile,
+                            Id = ProcessEvents.RequestSystemSaveFile,
                             Data = localState
                         };
 

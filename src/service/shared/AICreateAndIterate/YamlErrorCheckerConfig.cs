@@ -7,5 +7,6 @@ namespace AICreateAndIterate
         public string RecommendFirstErrorPromptTemplate { get; set; } = string.Empty;
         public string HumanReviewPromptTemplate { get; set; } = string.Empty;
         public string ApplyFixStepPrompt { get; set; } = string.Empty;
+        public string FixSyntaxWithLLMPromptTemplate { get; set; } = string.Empty;
     }
 }
