@@ -145,7 +145,8 @@ namespace YamlConfigurations.FileReader
                 // List entry alignment check and key set reset (per parent context)
                 if (Regex.IsMatch(line.TrimStart(), @"^-"))
                 {
-                    if (listIndentStack.Peek().HasValue && indent != listIndentStack.Peek().Value)
+                    var peekAhead = listIndentStack.Peek();
+                    if (peekAhead.HasValue && indent != peekAhead.Value)
                     {
                         // Report error on previous list entry line
                         int prevLine = listPrevLineStack.Peek();
