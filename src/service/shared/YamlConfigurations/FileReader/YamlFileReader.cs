@@ -82,7 +82,7 @@ namespace YamlConfigurations.FileReader
                         experience.Errors.AddRange(lintValidationErrors);
                     }
                 }
-                return (true, experienceDict);
+                return (lintValidationErrors.Count() == 0, experienceDict);
             }
             catch (YamlException)
             {

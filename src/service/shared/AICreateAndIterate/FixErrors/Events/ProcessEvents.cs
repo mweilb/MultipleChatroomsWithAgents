@@ -16,6 +16,7 @@ namespace AICreateAndIterate.FixErrors.Events
         public const string AutoFixReady = "AutoFixReady";
         public const string IterateRequired = "IterateRequired";
         public const string TryToApplyFixAgain = "TryToApplyFixAgain";
+        public const string TryToApplyFixAgainSyntax = "TryToApplyFixAgainSyntax";
         public const string RequestReview = "RequestReview";
 
         public const string SaveFix = "SaveFix";
@@ -23,7 +24,11 @@ namespace AICreateAndIterate.FixErrors.Events
 
         // Human-in-the-loop event triggers
         public const string WaitingOnHumanIterate = "WaitingOnHumanIterate";
-        public const string WaitingOnHumanValidateMaxAttempts = "WaitingOnHumanValidateMaxAttempts";
+        public const string WaitingOnHumanValidateLogicMaxAttempts = "WaitingOnHumanValidateLogicMaxAttempts";
+        public const string WaitingOnHumanValidateSyntaxcMaxAttempts = "WaitingOnHumanValidateSyntaxMaxAttempts";
+    
+
+
         public const string WaitingOnHumanValidateError = "WaitingOnHumanValidateError";
         public const string WaitingOnHumanReview = "WaitingOnHumanReview";
         public const string WaitingOnHumanFinished = "WaitingOnHumanFinished";
@@ -50,7 +55,7 @@ namespace AICreateAndIterate.FixErrors.Events
             AutoFixReady,
             IterateRequired,
             WaitingOnHumanIterate,
-            WaitingOnHumanValidateMaxAttempts,
+            WaitingOnHumanValidateLogicMaxAttempts,
             WaitingOnHumanValidateError,
  
             WaitingOnHumanReview,
@@ -58,6 +63,7 @@ namespace AICreateAndIterate.FixErrors.Events
             RequestHumanInTheLoopForReview,
             RequestHumanInTheLoopForFailure,
             TryToApplyFixAgain,
+            TryToApplyFixAgainSyntax,
             RequestReview
         ];
 
@@ -65,7 +71,8 @@ namespace AICreateAndIterate.FixErrors.Events
         public static readonly string[] HumanInTheLoopEvents =
         [
             WaitingOnHumanIterate,
-            WaitingOnHumanValidateMaxAttempts,
+            WaitingOnHumanValidateLogicMaxAttempts,
+            WaitingOnHumanValidateSyntaxcMaxAttempts,
             WaitingOnHumanValidateError,
  
             WaitingOnHumanReview,

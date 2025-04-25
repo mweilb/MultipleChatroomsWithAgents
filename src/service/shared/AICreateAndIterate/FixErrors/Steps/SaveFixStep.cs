@@ -15,6 +15,12 @@ namespace AICreateAndIterate.FixErrors.Steps
             YamlFixState state)
         {
  
+            if (state.Suggestions == null)
+            {
+                return state;
+            }
+
+            state.Suggestions.FixedYaml = CodeBlockCleaner.RestoreHandlebarsBraces( state.Suggestions.FixedYaml);// Check if the file path is valid
             await ctx.EmitEventAsync(ProcessEvents.RequestHumanToSaveFile, data: state);
 
           

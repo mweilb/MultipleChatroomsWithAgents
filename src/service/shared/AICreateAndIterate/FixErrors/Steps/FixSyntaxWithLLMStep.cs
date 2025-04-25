@@ -95,9 +95,6 @@ namespace AICreateAndIterate.FixErrors.Steps
                 ExplainDifferences = "LLM attempted to fix YAML syntax errors."
             };
 
-            // Optionally, re-validate or escalate if the fix failed
-            await ctx.EmitEventAsync(ProcessEvents.RequestHumanInTheLoopForReview, data: state, visibility: KernelProcessEventVisibility.Internal);
-
             return state;
         }
     }

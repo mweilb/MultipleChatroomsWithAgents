@@ -156,7 +156,7 @@ namespace cli_client
                             if ((accept.ToLower() == "y") || (accept.ToLower() == "yes"))
                             {
                                 Console.WriteLine("You accepted the fix.");
-                                suggestions.EventName = ProcessEvents.AIToReview;
+                                suggestions.EventName = ProcessEvents.SaveFix;
                             }
                             else
                             {

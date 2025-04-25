@@ -15,6 +15,8 @@ namespace AICreateAndIterate.FixErrors.Steps
         {
             var (syntaxValid,yamlText, experienceDict) = YamlFileReader.ReadFile(state.YamlFilePath);
 
+
+
             // Build validation errors dictionary
             var validationErrors = experienceDict.ToDictionary(
                 kvp => kvp.Key,
@@ -23,7 +25,7 @@ namespace AICreateAndIterate.FixErrors.Steps
 
             bool noErrors = validationErrors.Values.All(list => list == null || list.Count == 0);
             state.Errors = validationErrors;
-            state.YamlText = yamlText;
+            state.YamlText = CodeBlockCleaner.ProtectHandlebarsBraces(yamlText);
             state.IsComplete = noErrors;
 
             // Emit events based on validation result

@@ -15,16 +15,12 @@ flowchart TD
         NoErrors([No Errors])
     end
 
-    Start --> Pick
-    Pick --> Review
+    Pick -->|Reject Suggestions| Start
     Review -->|Reject Change| Start
-    Systems --> NoErrors
-
+    Systems -->|Next Error | Start
  
- 
-
-   subgraph "Fix"
-     LoadAndValidateStep([LoadAndValidateStep])
+    subgraph Semantic_Kernel_Process ["Semantic Kernel Process"]
+        LoadAndValidateStep([LoadAndValidateStep])
         RecommendFirstFixStep([RecommendFirstFixStep])
         SuggestFixForErrorsStep([SuggestFixForErrorsStep])
         FixSyntaxWithLLMStep([FixSyntaxWithLLMStep])
@@ -33,9 +29,8 @@ flowchart TD
         ValidateFixStep([ValidateFixStep])
         HumanReviewStep([HumanReviewStep])
         SaveFixStep([SaveFixStep])
-        
-    AIToIterateStep([AIToIterateStep])
-    AIToReviewStep([AIToReviewStep])
+        AIToIterateStep([AIToIterateStep])
+        AIToReviewStep([AIToReviewStep])
     end
 
     Start -->|Start| LoadAndValidateStep
@@ -45,40 +40,36 @@ flowchart TD
     LoadAndValidateStep -->|Errors| RecommendFirstFixStep
 
     FixSyntaxWithLLMStep -->|Needs Review| HumanReviewStep
-
     RecommendFirstFixStep -->|FunctionResult| SuggestFixForErrorsStep
-
     SuggestFixForErrorsStep -->|FunctionResult| HumanIterateStep
     HumanIterateStep -->|RequestHumanInTheLoopForIterate| Pick
 
-    %% AIToIterateStep is entered via input event from EventChannelStep (AIToIterate)
     AIToIterateStep -->|FunctionResult| ApplyFixStep
-
     ApplyFixStep -->|FunctionResult| ValidateFixStep
-
 
     ValidateFixStep -->|TryToApplyFixAgain| ApplyFixStep
     ValidateFixStep -->|RequestReview| HumanReviewStep
     HumanReviewStep -->|RequestHumanInTheLoopForReview| Review
 
-    %% AIToReviewStep is entered via input event from EventChannelStep (AIToReview)
     AIToReviewStep -->|FunctionResult| SaveFixStep
-
     ValidateFixStep -->|FunctionResult| HumanReviewStep
 
     SaveFixStep -->|RequestSystemToSaveFile| Systems
 
-    %% External entries
     Pick -->|Apply Fix to Selected| ApplyFixStep
-    
+    Review -->|Approved Changes| SaveFixStep
 
- 
-   Review -->|Approved Changes| SaveFixStep
- 
-    %% AI event routing
     Pick -- "AI To Pick" --> AIToIterateStep
     Review -- "AI to Review" --> AIToReviewStep
 
-   
-   
+    %% Define styles
+    classDef green fill:#b2fab4,stroke:#2e7d32,stroke-width:2px;
+    classDef darkblue fill:#1565c0,stroke:#0d47a1,stroke-width:2px,color:#ffffff;
+
+    class RecommendFirstFixStep,FixSyntaxWithLLMStep,ApplyFixStep,AIToIterateStep,SuggestFixForErrorsStep,AIToReviewStep green;
+    class HumanReviewStep,HumanIterateStep,Pick,Review darkblue;
+
+    %% Transparent subgraph workaround
+    style Semantic_Kernel_Process fill:none
+    style App fill:none
 ```

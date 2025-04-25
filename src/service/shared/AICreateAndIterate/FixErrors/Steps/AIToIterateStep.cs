@@ -1,3 +1,4 @@
+using AICreateAndIterate.FixErrors.Events;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
  
@@ -46,15 +47,15 @@ namespace AICreateAndIterate.FixErrors.Steps
             );
 
             var result = response.GetValue<string>() ?? "0";
-            int selectedIndex = 0;
-            int.TryParse(result.Trim(), out selectedIndex);
+       
+            int.TryParse(result.Trim(), out int selectedIndex);
 
             if (state.Suggestions != null)
             {
                 state.Suggestions.SelectedIndex = selectedIndex;
             }
 
-            await ctx.EmitEventAsync("AIToIterate", data: state, visibility: KernelProcessEventVisibility.Internal);
+            await ctx.EmitEventAsync(ProcessEvents.ApplyFix, data: state, visibility: KernelProcessEventVisibility.Internal);
 
             return state;
         }

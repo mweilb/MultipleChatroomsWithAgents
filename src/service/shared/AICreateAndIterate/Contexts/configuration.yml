@@ -7,7 +7,7 @@ suggestFixPromptTemplate: |
       ```
 
     Error:
-      Location: {{location}}
+      Location: {{locyation}}
       Line: {{line}}
       Column: {{col}}
       Message: {{error}}
@@ -28,11 +28,14 @@ fixSyntaxWithLLMPromptTemplate: |
   ```yaml
   {{yaml}}
   ```
-  Syntax Errors:
-  {{errors}}
+
   Hints:
   {{hints}}
-  Please use the above syntax errors and hints to correct all issues in the YAML. Output only the corrected YAML in a code block, with no extra explanation.
+ 
+  Syntax Errors:
+  {{errors}}
+
+  Only fix the errors in the Syntax Errors.  The other errors that you find are false positives.  Output only the corrected YAML in a code block, with no extra explanation.
 
 recommendFirstErrorPromptTemplate: |
   You are an expert YAML configuration troubleshooter. Given the following list of YAML validation errors, recommend which error should be fixed first, considering dependencies and impact.

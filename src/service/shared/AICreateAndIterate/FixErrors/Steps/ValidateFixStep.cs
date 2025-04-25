@@ -6,8 +6,29 @@ using AICreateAndIterate.FixErrors.Events;
 #pragma warning disable SKEXP0080
 namespace AICreateAndIterate.FixErrors.Steps
 {
-    public class ValidateFixStep : KernelProcessStep<YamlFixState>
+    public enum FixType
     {
+        Syntax,
+        Content
+    }
+
+    public record class ValidateFixState {
+        public FixType fixType = FixType.Content;
+    }
+
+
+    public class ValidateFixStep : KernelProcessStep<ValidateFixState>
+    {
+        private FixType _fixType = FixType.Content;
+
+        public override ValueTask ActivateAsync(KernelProcessStepState<ValidateFixState> state)
+        {
+            // Expect state.State to have a property or field indicating FixType
+            // Default to Content if not present
+            _fixType = state.State?.fixType ?? FixType.Content;
+            return base.ActivateAsync(state);
+        }
+
         [KernelFunction]
         public async Task<YamlFixState> ValidateFixAsync(
             KernelProcessStepContext ctx,
@@ -36,25 +57,32 @@ namespace AICreateAndIterate.FixErrors.Steps
                 else
                 {
         
-                    // Check if the original error is still present
-                    var errorContext = state.Recommendation?.Error;
-                    if (errorContext != null)
+                    if (_fixType == FixType.Syntax)
                     {
-                        errorStillPresent = false;
-                        foreach (var room in newInfo.Values)
+                        errorStillPresent = !syntaxValid;
+                    }
+                    else
+                    {     
+                        // Check if the original error is still present
+                        var errorContext = state.Recommendation?.Error;
+                        if (errorContext != null)
                         {
-                            foreach (var err in room.Errors)
+                            errorStillPresent = false;
+                            foreach (var room in newInfo.Values)
                             {
-                                // Set a breakpoint here to debug error matching
-                                if (err.Message == errorContext?.Message &&
-                                    err.Location == errorContext?.Location)
+                                foreach (var err in room.Errors)
                                 {
-                                    errorStillPresent = true;
-                                    break;
+                                    // Set a breakpoint here to debug error matching
+                                    if (err.Message == errorContext?.Message &&
+                                        err.Location == errorContext?.Location)
+                                    {
+                                        errorStillPresent = true;
+                                        break;
+                                    }
                                 }
+                                if (errorStillPresent)
+                                    break;
                             }
-                            if (errorStillPresent)
-                                break;
                         }
                     }
                 }
@@ -78,7 +106,14 @@ namespace AICreateAndIterate.FixErrors.Steps
             else if (errorStillPresent)
             {
                 state.IsComplete = true;
-                await ctx.EmitEventAsync(ProcessEvents.TryToApplyFixAgain, data: state, visibility: KernelProcessEventVisibility.Public);
+                if (_fixType == FixType.Syntax)
+                {
+                    await ctx.EmitEventAsync(ProcessEvents.TryToApplyFixAgainSyntax, data: state, visibility: KernelProcessEventVisibility.Public);
+                }
+                else
+                {
+                    await ctx.EmitEventAsync(ProcessEvents.TryToApplyFixAgain, data: state, visibility: KernelProcessEventVisibility.Public);
+                }
             }
             else
             {

@@ -83,13 +83,13 @@ namespace AICreateAndIterate
             return checkerConfig;
         }
 
-  private static ProcessBuilder GetYamlErrorCheckerBuilder(YamlErrorCheckerConfig config)
+        private static ProcessBuilder GetYamlErrorCheckerBuilder(YamlErrorCheckerConfig config)
         {
             var builder = new ProcessBuilder("Fix Errors");
 
             // --- Step Declarations ---
             var loadAndValidateStep = builder.AddStepFromType<LoadAndValidateStep>();
-            var fixSyntaxWithLLMStep = builder.AddStepFromType<FixSyntaxWithLLMStep, InputPromptState>(
+            var fixSyntaxIssue = builder.AddStepFromType<FixSyntaxWithLLMStep, InputPromptState>(
                 new InputPromptState { PromptTemplate = config.FixSyntaxWithLLMPromptTemplate }
             );
 
@@ -109,7 +109,9 @@ namespace AICreateAndIterate
             var applyStep = builder.AddStepFromType<ApplyFixStep, InputPromptState>(
                  new InputPromptState{ PromptTemplate = config.ApplyFixStepPrompt});
             
-            var validateFixStep = builder.AddStepFromType<ValidateFixStep>();
+            var validateFixStepLogic = builder.AddStepFromType<ValidateFixStep, ValidateFixState>(new ValidateFixState(){  fixType = FixType.Content },"validateFixStepLogic");
+            var validateFixStepSyntax = builder.AddStepFromType<ValidateFixStep, ValidateFixState>(new ValidateFixState(){  fixType = FixType.Syntax },"validateFixStepSyntax");
+
 
             var saveFixStep = builder.AddStepFromType<SaveFixStep>();
 
@@ -136,14 +138,12 @@ namespace AICreateAndIterate
                 .EmitExternalEvent(eventChannelStep, ProcessEvents.WaitingOnHumanFinished);
 
             loadAndValidateStep.OnEvent(ProcessEvents.FixSyntaxWithLLM)
-                .SendEventTo(new(fixSyntaxWithLLMStep));
+                .SendEventTo(new(fixSyntaxIssue));
 
             loadAndValidateStep.OnEvent(ProcessEvents.FixAnError)
                 .SendEventTo(new(recommendStep));
 
-            fixSyntaxWithLLMStep.OnFunctionResult()
-                .SendEventTo(new(humanReviewStep));
-
+     
         
             recommendStep.OnFunctionResult()
                 .SendEventTo(new(suggestFixForErrorsStep));
@@ -163,23 +163,34 @@ namespace AICreateAndIterate
             builder.OnInputEvent(ProcessEvents.AIToReview)   
                 .SendEventTo(new(aiReviewStep));
 
-            validateFixStep.OnEvent(ProcessEvents.RequestHumanInTheLoopForFailure)
-                .EmitExternalEvent(eventChannelStep, ProcessEvents.WaitingOnHumanValidateMaxAttempts);
+            validateFixStepLogic.OnEvent(ProcessEvents.RequestHumanInTheLoopForFailure)
+                .EmitExternalEvent(eventChannelStep, ProcessEvents.WaitingOnHumanValidateLogicMaxAttempts);
 
-            validateFixStep.OnEvent(ProcessEvents.TryToApplyFixAgain)
+            validateFixStepLogic.OnEvent(ProcessEvents.TryToApplyFixAgain)
                 .SendEventTo(new(applyStep));
 
-            validateFixStep.OnEvent(ProcessEvents.RequestReview)
+            validateFixStepLogic.OnEvent(ProcessEvents.RequestReview)
                 .SendEventTo(new(humanReviewStep));
+
+            
+            validateFixStepSyntax.OnEvent(ProcessEvents.RequestHumanInTheLoopForFailure)
+                .EmitExternalEvent(eventChannelStep, ProcessEvents.WaitingOnHumanValidateSyntaxcMaxAttempts);
+
+            validateFixStepSyntax.OnEvent(ProcessEvents.TryToApplyFixAgain)
+                .SendEventTo(new(applyStep));
+
+            validateFixStepSyntax.OnEvent(ProcessEvents.RequestReview)
+                .SendEventTo(new(humanReviewStep));
+                
 
             humanReviewStep.OnEvent(ProcessEvents.RequestHumanInTheLoopForReview)
                 .EmitExternalEvent(eventChannelStep, ProcessEvents.WaitingOnHumanReview);
 
             applyStep.OnFunctionResult()
-                .SendEventTo(new(validateFixStep));
-
-            validateFixStep.OnFunctionResult()
-                .SendEventTo(new(humanReviewStep));
+                .SendEventTo(new(validateFixStepLogic));
+ 
+            fixSyntaxIssue.OnFunctionResult()
+                .SendEventTo(new(validateFixStepSyntax));
 
             // External apply fix entry
             builder.OnInputEvent(ProcessEvents.ApplyFix)
@@ -207,13 +218,27 @@ namespace AICreateAndIterate
             KernelProcessEvent? currentEvent = new() { Id = "Start", Data = state };
             while (currentEvent != null)
             {
+
+                if (currentEvent.Id == "Start")
+                {
+                    currentEvent = new() { 
+                        Id = "Start", 
+                        Data = new YamlFixState()
+                        {
+                            YamlFilePath = yamlFileLocation,
+                            ErrorHints = _ErrorHints
+                        }
+                    };
+                  
+                }
+
                 await _kernelProcess.StartAsync(_kernel, currentEvent, _messageChannel);
                 currentEvent = null;
 
                 if (_messageChannel.WaitingOnEvent)
                 {
                     var localState = _messageChannel.State;
-                    if (localState == null || localState.Suggestions == null)
+                    if (localState == null)
                     {
                         yield return null!;
                         break;
@@ -222,6 +247,12 @@ namespace AICreateAndIterate
                     var suggestions = localState.Suggestions;
                     if (_messageChannel.EventName == ProcessEvents.WaitingOnHumanIterate)
                     {
+                        if (suggestions == null)
+                        {
+                            yield return null!;
+                            break;
+                        }
+
                         yield return new KernelProcessEvent
                         {
                             Id = ProcessEvents.WaitingOnHumanIterate,
@@ -231,24 +262,34 @@ namespace AICreateAndIterate
                     }
                     else if (_messageChannel.EventName == ProcessEvents.WaitingOnHumanReview)
                     {
+                        if (suggestions == null)
+                        {
+                            yield return null!;
+                            break;
+                        }
+
                         yield return new KernelProcessEvent
                         {
                             Id = ProcessEvents.WaitingOnHumanReview,
                             Data = localState
                         };
+
+                        currentEvent = new() { Id = suggestions.EventName, Data = localState };
+
                     }
                     else if (_messageChannel.EventName == ProcessEvents.RequestSystemSaveFile)
                     {
+                        if (suggestions == null)
+                        {
+                            yield return null!;
+                            break;
+                        }
+
                         if (!string.IsNullOrWhiteSpace(localState.YamlFilePath) && !string.IsNullOrEmpty(localState.Suggestions?.FixedYaml))
                         {
                             await File.WriteAllTextAsync(localState.YamlFilePath, localState.Suggestions?.FixedYaml);
                         }
 
-                        state = new YamlFixState()
-                        {
-                            YamlFilePath = yamlFileLocation,
-                            ErrorHints = _ErrorHints
-                        };
 
                         yield return new KernelProcessEvent
                         {
