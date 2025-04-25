@@ -108,7 +108,7 @@ namespace AppExtensions.Watcher
                 Dictionary<string, YamlMultipleChatRooms> newConfig;
                 try
                 {
-                    (_, newConfig) = YamlFileReader.ReadFile(path);
+                    (_, _, newConfig) = YamlFileReader.ReadFile(path);
                 }
                 catch
                 {

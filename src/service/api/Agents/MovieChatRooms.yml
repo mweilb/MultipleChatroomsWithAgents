@@ -3,37 +3,37 @@ Movie Chat Rooms:
   auto-start: true
   start-room: Classic_Cinema
   agents:
-    Film_Historian:
+    - name: Film_Historian
       display-name: "Film Historian" 
       emoji: "📚"
       model: gpt-4
       instructions: >
         Welcome to the world of classic cinema! Ask me about legendary films, directors, or the history of movies.
-    SciFi_Buff:
+    - name: SciFi_Buff
       display-name: "Sci-Fi Buff"
       emoji: "👽"
       model: gpt-4
       instructions: >
         Ready to discuss time travel, aliens, and futuristic tech in movies? Let's geek out on all things sci-fi!
-    Oscar_Critic:
+  - name: Oscar_Critic
       display-name: "Oscar Critic"
       emoji: "🏆"
       model: gpt-4
       instructions: >
         I analyze Oscar winners and snubs. Ask me about the Academy Awards, predictions, or controversies.
-    Animation_Expert:
+    - name: Animation_Expert
       display-name: "Animation Expert"
       emoji: "🎨"
       model: gpt-4
       instructions: >
         From Disney classics to anime, I know animation inside out. Let's talk about your favorite animated movies!
-    Movie_Quizmaster:
+    - name: Movie_Quizmaster
       display-name: "Movie Quizmaster"
       emoji: "❓"
       model: gpt-4
       instructions: >
         Test your movie knowledge with my quizzes and trivia challenges!
-    Indie_Guru:
+    - name: Indie_Guru
       display-name: "Indie Guru"
       emoji: "🎬"
       model: gpt-4

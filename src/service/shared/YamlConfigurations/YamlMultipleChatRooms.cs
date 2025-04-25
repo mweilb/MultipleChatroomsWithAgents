@@ -5,17 +5,9 @@ using YamlDotNet.Serialization;
 
 namespace YamlConfigurations
 {
-    public class YamlMultipleChatRooms : YamlLineInfo
+    public class YamlMultipleChatRooms : YamlRoomConfig
     {
-        [YamlMember(Alias = "name")]
-        public string Name { get; set; } = string.Empty;
-
-        [YamlMember(Alias = "display-name")]
-        public string? DisplayName { get; set; }
-
-        // YAML "emoji" key.
-        [YamlMember(Alias = "emoji")]
-        public string Emoji { get; set; } = string.Empty;
+         
 
         // YAML "start room" maps to our CurrentRoom property.
         [YamlMember(Alias = "start-room")]
@@ -24,10 +16,6 @@ namespace YamlConfigurations
         // YAML "start room" maps to our CurrentRoom property.
         [YamlMember(Alias = "auto-start")]
         public string AutoStart { get; set; } = string.Empty;
-
-        // YAML "agents" node: Global agents defined once.
-        [YamlMember(Alias = "agents")]
-        public Dictionary<string, YamlAgentConfig>? Agents { get; set; } = new Dictionary<string, YamlAgentConfig>();
 
         // YAML "chatrooms" node.
         [YamlMember(Alias = "chatrooms")]
@@ -63,7 +51,8 @@ namespace YamlConfigurations
             {
                 foreach (var agent in room.Agents)
                 {
-                    if (Agents.TryGetValue(agent.Name, out var agentDefintion))
+                    var agentDefintion = Agents.FirstOrDefault(a => a.Name == agent.Name);
+                    if (agentDefintion != null)
                     {
                         agent.ApplyParentOverride(agentDefintion);
                     }

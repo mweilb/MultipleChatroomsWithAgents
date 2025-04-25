@@ -13,7 +13,7 @@ namespace AICreateAndIterate.FixErrors.Steps
         [KernelFunction]
         public async Task<YamlFixState> ValidateYamlAsync(KernelProcessStepContext ctx, YamlFixState state)
         {
-            var (yamlText, experienceDict) = YamlFileReader.ReadFile(state.YamlFilePath);
+            var (syntaxValid,yamlText, experienceDict) = YamlFileReader.ReadFile(state.YamlFilePath);
 
             // Build validation errors dictionary
             var validationErrors = experienceDict.ToDictionary(

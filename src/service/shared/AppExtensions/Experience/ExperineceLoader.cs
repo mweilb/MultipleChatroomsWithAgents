@@ -30,7 +30,7 @@ namespace AppExtensions.Experience
             {
                 // This method presumably returns a Dictionary<string, YamlMultipleChatRooms>
                 // Key: experience name, Value: the YamlMultipleChatRooms definition
-                var (_, experienceDict) = YamlFileReader.ReadFile(yamlFilePath);
+                var (_1,_2, experienceDict) = YamlFileReader.ReadFile(yamlFilePath);
 
                 // Merge into the final dictionary
                 foreach (var kvp in experienceDict)

@@ -26,7 +26,7 @@ namespace AICreateAndIterate.FixErrors.Steps
 
             try
             {
-                var newInfo = YamlFileReader.ReadFromString(state.Suggestions.FixedYaml);
+                var (syntaxValid, newInfo) = YamlFileReader.ReadFromString(state.Suggestions.FixedYaml);
 
                 if (newInfo.Count == 0 || newInfo.First().Value == null)
                 {

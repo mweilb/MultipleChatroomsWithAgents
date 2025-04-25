@@ -10,11 +10,9 @@
             // Validate global agents.
             if (config.Agents != null)
             {
-                foreach (var agentPair in config.Agents)
+                foreach (var agent in config.Agents)
                 {
-                    var agentName = agentPair.Key;
-                    var agentConfig = agentPair.Value;
-                    CheckEchoAnInstructions(errorList, agentName, agentConfig);
+                    CheckEchoAnInstructions(errorList, agent.Name, agent);
                 }
             }
 

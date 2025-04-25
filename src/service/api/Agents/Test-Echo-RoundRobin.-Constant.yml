@@ -1,38 +1,38 @@
-name: Test-Echo-RoundRobin-Const
-emoji: 💬
+Test-Echo-RoundRobin-Const:
+    emoji: 💬
 
-agents:
-    - name: Positive Agent
-      emoji: 🎨 
+    agents:
+        - name: Positive Agent
+          emoji: 🎨 
       
-      echo: >
-        Echo the the following with positivity - We are positivity
+          echo: >
+            Echo the the following with positivity - We are positivity
    
-    - name: Negative Agent
-      emoji: 🎨 
+        - name: Negative Agent
+          emoji: 🎨 
       
-      echo: >
-        Echo the the following with negavity - We need to be happy
+          echo: >
+            Echo the the following with negavity - We need to be happy
     
-strategies:
+    strategies:
     
-    termination:
+        termination:
         
-        continuation-agent-name: Human Agent
+            continuation-agent-name: Human Agent
 
-        constant-termination:
-             agents:
-                - Negative Agent
-             value: true
+            constant-termination:
+                 agents:
+                    - Negative Agent
+                 value: true
                 
 
-    selection:
+        selection:
        
-        round-robin-selection:
-            agents:
-                - Positive Agent
-                - Negative Agent
-            initial-agent: Positive Agent
+            round-robin-selection:
+                agents:
+                    - Positive Agent
+                    - Negative Agent
+                initial-agent: Positive Agent
 
     
 

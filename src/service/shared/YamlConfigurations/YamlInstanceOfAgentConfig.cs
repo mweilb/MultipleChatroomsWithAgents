@@ -6,8 +6,7 @@ namespace YamlConfigurations
     // An instance of an agent in a room, which may include position overrides.
     public class YamlInstanceOfAgentConfig : YamlAgentConfig
     {
-        [YamlMember(Alias = "name")]
-        public string Name { get; set; } = string.Empty;
+
 
         public static bool IsValidAgentName(string name)
         {

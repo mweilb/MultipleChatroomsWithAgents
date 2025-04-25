@@ -5,6 +5,9 @@ namespace YamlConfigurations
     // Global Agent definition.
     public class YamlAgentConfig : YamlLineInfo
     {
+        [YamlMember(Alias = "name")]
+        public string Name { get; set; } = string.Empty;
+
         [YamlMember(Alias = "emoji")]
         public string? Emoji { get; set; } = string.Empty;
 

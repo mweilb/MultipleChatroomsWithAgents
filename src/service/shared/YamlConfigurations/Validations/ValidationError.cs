@@ -19,6 +19,7 @@
         public const string PromptSelect = "prompt-select";
         public const string SequentialSelection = "sequential-selection";
         public const string RoundRobinSelection = "round-robin-selection";
+        public const string Syntax = "syntax";
     }
 
     public class ValidationError 

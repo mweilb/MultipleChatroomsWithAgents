@@ -12,9 +12,19 @@ Termination defines when and how a chat room or agent's rule should end its proc
 
 A termination block can be added to a room or rule. Only one of the following keys may be present:
 
-- `regex-termination`: Ends when a message matches a regular expression.
+- `regex-termination`: Ends when a message matches any regular expression in the `expressions` list.
+  - `expressions`: List of regex patterns (strings).
 - `constant-termination`: Ends based on a fixed value or condition.
+  - `agents`: (optional) List of agent names.
+  - `value`: (optional) String value to match.
 - `prompt-termination`: Ends when a specific prompt or message is encountered.
+  - `agents`: (optional) List of agent names.
+  - `instructions`: (optional) String with instructions for the prompt.
+  - `history-variable-name`: (optional) String for the variable name holding conversation history.
+  - `result-parser`: (optional) Object with a `regex` field (list of objects with `pattern` and `value`).
+  - `evaluate-name-only`: (optional) String.
+  - `truncation-reducer`: (optional) Object with `target-count` and `threshold-count` (strings).
+  - `summarization-reducer`: (optional) Object with `target-count` and `threshold-count` (strings).
 
 You may also specify:
 
@@ -27,10 +37,15 @@ You may also specify:
 ```yaml
 termination:
   regex-termination:
-    pattern: "end of conversation"
+    expressions:
+      - "end of conversation"
+      - "goodbye"
   # Only one of the following should be present:
   # constant-termination:
+  #   agents: ["AgentA"]
+  #   value: "done"
   # prompt-termination:
+  #   instructions: "Summarize and end."
   continuation-agent-name: "AgentB"
 ```
 
